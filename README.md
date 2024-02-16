@@ -1,3 +1,3 @@
 
-## Osom project
+## OsomGPT
 
