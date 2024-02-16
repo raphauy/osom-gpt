@@ -1,0 +1,194 @@
+"use server"
+
+import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getFirstClient, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
+import { getUser } from "@/services/userService";
+import { Client } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { EndpointFormValues } from "../../config/(crud)/endpoint-form";
+import { PromptFormValues } from "../../prompts/prompt-form";
+import { ClientFormValues } from "./clientForm";
+
+export type DataClient = {
+    id: string
+    nombre: string
+    slug: string
+    descripcion: string
+    url: string
+    cantPropiedades: number
+    rentPercentage?: string
+    salePercentage?: string
+    whatsAppEndpoint: string | null
+    prompt?: string | null
+    promptTokensPrice?: number | null
+    completionTokensPrice?: number | null
+  }
+    
+
+export async function getDataClient(clientId: string): Promise<DataClient | null>{
+    const client= await getClient(clientId)
+    if (!client) return null
+
+    const propertiesCount= 0
+
+    const data: DataClient= {
+        id: client.id,
+        nombre: client.name,
+        slug: client.slug,
+        descripcion: client.description || '',
+        url: client.url || '',
+        cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
+    }
+    return data
+}
+
+export async function getDataClientOfUser(userId: string): Promise<DataClient | null>{
+    const user= await getUser(userId)
+    if (!user) return null
+
+    const client= user.client
+    if (!client) return null
+
+    const propertiesCount= 0
+
+    const data: DataClient= {
+        id: client.id,
+        nombre: client.name,
+        slug: client.slug,
+        descripcion: client.description || '',
+        url: client.url || '',
+        cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
+    }
+    return data
+}
+
+export async function getDataClientBySlug(slug: string): Promise<DataClient | null>{
+    
+    const client= await getClientBySlug(slug)
+    if (!client) return null
+
+    const propertiesCount= 0
+
+    const data: DataClient= {
+        id: client.id,
+        nombre: client.name,
+        slug: client.slug,
+        descripcion: client.description || '',
+        url: client.url || '',
+        cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
+    }
+    return data
+}
+
+export async function getFirstClientAction(): Promise<DataClient | null>{
+    const client= await getFirstClient()
+    if (!client) return null
+
+    const propertiesCount= 0
+
+    const data: DataClient= {
+        id: client.id,
+        nombre: client.name,
+        slug: client.slug,
+        descripcion: client.description || '',
+        url: client.url || '',
+        cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
+    }
+    return data
+}
+
+export type Percentages = {
+    sales: string
+    rents: string
+}
+
+export async function getDataClients() {
+    const clients= await getClients()
+
+    const data: DataClient[] = await Promise.all(
+        clients.map(async (client) => {
+            const propertiesCount = 0
+
+            return {
+                id: client.id,
+                nombre: client.name,
+                slug: client.slug,
+                descripcion: client.description || "",
+                url: client.url || "",
+                cantPropiedades: propertiesCount,
+                rentPercentage: "0",
+                salePercentage: "0",
+                whatsAppEndpoint: client.whatsappEndpoint,
+                prompt: client.prompt,
+                promptTokensPrice: client.promptTokensPrice,
+                completionTokensPrice: client.completionTokensPrice
+            };
+        })
+    );
+
+    revalidatePath(`/admin/config`)
+    
+    return data    
+}
+
+export async function create(data: ClientFormValues): Promise<Client | null> {       
+    const created= await createClient(data)
+
+    console.log(created);
+
+    revalidatePath(`/admin`)
+
+    return created
+}
+  
+export async function update(clientId: string, data: ClientFormValues): Promise<Client | null> {  
+    const edited= await editClient(clientId, data)    
+
+    revalidatePath(`/admin`)
+    
+    return edited
+}
+
+
+export async function eliminate(clientId: string): Promise<Client | null> {    
+    const deleted= await deleteClient(clientId)
+
+    revalidatePath(`/admin`)
+
+    return deleted
+}
+
+export async function updateEndpoint(json: EndpointFormValues) {
+
+    if (!json.whatsappEndpoint || !json.clienteId)
+        return
+
+    setWhatsAppEndpoing(json.whatsappEndpoint, json.clienteId)
+
+    revalidatePath(`/admin/config`)
+}
+
+export async function updatePrompt(json: PromptFormValues) {
+
+    if (!json.prompt || !json.clienteId)
+        return
+
+    setPrompt(json.prompt, json.clienteId)
+
+    revalidatePath(`/admin/prompts`)
+}

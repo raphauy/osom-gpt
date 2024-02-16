@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Document" ALTER COLUMN "jsonContent" DROP NOT NULL,
+ALTER COLUMN "textContent" DROP NOT NULL,
+ALTER COLUMN "charCount" DROP NOT NULL;
