@@ -22,6 +22,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { LoadingSpinnerChico } from "@/components/loadingSpinner";
+import { Loader } from "lucide-react";
 
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -102,9 +103,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-          <Button disabled={isLoading} className="w-full">
+          <Button disabled={isLoading} className="w-full whitespace-nowrap">
             {isLoading && (
-              <LoadingSpinnerChico />
+              <Loader className="animate-spin" />
             )}
             Envíame el link
           </Button>
