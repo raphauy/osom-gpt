@@ -26,7 +26,7 @@ export default function Chat() {
   const [clients, setClients] = useState<SelectorData[]>([])
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
-  const [showSystem, setShowSystem] = useState(true)
+  const [showSystem, setShowSystem] = useState(false)
   const [finishedCount, setFinishedCount] = useState(0)
   const [mapMessageSectioin, setMapMessageSectioin] = useState<Map<string, string[]>>(new Map())
   const session= useSession()
