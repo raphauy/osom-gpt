@@ -21,7 +21,11 @@ export default function MenuOsom() {
                 <ul className="flex items-center">
                     {clients.map(client => (
                         <li key={client.id} className={`flex items-center border-b-osom-color hover:border-b-osom-color hover:border-b-2 h-11 whitespace-nowrap ${path.includes(client.slug) && "border-b-2"}`}>
-                            <Link href={`/client/${client.slug}`}><Button className="text-lg" variant="ghost">{client.nombre}</Button></Link>
+                            <Link href={`/client/${client.slug}`}>
+                                <Button className="text-lg" variant="ghost">
+                                    {client.nombre}
+                                </Button>
+                            </Link>
                         </li>
                         ))
                     }

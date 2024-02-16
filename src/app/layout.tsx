@@ -36,12 +36,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased w-full", fontSans.variable)}>
             <SessionProvider session={session}>
           
 
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <div className="container relative flex flex-col min-h-screen mt-1 text-muted-foreground">
+              <div className="container relative flex flex-col min-w-full min-h-screen mt-1 text-muted-foreground w-fit">
                 <Header><Menu /></Header> 
 
                 <div className="flex flex-col items-center flex-1">
