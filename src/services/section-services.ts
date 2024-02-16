@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db"
 import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import pgvector from 'pgvector/utils';
 import { DocumentDAO, getDocumentsDAOByClient } from "./document-services";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export type SectionDAO = {
 	id: string
@@ -207,7 +209,10 @@ export type SimilaritySearchResult = {
 export async function getContext(clientId: string, userInput: string) {
 
   const documents= await getDocumentsDAOByClient(clientId)
-  let contextString= "\n**** Documentos ****\n"
+  let contextString= "\n**** Fecha y hora ****\n"
+  const hoy= format(new Date(), "EEEE, dd/MM/yyyy HH:mm:ss", {locale: es})
+  contextString+= `Hoy es ${hoy}.\n`
+  contextString+= "\n**** Documentos ****\n"
   contextString+= "Documentos que pueden ser relevantes para elaborar una respuesta:\n"
   documents.map((doc) => {
     contextString += `{
