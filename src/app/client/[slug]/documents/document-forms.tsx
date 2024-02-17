@@ -93,9 +93,9 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
           
 
         <div className="flex justify-end">
-            <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
-            <Button type="submit" className="w-32 ml-2">
-              {loading ? <Loader className="w-4 h-4 animate-spin" /> : <p>Save</p>}
+            <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancelar</Button>
+            <Button type="submit" className="w-32 ml-2" variant="outline">
+              {loading ? <Loader className="w-4 h-4 animate-spin" /> : <p>Guardar</p>}
             </Button>
           </div>
         </form>

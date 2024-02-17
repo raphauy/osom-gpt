@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { User } from "@prisma/client"
 import { useState } from "react"
 import { UserForm, UserFormValues } from "./userForm"
-import { DataClient } from "../../clients/(crud)/actions"
 
 interface Props{
   title: string

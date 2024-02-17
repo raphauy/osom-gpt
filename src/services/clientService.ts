@@ -186,7 +186,13 @@ export async function getCountData(clientId: string): Promise<CountData> {
 }
 
 export async function getCountDataOfAllClients(): Promise<CountData[]> {
-  const clients= await prisma.client.findMany()
+  const clients= await prisma.client.findMany(
+    {
+      orderBy: {
+        id: 'asc',
+      }
+    }
+  )
 
   const data= await Promise.all(clients.map(async client => {
     const documents= await prisma.document.count({
