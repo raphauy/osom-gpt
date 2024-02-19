@@ -14,7 +14,7 @@ import SessionProvider from '@/components/SessionProvider'
 
 
 export const metadata: Metadata = {
-  title: "Osom Digital AI",
+  title: "OsomGPT",
   description: "Osom Digital AI",
   icons: {
     icon: "/favicon.ico",
