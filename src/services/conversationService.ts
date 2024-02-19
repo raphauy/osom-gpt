@@ -277,6 +277,7 @@ export async function processMessage(id: string) {
         gptData= {
           docId: result.docId,
           docName: result.docName,
+          docURL: result.docURL,
           description: "Documento entero"
         }
       }
