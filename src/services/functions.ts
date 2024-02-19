@@ -80,7 +80,7 @@ export async function getSection(docId: string, secuence: string): Promise<Secti
 export type DocumentResult = {
   docId: string;
   docName: string;
-  docURL: string | undefined;
+  docURL: string | null;
   description: string | null;
   content: string | null;
 };
@@ -93,7 +93,7 @@ export async function getDocument(id: string): Promise<DocumentResult | string> 
   return {
     docId: document.id,
     docName: document.name,
-    docURL: document.url,
+    docURL: document.url ?? null,
     description: document.description ?? null,
     content: document.textContent ?? null,
   }
