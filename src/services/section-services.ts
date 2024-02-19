@@ -217,8 +217,9 @@ export async function getContext(clientId: string, userInput: string) {
   documents.map((doc) => {
     contextString += `{
   docId: "${doc.id}",
-  name: "${doc.name}",
-  description: "${doc.description}",
+  docName: "${doc.name}",
+  docDescription: "${doc.description}",
+  docURL: "${doc.url}",
   sectionsCount: ${doc.sectionsCount}
 },
 `

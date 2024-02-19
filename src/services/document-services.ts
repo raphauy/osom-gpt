@@ -26,6 +26,7 @@ export const documentSchema = z.object({
 	description: z.string().optional(),
 	jsonContent: z.string().optional(),
 	textContent: z.string().optional(),
+  url: z.string().optional(),
 	fileSize: z.number().optional(),
 	wordsCount: z.number().optional(),
 	clientId: z.string({required_error: "clientId is required."}),
@@ -105,7 +106,6 @@ export async function getDocumentDAO(id: string) {
 }
     
 export async function createDocument(data: DocumentFormValues) {
-  // TODO: implement createDocument
   const created = await prisma.document.create({
     data
   })

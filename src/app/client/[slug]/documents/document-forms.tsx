@@ -45,6 +45,7 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
         if (data) {
           form.setValue("name", data.name)
           form.setValue("description", data.description)
+          form.setValue("url", data.url)
           form.setValue("clientId", data.clientId)
         }
       })
@@ -71,7 +72,6 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
               </FormItem>
             )}
           />
-          
       
           <FormField
             control={form.control}
@@ -89,8 +89,23 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
             )}
           />
           
-      
-          
+          {
+            id && 
+              <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="ej: https://www.osom.com" {...field} />
+                  </FormControl>
+                  <FormDescription>Cuanto más descriptivo el nombre mejor para la IA</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          }
 
         <div className="flex justify-end">
             <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancelar</Button>

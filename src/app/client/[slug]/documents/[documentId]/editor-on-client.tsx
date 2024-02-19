@@ -9,13 +9,15 @@ import { Editor as NovelEditor } from "novel";
 import { useEffect, useRef, useState } from "react";
 import { updateContentAction } from "../document-actions";
 import { ToastAction } from "@/components/ui/toast";
+import LinkBox from "./link-box";
 
 type Props = {
     document: DocumentDAO
     initialContent: string
+    basePath: string
 }
 
-export default function NovelOnClient({ document, initialContent }: Props) {
+export default function NovelOnClient({ document, initialContent, basePath }: Props) {
 
     const [loading, setLoading] = useState(false);
     const [textContent, setTextContent] = useState<string>(document.textContent || "")
@@ -98,11 +100,11 @@ export default function NovelOnClient({ document, initialContent }: Props) {
                 </Button>
             </div>
 
-            <div className="flex items-center justify-between w-full gap-2">
+            <div className="flex items-center justify-between w-full px-7">
 
-                <p></p>
+                <LinkBox href={`${document.url}`} />
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center w-1/3 gap-2">
                     <p className="font-bold">{wordCount}</p> <p>palabras, </p>
                     <p className="font-bold">{sections === 1 ? "1 sección" : `${sections} secciones`}</p>
                 </div>
@@ -119,6 +121,7 @@ export default function NovelOnClient({ document, initialContent }: Props) {
                   
             </div>
             <NovelEditor
+                
                 defaultValue={jsonContent ? JSON.parse(jsonContent) : {}}
                 onDebouncedUpdate={onUpdate}
                 disableLocalStorage

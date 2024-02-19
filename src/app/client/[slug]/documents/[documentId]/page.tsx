@@ -2,6 +2,9 @@ import { getDocumentDAO } from "@/services/document-services";
 import { redirect } from "next/navigation";
 import { DocumentDialog } from "../document-dialogs";
 import NovelOnClient from "./editor-on-client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import LinkBox from "./link-box";
 
 type Props = {
     params: {
@@ -25,14 +28,17 @@ export default async function Page({ params }: Props) {
         redirect(`/client/${slug}/documents`)
     }
 
+    const BASE_PATH= process.env.NEXTAUTH_URL
+
     return (
         <div className="flex flex-col w-full p-1 md:p-4 xl:p-8">
+                        
             <div className="flex items-center justify-center gap-4 mb-4">
                 <p className="text-3xl font-bold">{document.name}</p>
                 <DocumentDialog id={document.id} clientId={document.clientId} />
             </div>
 
-            <NovelOnClient document={document} initialContent={content}/>
+            <NovelOnClient document={document} initialContent={content} basePath={BASE_PATH || "http://localhost:3000"} />
 
         </div>
     )

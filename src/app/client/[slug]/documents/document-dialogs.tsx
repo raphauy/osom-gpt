@@ -9,7 +9,6 @@ import { DeleteDocumentForm, DocumentForm } from "./document-forms";
 type Props= {
   id?: string
   clientId: string
-  create?: boolean
 }
 
 const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Crear Documento</Button>
