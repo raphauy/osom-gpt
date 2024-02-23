@@ -65,7 +65,7 @@ export function ClientSelector({ selectors }: Props) {
     }
   
     return (
-      <div className="w-full px-1">
+      <div className="min-w-[300px]">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button

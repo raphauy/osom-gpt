@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { DocumentResult, SectionResult, getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
+import { DocumentResult, SectionResult, functions, getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { format, set } from "date-fns";
@@ -9,7 +9,6 @@ import { BillingData, CompleteData } from "@/app/admin/billing/actions";
 import { getContext, setSectionsToMessage } from "./section-services";
 import { removeSectionTexts } from "@/lib/utils";
 import { getFunctionsDefinitions } from "./function-services";
-import { completionInit } from "./function-call-services";
 
 
 const openai = new OpenAI({
@@ -208,29 +207,164 @@ export async function processMessage(id: string) {
 
   console.log("messages.count: " + messages.length)
 
-  //TODO
   const functions= await getFunctionsDefinitions(client.id)
 
-  const completionResponse= await completionInit(client.id,functions, messages)
-  if (completionResponse === null) {
-    console.log("completionInit returned null")
-    return
-  }
+  let baseArgs = {
+    model: "gpt-4-1106-preview",
+    temperature: 0,
+    messages
+  };
+
+
+  const args = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
+
+  console.log("args: ", args);
   
-  const assistantResponse= completionResponse.assistantResponse
-  const gptData= null
-  const notificarAgente= completionResponse.agentes
-  const promptTokens= completionResponse.promptTokens
-  const completionTokens= completionResponse.completionTokens
+
+  const initialResponse = await openai.chat.completions.create(args as any);
+
+
+  // const initialResponse = await openai.chat.completions.create({
+  //   //model: "gpt-4-turbo-preview",    
+  //   model: "gpt-4-1106-preview",
+  //   //model: "gpt-3.5-turbo-0125",
+    
+  //   messages: messages,
+  //   temperature: 0,
+  //   functions,
+  //   function_call: "auto",
+  // })
+
+  let wantsToUseFunction = initialResponse.choices[0].finish_reason == "function_call"
+
+  const usage= initialResponse.usage
+  console.log("usage:")
+  console.log(usage)  
+  let promptTokens= usage ? usage.prompt_tokens : 0
+  let completionTokens= usage ? usage.completion_tokens : 0
+  console.log("promptTokens: ", promptTokens)
+  console.log("completionTokens: ", completionTokens)  
+
+  console.log("wantsToUseFunction: ", wantsToUseFunction)
+  
+
+  let assistantResponse: string | null = ""
+	let content: string | DocumentResult | SectionResult
+  let notificarAgente = false
+  let gptData: any
+	// Step 2: Check if ChatGPT wants to use a function
+	if(wantsToUseFunction){
+		// Step 3: Use ChatGPT arguments to call your function
+    if (!initialResponse.choices[0].message.function_call) throw new Error("No function_call message")
+
+		if(initialResponse.choices[0].message.function_call.name == "getSection"){
+			let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const docId= argumentObj.docId
+      const secuence= argumentObj.secuence
+			const result = await getSection(docId, secuence)
+      content= JSON.stringify(result)
+
+      if (typeof result === "object") {
+        gptData= {
+          docId: result.docId,
+          docName: result.docName,
+          description: `Parte ${result.secuence}`
+        }
+      }
+
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "getDocument",
+				content,
+			})
+    }
+
+    if(initialResponse.choices[0].message.function_call.name == "getDocument"){
+			let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const docId= argumentObj.docId
+			const result = await getDocument(docId)
+      content= JSON.stringify(result)
+
+      if (typeof result === "object") {
+        gptData= {
+          docId: result.docId,
+          docName: result.docName,
+          docURL: result.docURL,
+          description: "Documento entero"
+        }
+      }
+
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "getDocument",
+				content,
+			})
+    }
+
+		if(initialResponse.choices[0].message.function_call.name == "notifyHuman"){
+			content = await notifyHuman(conversation.clientId)
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "notifyHuman", 
+				content: JSON.stringify(content),
+			})
+      notificarAgente = true
+		}
+
+		if(initialResponse.choices[0].message.function_call.name == "getDateOfNow"){
+			content = await getDateOfNow()
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "getDateOfNow", 
+				content: JSON.stringify(content),
+			})
+		}
+
+    let baseArgs = {
+      model: "gpt-4-1106-preview",
+      messages,
+    };
+  
+    const recursiveArgs = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
+
+    let step4response = await openai.chat.completions.create(recursiveArgs as any);
+
+    // second invocation of ChatGPT to respond to the function call
+    // let step4response = await openai.chat.completions.create({
+    //   model: "gpt-4-1106-preview",
+    //   messages,
+    // });
+    const usage= step4response.usage
+    console.log("usage function call:")
+    console.log(usage)
+    if (usage) {
+      promptTokens+= usage.prompt_tokens
+      completionTokens+= usage.completion_tokens
+    }
+    console.log("promptTokens: ", promptTokens)
+    console.log("completionTokens: ", completionTokens)  
+    console.log("Response from function call: ", step4response.choices[0].message.function_call);
+    
+    
+    assistantResponse = step4response.choices[0].message.content    
+    
+	} else {
+    assistantResponse = initialResponse.choices[0].message.content    
+  }
+
+  console.log("assistantResponse: ", assistantResponse)  
 
   if (assistantResponse) {
     const gptDataString= JSON.stringify(gptData)
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
+    console.log("message stored")
   }
 
   if (assistantResponse) {
-    console.log("notificarAgente: " + notificarAgente)
-    
     sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   } else {
     console.log("assistantResponse is null")

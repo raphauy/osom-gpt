@@ -1,6 +1,6 @@
 "use server"
 
-import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getFirstClient, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
+import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFirstClient, getFunctionsOfClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
 import { getUser } from "@/services/userService";
 import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -191,4 +191,21 @@ export async function updatePrompt(json: PromptFormValues) {
     setPrompt(json.prompt, json.clienteId)
 
     revalidatePath(`/admin/prompts`)
+}
+
+export async function getFunctionsOfClientAction(clientId: string) {
+    return getFunctionsOfClient(clientId)
+}
+
+export async function getComplementaryFunctionsOfClientAction(clientId: string) {
+    return getComplementaryFunctionsOfClient(clientId)
+}
+
+export async function setFunctionsAction(clientId: string, functionIs: string[]) {
+    return setFunctions(clientId, functionIs)
+}
+
+export async function getFirstClientIdAction() {
+    const client= await getFirstClient()
+    return client?.id
 }

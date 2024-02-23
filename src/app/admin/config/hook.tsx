@@ -19,7 +19,6 @@ export default function Hook({ basePath }: Props) {
     const [client, setClient] = useState<DataClient>()
     const [hook, setHook] = useState(`${basePath}/api/${client?.id}/conversation`)
     const [endPoint, setEndPoint] = useState("No configurado")
-    const [updateAPIEndpoint, setUpdateAPIEndpoint] = useState(`${basePath}/${client?.id}/update`)
     const searchParams= useSearchParams()
 
     useEffect(() => {
@@ -32,7 +31,6 @@ export default function Hook({ basePath }: Props) {
             setClient(data)
             data.whatsAppEndpoint && setEndPoint(data.whatsAppEndpoint)
             setHook(`${basePath}/api/${data.id}/conversation`)
-            setUpdateAPIEndpoint(`${basePath}/api/${data.id}/update`)
         })
 
        
@@ -49,11 +47,6 @@ export default function Hook({ basePath }: Props) {
         toast({title: "Endpoint copiado" })
     }
 
-    function copyUpdateAPIEndpointIdToClipboard(){   
-        copy(updateAPIEndpoint)    
-        toast({title: "Update API Endpoint copiado" })
-    }
-
     const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer"/>)
 
     return (
@@ -68,11 +61,6 @@ export default function Hook({ basePath }: Props) {
                 <p><strong>Saliente</strong>: {endPoint}</p>
                 <EndpointDialog update={updateEndpoint} title="Configurar WhatsApp Endpoint" trigger={editTrigger} id={client?.id || ""} />
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyEndPointToClipboard} /></Button>
-            </div>
-
-            <div className="flex items-center gap-4 pb-3 mb-3 border-b">
-                <p><strong>Update API</strong>: {updateAPIEndpoint}</p>
-                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyUpdateAPIEndpointIdToClipboard} /></Button>
             </div>
 
         </div>

@@ -9,7 +9,7 @@ export default function MenuAdmin() {
     const path= usePathname()
 
     return (
-        <div className="flex flex-1 gap-6 pl-5 md:gap-5 ">
+        <div className="flex-1 hidden gap-6 pl-5 lg:flex md:gap-5">
             <nav>
                 <ul className="flex items-center">
                     <li className={`flex items-center border-b-osom-color hover:border-b-osom-color hover:border-b-2 h-11 ${path.includes("admin") && "border-b-2"}`}>

@@ -1,5 +1,6 @@
 import { ClientFormValues } from "@/app/admin/clients/(crud)/clientForm";
 import { prisma } from "@/lib/db";
+import { FunctionDAO } from "./function-services";
 
 
 export default async function getClients() {
@@ -232,4 +233,112 @@ export async function getCountDataOfAllClients(): Promise<CountData[]> {
   }))
 
   return data
+}
+
+export async function getFunctionsOfClient(clientId: string) {
+  const client= await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    include: {
+      functions: true      
+    }
+  })
+
+  if (!client) return []
+
+  const functionsIds= client.functions.map((f) => f.functionId)
+
+  const functions= await prisma.function.findMany({
+    where: {
+      id: {
+        in: functionsIds
+      }
+    }
+  })
+
+  return functions
+}
+
+export async function getComplementaryFunctionsOfClient(clientId: string) {
+  const client= await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    include: {
+      functions: true
+    }
+  })
+
+  if (!client) return []
+
+  const clientFunctions= client.functions
+
+  const allFunctions= await prisma.function.findMany()
+
+  const complementary= allFunctions.filter((f) => !clientFunctions.find((cf) => cf.functionId === f.id))
+
+  return complementary
+}
+
+
+// model Function {
+//   id             String       @id @default(cuid())
+//   name           String       @unique             // gennext: show.column
+//   description    String?                          // gennext: show.column
+//   definition     String?      @db.Text            // gennext: show.column
+//   createdAt      DateTime     @default(now())     // gennext: skip.zod
+//   updatedAt      DateTime     @updatedAt          // gennext: skip.zod
+
+//   clients        ClientFunction[]                 // gennext: skip.list
+// 	@@map("Function")                               // gennext: skip.list
+// }
+
+// model ClientFunction {
+//   client   Client @relation(fields: [clientId], references: [id])
+//   clientId String
+
+//   function  Function @relation(fields: [functionId], references: [id])
+//   functionId String
+  
+//   @@id([clientId, functionId])
+// 	@@map("ClientFunction")
+// }
+
+
+// disconnect existing functions and connect new ones
+export async function setFunctions(clientId: string, functionIs: string[]) {
+  const client= await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    include: {
+      functions: true
+    }
+  })
+
+  if (!client) throw new Error('Client not found')
+
+  const clientFunctions= client.functions
+
+  const toDisconnect= clientFunctions.filter((cf) => !functionIs.includes(cf.functionId))
+  const toConnect= functionIs.filter((fi) => !clientFunctions.find((cf) => cf.functionId === fi))
+
+  await Promise.all(toDisconnect.map((cf) => prisma.clientFunction.delete({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId: cf.functionId
+      }
+    }
+  })))
+
+  await Promise.all(toConnect.map((fi) => prisma.clientFunction.create({
+    data: {
+      clientId,
+      functionId: fi
+    }
+  })))
+
+  return true
 }

@@ -9,7 +9,8 @@ export async function deleteConversationAction(id: string): Promise<boolean> {
 
     if (!deleted) return false
 
-    revalidatePath(`/chats`)
+    revalidatePath(`/client`)
+    revalidatePath(`/admin/chat`)
 
     return true
 }

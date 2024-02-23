@@ -19,8 +19,8 @@ export default async function Menu() {
         return (
             <div className="flex">
                 <div className="flex">
-                    {/* <MenuAdmin /> */}
                     <ClientSelector selectors={selectorData} />
+                    <MenuAdmin />
                     {/* <MenuOsom /> */}
                 </div>
             </div>

@@ -2,52 +2,52 @@ import { JSONValue } from "ai";
 import { getDocumentDAO } from "./document-services";
 import { getSectionOfDocument } from "./section-services";
 
-export const functions= [
-  {
-    name: "getSection",
-    description:
-      "Devuelve la información de una Section de un documento. La información debe utilizarse para responder a las preguntas del usuario. Los documentos están divididos en secciones y cada sección tiene un texto. Las secciones se numeran con secuencias comenzando desde 1.",
-    parameters: {
-      type: "object",
-      properties: {
-        docId: {
-          type: "string",
-          description: "Id del documento que se quiere consultar consultar.",
-        },
-        secuence: {
-          type: "string",
-          description: "Secuencia que identifica la sección del documento que se quiere consultar.",
-        },
-      },
-      required: ["id", "secuence"],
-    },    
-  },
-  {
-    name: "getDocument",
-    description:
-      "Devuelve la información completa de un documento a partir de su id. Los documentos deben utilizarse para responder a las preguntas del usuario.",
-    parameters: {
-      type: "object",
-      properties: {
-        docId: {
-          type: "string",
-          description: "Id del documento que se quiere consultar consultar.",
-        },
-      },
-      required: ["docId"],
-    },    
-  },
-  {
-    name: "notifyHuman",
-    description:
-      "Se debe invocar esta función para notificar a un agente inmobiliario cuando la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita.",
-    parameters: {
-      type: "object",
-      properties: {},
-      required: [],
-    },
-  },
-];
+// export const functions= [
+//   {
+//     name: "getSection",
+//     description:
+//       "Devuelve la información de una Section de un documento. La información debe utilizarse para responder a las preguntas del usuario. Los documentos están divididos en secciones y cada sección tiene un texto. Las secciones se numeran con secuencias comenzando desde 1.",
+//     parameters: {
+//       type: "object",
+//       properties: {
+//         docId: {
+//           type: "string",
+//           description: "Id del documento que se quiere consultar consultar.",
+//         },
+//         secuence: {
+//           type: "string",
+//           description: "Secuencia que identifica la sección del documento que se quiere consultar.",
+//         },
+//       },
+//       required: ["id", "secuence"],
+//     },    
+//   },
+//   {
+//     name: "getDocument",
+//     description:
+//       "Devuelve la información completa de un documento a partir de su id. Los documentos deben utilizarse para responder a las preguntas del usuario.",
+//     parameters: {
+//       type: "object",
+//       properties: {
+//         docId: {
+//           type: "string",
+//           description: "Id del documento que se quiere consultar consultar.",
+//         },
+//       },
+//       required: ["docId"],
+//     },    
+//   },
+//   {
+//     name: "notifyHuman",
+//     description:
+//       "Se debe invocar esta función para notificar a un agente inmobiliario cuando la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita.",
+//     parameters: {
+//       type: "object",
+//       properties: {},
+//       required: [],
+//     },
+//   },
+// ];
 
 
 
@@ -67,7 +67,7 @@ export type SectionResult = {
 export async function getSection(docId: string, secuence: string): Promise<SectionResult | string> {
   const section= await getSectionOfDocument(docId, parseInt(secuence))
   if (!section) return "Section not found"
-  console.log(`getSection: doc: ${section.document.name}, secuence: ${secuence}`)
+  console.log(`\tgetSection: doc: ${section.document.name}, secuence: ${secuence}`)
 
   return {
     docId: section.documentId,
@@ -88,7 +88,7 @@ export type DocumentResult = {
 export async function getDocument(id: string): Promise<DocumentResult | string> {
   const document= await getDocumentDAO(id)
   if (!document) return "Document not found"
-  console.log(`getDocument: doc: ${document.name}`)
+  console.log(`\tgetDocument: doc: ${document.name}`)
 
   return {
     docId: document.id,
@@ -99,6 +99,12 @@ export async function getDocument(id: string): Promise<DocumentResult | string> 
   }
 }
 
+export async function getDateOfNow(){
+  // return the current date and time in Montevideo time zone
+  const res= new Date().toLocaleString("es-UY", {timeZone: "America/Montevideo"})
+  console.log("getDateOfNow: " + res)
+  return res
+}
 
 export async function runFunction(name: string, args: any, clientId: string){
   switch (name) {
@@ -108,6 +114,8 @@ export async function runFunction(name: string, args: any, clientId: string){
       return getDocument(args.docId);
     case "notifyHuman":
       return notifyHuman(clientId);
+    case "getDateOfNow":
+      return getDateOfNow();
     default:
       return null;
   }

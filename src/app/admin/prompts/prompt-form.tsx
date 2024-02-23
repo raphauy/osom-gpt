@@ -56,12 +56,6 @@ export function PromptForm({ id, update, prompt }: Props) {
   }
 
   useEffect(() => {
-    // getDataClient(id).then((data) => {
-    //   if (!data) return
-    //   data.prompt && form.setValue("prompt", data.prompt)
-    //   data.id && form.setValue("clienteId", id)
-    //   setLoading(false)
-    // })
     form.setValue("prompt", prompt)
     form.setValue("clienteId", id)
     setLoading(false)
@@ -71,7 +65,7 @@ export function PromptForm({ id, update, prompt }: Props) {
 
 
   return (
-    <div className="p-4 bg-white rounded-md">
+    <div className="">
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
@@ -79,12 +73,12 @@ export function PromptForm({ id, update, prompt }: Props) {
           name="prompt"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Prompt</FormLabel>
+              <FormLabel>Prompt:</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Prompt del cliente"                  
                   {...field}
-                  rows={18}
+                  rows={30}
                 />
               </FormControl>
               <FormMessage />
@@ -92,7 +86,6 @@ export function PromptForm({ id, update, prompt }: Props) {
           )}
         /> 
       <div className="flex justify-end">
-          <Button onClick={() => router.back() } type="button" variant={"secondary"} className="w-32">Cancelar</Button>
           <Button type="submit" className="w-32 ml-2" >{loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}</Button>
         </div>
       </form>

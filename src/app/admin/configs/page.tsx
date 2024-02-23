@@ -5,7 +5,7 @@ import { columns } from "./config-columns"
 import { getCurrentUser } from "@/lib/auth"
 import APIToken from "../config/api-token"
 
-export default async function UsersPage() {
+export default async function ConfigsPage() {
   let data = await getConfigsDAO()
 
   const user= await getCurrentUser()
@@ -18,8 +18,8 @@ export default async function UsersPage() {
 
   return (
     <div className="w-full">
-      <p className="my-5 text-2xl font-bold text-center">Configuración</p>
-      <div className="flex justify-end mx-auto my-2">
+      <div className="flex items-center justify-between mx-auto my-2 font-bold">
+        <p>Esta configuración aplica a todos los clientes:</p>
         {
           isSuperAdmin && <ConfigDialog />
         }

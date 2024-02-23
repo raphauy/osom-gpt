@@ -5,6 +5,7 @@ import pgvector from 'pgvector/utils';
 import { DocumentDAO, getDocumentsDAOByClient } from "./document-services";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { getFunctionsOfClient } from "./clientService";
 
 export type SectionDAO = {
 	id: string
@@ -208,14 +209,24 @@ export type SimilaritySearchResult = {
   
 export async function getContext(clientId: string, userInput: string) {
 
-  const documents= await getDocumentsDAOByClient(clientId)
-  let contextString= "\n**** Fecha y hora ****\n"
-  const hoy= format(new Date(), "EEEE, dd/MM/yyyy HH:mm:ss", {locale: es})
-  contextString+= `Hoy es ${hoy}.\n`
-  contextString+= "\n**** Documentos ****\n"
-  contextString+= "Documentos que pueden ser relevantes para elaborar una respuesta:\n"
-  documents.map((doc) => {
-    contextString += `{
+  const functioins= await getFunctionsOfClient(clientId)
+  const functionsNames= functioins.map((f) => f.name)
+
+  let contextString= ""
+  let sectionsIds: string[] = []
+
+  if (functionsNames.includes("getDateOfNow")) {
+    contextString+= "\n**** Fecha y hora ****\n"
+    const hoy= format(new Date(), "EEEE, dd/MM/yyyy HH:mm:ss", {locale: es})
+    contextString+= `Hoy es ${hoy}.\n`
+  }
+
+  if (functionsNames.includes("getDocument")) {
+    const documents= await getDocumentsDAOByClient(clientId)
+    contextString+= "\n**** Documentos ****\n"
+    contextString+= "Documentos que pueden ser relevantes para elaborar una respuesta:\n"
+    documents.map((doc) => {
+      contextString += `{
   docId: "${doc.id}",
   docName: "${doc.name}",
   docDescription: "${doc.description}",
@@ -223,31 +234,33 @@ export async function getContext(clientId: string, userInput: string) {
   sectionsCount: ${doc.sectionsCount}
 },
 `
-  })
-
-  const similarity= await similaritySearch(clientId, userInput, 3)
-
-  if (similarity.length > 0) {
-    contextString+= "\n**** Sections ****\n"
-    contextString+= "Sections que pueden ser relevantes para elaborar una respuesta:\n"
-    similarity.map((item) => {
-      contextString += `{
-  docId: "${item.docId}",
-  docTitle: "${item.name}",
-  SectionSecuence: ${item.secuence},
-  Text: "${item.text}",
-  SemanticDistance: ${item.distance}
-},
-
-`
     })
-    contextString+= "Puedes utilizar directamente la información de alguna de estas secciones para elaborar una respuesta.\n"
+
+    const similarity= await similaritySearch(clientId, userInput, 3)
+
+    if (similarity.length > 0) {
+      contextString+= "\n**** Sections ****\n"
+      contextString+= "Sections que pueden ser relevantes para elaborar una respuesta:\n"
+      similarity.map((item) => {
+        contextString += `{
+    docId: "${item.docId}",
+    docTitle: "${item.name}",
+    SectionSecuence: ${item.secuence},
+    Text: "${item.text}",
+    SemanticDistance: ${item.distance}
+  },
+
+  `
+      })
+      contextString+= "Puedes utilizar directamente la información de alguna de estas secciones para elaborar una respuesta.\n"
+    }
+
+    contextString+= "Puedes utilizar la función getDocument para obtener toda la información de un documento y la función getSection para obtener la información de una sección.\n"
+    contextString+= "Hay documentos con más de una Section. Si obtienes una Section con secuence 1 por ejemplo y no está la información para la respuesta, solicita la siguiente Section, utiliza función getSection con la secuence 2.\n"
+
+    sectionsIds = similarity.map((item) => item.id)
   }
 
-  contextString+= "Puedes utilizar la función getDocument para obtener toda la información de un documento y la función getSection para obtener la información de una sección.\n"
-  contextString+= "Hay documentos con más de una Section. Si obtienes una Section con secuence 1 por ejemplo y no está la información para la respuesta, solicita la siguiente Section, utiliza función getSection con la secuence 2.\n"
-
-  const sectionsIds = similarity.map((item) => item.id)
   const res= {
     contextString,
     sectionsIds

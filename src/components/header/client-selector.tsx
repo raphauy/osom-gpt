@@ -91,10 +91,6 @@ export function ClientSelector({ selectors }: Props) {
                         } else {
                           setValue(currentValue)
                           let restOfPath = path.split('/').slice(3).join('/') 
-                          console.log("restOfPath", restOfPath);
-                          
-                          
-  //                          router.push(`/client/${client.slug}/${restOfPath}?${search}`)
                           router.push(`/client/${client.slug}/${restOfPath}`)
                         }
                         setSearchValue("")

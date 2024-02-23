@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
-import NotAlowedPage from "../(auth)/unauthorized/page";
-import SideBar from "./sideBar";
 import { redirect } from "next/navigation";
+import SideBar from "./side-bar";
 
 interface Props {
   children: React.ReactNode;

@@ -24,7 +24,10 @@ export function DeleteConversationForm({ id, clientSlug, closeDialog }: DeletePr
     deleteConversationAction(id)
     .then(() => {
       toast({title: "Conversación eliminada"})
-      router.push(`/client/${clientSlug}`)
+      if (clientSlug.startsWith("/admin"))
+        router.push(clientSlug)
+      else
+        router.push(`/client/${clientSlug}`)
     })
     .catch((error) => {
       toast({title: "Error", description: error.message, variant: "destructive"})

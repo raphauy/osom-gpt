@@ -1,11 +1,12 @@
 import { getSystemMessage, messageArrived } from "@/services/conversationService";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { OpenAI } from "openai";
-import { functions, runFunction } from "../../../services/functions";
+import { runFunction } from "../../../services/functions";
 import { getClient } from "@/services/clientService";
 import { getCurrentUser } from "@/lib/auth";
 import { getContext, setSectionsToMessage } from "@/services/section-services";
 import { removeSectionTexts } from "@/lib/utils";
+import { getFunctionsDefinitions } from "@/services/function-services";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -44,30 +45,51 @@ export async function POST(req: Request) {
 
   console.log("messages.count: " + messages.length)
 
-  // check if the conversation requires a function call to be made
-  const initialResponse = await openai.chat.completions.create({
+  const functions= await getFunctionsDefinitions(clientId)
+
+  // Inicializa el objeto de argumentos con propiedades comunes
+  let baseArgs = {
     model: "gpt-4-1106-preview",
-    messages,
     temperature: 0,
     stream: true,
-    functions,
-    function_call: "auto",
-  })
+  };
 
+  // @ts-ignore
+  baseArgs = { ...baseArgs, messages: messages };
+
+  // Si el array de functions tiene al menos un elemento, añade el parámetro functions
+  const args = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
+
+  // Ahora args contiene el parámetro functions solo si el array no estaba vacío
+  const initialResponse = await openai.chat.completions.create(args as any);
 
   // @ts-ignore
   const stream = OpenAIStream(initialResponse, {
     experimental_onFunctionCall: async (
-      { name, arguments: args },
+      { name, arguments: args,  },
       createFunctionCallMessages,
     ) => {
       const result = await runFunction(name, args, clientId);
       const newMessages = createFunctionCallMessages(result);
-      return openai.chat.completions.create({
+
+      let baseArgs = {
         model: "gpt-4-1106-preview",
         stream: true,
-        messages: [...messages, ...newMessages],
-      });
+      };
+    
+      // @ts-ignore
+      baseArgs = { ...baseArgs, messages: [...messages, ...newMessages] };
+      const recursiveArgs = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
+
+      return openai.chat.completions.create(recursiveArgs as any);
+
+      // return openai.chat.completions.create({
+      //   model: "gpt-4-1106-preview",
+      //   stream: true,
+      //   messages: [...messages, ...newMessages],
+      //   functions: functions,
+      //   function_call: "auto",
+      // });
     },
     onStart: async () => {
       console.log("start")
@@ -84,7 +106,7 @@ export async function POST(req: Request) {
       if (!completion.includes("function_call")) {
         const messageStored= await messageArrived(phone, completion, client.id, "assistant", "")
         if (messageStored) console.log("assistant message stored")
-      } 
+      }
     },
   });
 

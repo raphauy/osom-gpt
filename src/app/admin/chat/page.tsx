@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Switch } from "@/components/ui/switch";
 import { removeSectionTexts } from "@/lib/utils";
 import { SectionDialog } from "./section-dialogs";
+import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 
 export default function Chat() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -24,6 +25,7 @@ export default function Chat() {
   const [clientId, setClientId] = useState("")
   const [clientName, setClientName] = useState("")
   const [clients, setClients] = useState<SelectorData[]>([])
+  const [conversationId, setConversationId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
@@ -81,6 +83,7 @@ export default function Chat() {
         const messages= showSystem ? res : res.filter(message => message.role !== "system")
         // @ts-ignore        
         setMessages(messages)
+        setConversationId(res[0].conversationId)
       })
       .catch((err) => {
         console.log(err)
@@ -124,6 +127,7 @@ export default function Chat() {
         
         <div className="flex items-center gap-2">
           <p>Prompt:</p><Switch checked={showSystem} onCheckedChange={setShowSystem} />
+          <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación?`} clientSlug={`/admin/chat?clientId=${clientId}&r=${new Date().getMilliseconds()}`} />
         </div>
       </div>
       {messages.length > 0 ? (
