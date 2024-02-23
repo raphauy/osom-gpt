@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { DocumentResult, SectionResult, functions, getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
+import { DocumentResult, SectionResult, getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { format, set } from "date-fns";

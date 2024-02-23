@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { TailwindIndicator } from '@/components/shadcn/tailwind-indicator'
 import { ThemeProvider } from '@/components/shadcn/theme-provider'
 import getSession from '@/lib/auth'
-import { fontSans } from '@/lib/fonts'
+//import { fontSans } from '@/lib/fonts'
 import { cn } from "@/lib/utils"
 import Header from '../components/header/header'
 import Menu from "@/components/header/menu"
@@ -36,7 +36,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={cn("min-h-screen bg-background font-sans antialiased w-full", fontSans.variable)}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased w-full")}>
+        {/* <body className={cn("min-h-screen bg-background font-sans antialiased w-full", fontSans.variable)}> */}
             <SessionProvider session={session}>
           
 
