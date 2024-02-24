@@ -28,11 +28,6 @@ export default function SideBar() {
       icon: Briefcase,
       text: "Clientes"
     },
-    // {
-    //   href: `/admin/prompts`,
-    //   icon: ChevronRightSquare,
-    //   text: "Prompts"
-    // },
     {
       href: `/admin/functions`,
       icon: FunctionSquare,

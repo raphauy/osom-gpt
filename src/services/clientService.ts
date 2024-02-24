@@ -7,7 +7,7 @@ export default async function getClients() {
 
   const found = await prisma.client.findMany({
     orderBy: {
-      name: 'asc',
+      createdAt: 'desc'
     },
     include: {
       users: true
@@ -15,7 +15,14 @@ export default async function getClients() {
   })
 
   return found;
-};
+}
+
+export async function getClientsCount() {
+
+  const found = await prisma.client.count()
+
+  return found;
+}
 
 export async function getFirstClient() {
   
@@ -190,7 +197,7 @@ export async function getCountDataOfAllClients(): Promise<CountData[]> {
   const clients= await prisma.client.findMany(
     {
       orderBy: {
-        id: 'asc',
+        createdAt: 'desc'
       }
     }
   )

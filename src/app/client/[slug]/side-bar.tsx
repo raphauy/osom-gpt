@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BarChartHorizontalBig, BookOpen, LayoutDashboard, MessageCircle, Receipt, User } from "lucide-react";
+import { BarChartHorizontalBig, BookOpen, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -28,6 +28,11 @@ export default function SideBar({ slug }: Props) {
       href: `/client/${slug}/chats`,
       icon: MessageCircle,
       text: "Conversaciones"
+    },
+    {
+      href: `/client/${slug}/prompt`,
+      icon: ChevronRightSquare,
+      text: "Prompt"
     },
     {
       href: "divider", icon: User
