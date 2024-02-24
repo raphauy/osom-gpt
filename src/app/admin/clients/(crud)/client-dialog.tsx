@@ -153,7 +153,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
       <div>
           <div className="flex justify-between">
             <p>👇🏼 Funciones aplicadas a este cliente</p>
-            <p>👇🏼 Funciones a un click de ser utilizadas por este cliente</p>
+            <p>👇🏼 Funciones a un click de ser aplicadas a este cliente</p>
           </div>
           <div className="grid grid-cols-2 gap-4 p-3 border rounded-md min-w-[400px] w-full min-h-[500px]">
             {
