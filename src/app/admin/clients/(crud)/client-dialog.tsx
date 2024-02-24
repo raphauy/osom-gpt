@@ -10,6 +10,7 @@ import { FunctionDAO } from "@/services/function-services"
 import { getComplementaryFunctionsOfClientAction, getFunctionsOfClientAction, setFunctionsAction } from "./actions"
 import { toast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface Props{
   title: string
@@ -77,6 +78,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
   const [loading, setLoading] = useState(false)
   const [functions, setFunctions] = useState<FunctionDAO[]>([])
   const [complementary, setComplementary] = useState<FunctionDAO[]>([])
+  const [haveToSave, setHaveToSave] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -107,6 +109,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
       const newComplementary= complementary.filter((c) => c.id !== id)
       setComplementary(newComplementary)
       setFunctions([...functions, comp])
+      setHaveToSave(true)
   }
 
   function complementaryOut(id: string) {            
@@ -115,16 +118,19 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
       const newComplementary= functions.filter((c) => c.id !== id)
       setFunctions(newComplementary)
       setComplementary([...complementary, comp])
+      setHaveToSave(true)
   }
 
   function allIn() {
       setFunctions([...functions, ...complementary])
       setComplementary([])
+      setHaveToSave(true)
   }
 
   function allOut() {
       setComplementary([...complementary, ...functions])
       setFunctions([])
+      setHaveToSave(true)
   }
 
   async function handleSave() {
@@ -132,6 +138,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
       setFunctionsAction(clientId, functions.map((u) => u.id))
       .then(() => {
           toast({ title: "Funciones Actualizadas" })
+          setHaveToSave(false)
           closeDialog && closeDialog()
       })
       .catch((error) => {
@@ -144,6 +151,10 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
 
   return (
       <div>
+          <div className="flex justify-between">
+            <p>👇🏼 Funciones aplicadas a este cliente</p>
+            <p>👇🏼 Funciones a un click de ser utilizadas por este cliente</p>
+          </div>
           <div className="grid grid-cols-2 gap-4 p-3 border rounded-md min-w-[400px] w-full min-h-[500px]">
             {
               loading ? <div className="flex items-center justify-center w-full h-full col-span-2"><Loader className="w-10 h-10 animate-spin" /></div> : 
@@ -153,7 +164,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
                   functions.map((item) => {
                   return (
                       <div key={item.id} className="flex items-center justify-between gap-2 mb-1 mr-5">
-                          <p className="whitespace-nowrap">{item.name}</p>
+                          <p className="text-green-500 whitespace-nowrap">{item.name}</p>
                           <Button variant="secondary" className="h-7" onClick={() => complementaryOut(item.id)}><ChevronsRight /></Button>
                       </div>
                   )})
@@ -185,7 +196,9 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
             </div>
 
           <div className="flex justify-end mt-4">
-              <Button onClick={handleSave} className="w-32 ml-2" >{loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}</Button>
+              <Button className={cn("w-32 ml-2", haveToSave && "text-white bg-red-500")} onClick={handleSave} disabled={!haveToSave} >
+                {loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}
+              </Button>
           </div>
       </div>
   )
