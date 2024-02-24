@@ -1,18 +1,14 @@
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
+import { removeSectionTexts } from "@/lib/utils"
 import clsx from "clsx"
+import { Bot, CircleDollarSign, Terminal, User } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-import { Bot, CircleDollarSign, Terminal, User } from "lucide-react"
-import { getCurrentUser } from "@/lib/auth"
-import { parse } from "path"
-import { cn, formatPresupuesto, removeSectionTexts } from "@/lib/utils"
-import { Separator } from "@/components/ui/separator"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { DeleteConversationDialog } from "./(delete-conversation)/delete-dialogs"
 import { DataConversation } from "./actions"
 import GPTData from "./gpt-data"
-import { DeleteConversationDialog } from "./(delete-conversation)/delete-dialogs"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Switch } from "@/components/ui/switch"
 
 interface Props {
   conversation: DataConversation
@@ -63,8 +59,12 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
             }
           </div>
           <div className="flex items-center gap-2">
-            {isAdmin && <><p>Prompt:</p><Switch checked={showSystem} onCheckedChange={setShowSystem} /></>}
-            <DeleteConversationDialog id={conversation.id} description={`Seguro que desea eliminar la conversación de ${conversation.celular}`} clientSlug={conversation.clienteSlug} />
+            {isAdmin && 
+              <>
+                <p>Prompt:</p><Switch checked={showSystem} onCheckedChange={setShowSystem} />
+                <DeleteConversationDialog id={conversation.id} description={`Seguro que desea eliminar la conversación de ${conversation.celular}`} redirectUri={`${conversation.clienteSlug}`} />
+              </>
+            }
           </div>          
         </div>  
         {

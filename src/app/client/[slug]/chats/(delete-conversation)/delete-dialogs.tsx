@@ -9,11 +9,11 @@ import { DeleteConversationForm } from "./delete-form";
 type DeleteProps= {
   id: string
   description: string
-  clientSlug: string
+  redirectUri: string
   notifyDelete?: () => void
 }
 
-export function DeleteConversationDialog({ id, description, clientSlug, notifyDelete }: DeleteProps) {
+export function DeleteConversationDialog({ id, description, redirectUri, notifyDelete }: DeleteProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -26,7 +26,7 @@ export function DeleteConversationDialog({ id, description, clientSlug, notifyDe
           <DialogTitle>Eliminar conversación</DialogTitle>
           <DialogDescription className="py-8">{description}</DialogDescription>
         </DialogHeader>
-        <DeleteConversationForm closeDialog={() => setOpen(false)} id={id} clientSlug={clientSlug} />
+        <DeleteConversationForm closeDialog={() => setOpen(false)} id={id} redirectUri={redirectUri} />
       </DialogContent>
     </Dialog>
   )

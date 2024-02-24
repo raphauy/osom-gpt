@@ -9,11 +9,12 @@ type Props= {
 }  
 export default async function PromptPage({ params }: Props) {
     const slug= params.slug
+        
     const client= await getClientBySlug(slug)
     if (!client) {
       return <div>Cliente no encontrado</div>
     }
-  
+
     return (
         <div className="container mt-10 space-y-5">
             <div 

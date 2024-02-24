@@ -1,5 +1,8 @@
 "use client";
 
+import { getActiveMessagesAction } from "@/app/admin/chat/actions";
+import { getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
+import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 import { useChat } from "ai/react";
 import clsx from "clsx";
 import { Bot, Loader, RefreshCcw, SendIcon, Terminal, User } from "lucide-react";
@@ -9,22 +12,23 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
-import { ClientSelector, SelectorData } from "../client-selector";
-import { getDataClients, getFirstClientAction } from "../clients/(crud)/actions";
-import { getActiveMessagesAction, getSectionsOfMessageAction } from "./actions";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Switch } from "@/components/ui/switch";
-import { removeSectionTexts } from "@/lib/utils";
-import { SectionDialog } from "./section-dialogs";
-import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 
-export default function Chat() {
+type Props= {
+  params: {
+    slug: string
+  }
+}  
+
+export default function Chat({ params }: Props) {
+  const slug= params.slug
+  console.log(slug)
+  
+  
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const [clientId, setClientId] = useState("")
   const [clientName, setClientName] = useState("")
-  const [clients, setClients] = useState<SelectorData[]>([])
   const [conversationId, setConversationId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
@@ -44,31 +48,19 @@ export default function Chat() {
   const searchParams= useSearchParams()
 
   useEffect(() => {
-    const clientId= searchParams.get('clientId')
-    if (clientId) {
-      setClientId(clientId)
-    } else {
-      getFirstClientAction()
-      .then(client => {
-        if (client) {
-          router.push("/admin/chat?clientId=" + client.id)
-        }
-      })
-      .catch(error => console.log(error))
-    }
+    
+    getDataClientBySlug(slug)
+    .then(client => {
+      if (client) {
+        setClientId(client.id)
+        setClientName(client.nombre)
+      }
+    })
+    .catch(error => console.log(error))
+
     // empty messages
     setMessages([])    
-  }, [searchParams, setMessages, router])
-
-  useEffect(() => {
-    getDataClients().then((data) => {      
-      setClients(data.map((client) => ({ slug: client.id, name: client.nombre })))
-      const cliName= data.find((client) => client.id === clientId)?.nombre
-      cliName && setClientName(cliName)
-    })
-    session.data?.user.email && setUserEmail(session.data.user.email)
-
-  }, [clientId, session.data?.user.email])
+  }, [slug, setMessages, router, searchParams])
 
 
   useEffect(() => {
@@ -90,47 +82,19 @@ export default function Chat() {
         console.log(err)
       })
     }
-    }, [session, setMessages, clientId, showSystem, finishedCount])
+  }, [session, setMessages, clientId, showSystem, finishedCount])
 
-    function loadSections(messageId: string) {
-      if (mapMessageSectioin.has(messageId)) return
-      
-      setLoading(true)
-      getSectionsOfMessageAction(messageId)
-      .then((sections) => {
-        if(!sections) return
-        setMapMessageSectioin((prev) => {
-          prev.set(messageId, sections)
-          return prev
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-    }
 
   const disabled = isLoading || input.length === 0;
 
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
-      <div className="flex items-center justify-between w-full my-5">
-        <p>{loading && <Loader className="w-6 h-6 animate-spin" />}</p>
-        <div className="min-w-[270px]">
-          {
-            clientId ? 
-            <ClientSelector selectors={clients} /> :
-            <Loader className="animate-spin" />
-          }
-        </div>
-        
+      <div className="flex items-center justify-end w-full my-5">        
         <div className="flex items-center gap-2">
-          <p>Prompt:</p><Switch checked={showSystem} onCheckedChange={setShowSystem} />
-          <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/admin/chat?clientId=${clientId}&r=${new Date().getMilliseconds()}`} />
+          <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/client/${slug}/simulator?r=${new Date().getMilliseconds()}`} />
         </div>
       </div>
+      
       {messages.length > 0 ? (
         messages.map((message, i) => (
           <div
@@ -157,25 +121,7 @@ export default function Chat() {
               }
 
               </div>
-              {message.role === "system" ?
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="Prompt">
-                  <AccordionTrigger onTransitionEnd={() => loadSections(message.id)}>Prompt</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="whitespace-pre-line">
-                      {removeSectionTexts(message.content)}                      
-                    </div>
-                    <div className="flex flex-col gap-2 mt-10">
-                      <p className="mb-3 text-base font-bold">Mejores Secciones para este input:</p>
-                      {loading ? <Loader className="w-6 h-6 animate-spin" /> : 
-                        mapMessageSectioin.get(message.id)?.map((section, i) => (
-                          <SectionDialog key={i} id={section} />
-                        ))
-                      }
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion> :
+              {message.role !== "system" &&
                 <ReactMarkdown
                   className="w-full mt-1 prose break-words prose-p:leading-relaxed"
                   remarkPlugins={[remarkGfm]}
@@ -187,13 +133,13 @@ export default function Chat() {
                   }}
                 >
                   {message.content}
-                </ReactMarkdown>
-            }
+                </ReactMarkdown>            
+              }
             </div>            
           </div>
         ))
       ) : clientName && (
-        <div className="max-w-screen-md mx-5 mt-20 border rounded-md border-gray-200sm:mx-0 sm:w-full">
+        <div className="max-w-screen-md mx-5 border rounded-md border-gray-200sm:mx-0 sm:w-full">
           <div className="flex flex-col space-y-4 p-7 sm:p-10">
             <h1 className="text-lg font-semibold text-black">
               Bienvenido al asistente de {clientName}!

@@ -6,15 +6,16 @@ import { Loader } from "lucide-react"
 import { useState } from "react"
 import { deleteConversationAction } from "./actions"
 import { useRouter } from "next/navigation"
+import { getLastDataConversationAction } from "../actions"
 
 
 type DeleteProps= {
   id?: string
-  clientSlug: string
+  redirectUri: string
   closeDialog: () => void
 }
 
-export function DeleteConversationForm({ id, clientSlug, closeDialog }: DeleteProps) {
+export function DeleteConversationForm({ id, redirectUri, closeDialog }: DeleteProps) {
   const [loading, setLoading] = useState(false)
   const router= useRouter()
 
@@ -24,10 +25,20 @@ export function DeleteConversationForm({ id, clientSlug, closeDialog }: DeletePr
     deleteConversationAction(id)
     .then(() => {
       toast({title: "Conversación eliminada"})
-      if (clientSlug.startsWith("/admin"))
-        router.push(clientSlug)
-      else
-        router.push(`/client/${clientSlug}`)
+      if (redirectUri.includes("/")){
+        router.push(redirectUri)
+      } else {
+        // conversation page, redirectUri is the slug
+        getLastDataConversationAction(redirectUri)
+        .then(conversation => {
+          if (conversation) {
+            router.push(`/client/${redirectUri}/chats?id=${conversation.id}`)
+          }
+        })
+        .catch(error => {
+          toast({title: "Error", description: error.message, variant: "destructive"})
+        })
+      }
     })
     .catch((error) => {
       toast({title: "Error", description: error.message, variant: "destructive"})

@@ -17,7 +17,7 @@ interface Props{
 export default async function ClientPage({ params: { slug } }: Props) {
 
   const client= await getClientBySlug(slug)
-  if (!client) return <div>Cliente no encontrado</div>
+  if (!client) return <div>Cliente no encontrado (p)</div>
 
   const countData= await getCountData(client?.id)
  

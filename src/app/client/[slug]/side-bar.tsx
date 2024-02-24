@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BarChartHorizontalBig, BookOpen, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User } from "lucide-react";
+import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -33,6 +33,11 @@ export default function SideBar({ slug }: Props) {
       href: `/client/${slug}/prompt`,
       icon: ChevronRightSquare,
       text: "Prompt"
+    },
+    {
+      href: `/client/${slug}/simulator`,
+      icon: Bot,
+      text: "Simulador"
     },
     {
       href: "divider", icon: User
@@ -69,7 +74,9 @@ export default function SideBar({ slug }: Props) {
           const classes= cn(commonClasses, selected && selectedClasses)
           return (
             <Link href={href} key={href} className={classes}>
-              <Icon size={23} />
+              <div className="pb-1">
+                <Icon />
+              </div>
               <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>{text}</p>                  
             </Link>
           )

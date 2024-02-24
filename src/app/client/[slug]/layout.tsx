@@ -15,19 +15,26 @@ interface Props {
 export default async function SlugLayout({ children, params }: Props) {
   const currentUser = await getCurrentUser()
   const slug = params.slug
+  console.log("slug", slug)
+  
 
   if (!currentUser) {
     return redirect("/unauthorized?message=Deberías estar logueado.")
   }
 
-  let client= await getDataClientOfUser(currentUser.id)
+  let client= null
   if (currentUser.role === "admin" || currentUser.role === "osom") {
     client = await getDataClientBySlug(slug)
+  } else if (currentUser.role === "cliente") {   
+    client= await getDataClientOfUser(currentUser.id)    
   }
   if (!client) 
-    return <div>Cliente no encontrado</div>
-    
-  if (client.slug !== slug) 
+    return <div>Cliente no encontrado (l)</div>
+  
+  console.log("client slug: ", client.slug)
+  
+  
+  if (slug !== client.slug)
     return redirect("/unauthorized?message=No tienes permisos para ver este cliente.")
 
   return (

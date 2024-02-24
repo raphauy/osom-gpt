@@ -46,6 +46,7 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
 }
 
 export async function getDataClientOfUser(userId: string): Promise<DataClient | null>{
+    
     const user= await getUser(userId)
     if (!user) return null
 
