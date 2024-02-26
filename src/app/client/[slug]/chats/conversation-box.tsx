@@ -26,15 +26,6 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
   const completionTokensValue= totalCompletionTokens / 1000 * 0.03
 
   const messages= showSystem && isAdmin ? conversation.messages : conversation.messages.filter(message => message.role !== "system")
-  // const messages= conversation.messages.map(message => {
-  //     if (message.content.includes("**")) return message
-  //     if (message.content.includes("*")) {
-  //         const newContent= message.content.replace(/\*/g, "**")
-  //         return {...message, content: newContent}
-  //     }
-      
-  //     return message
-  // })
 
   return (
       <main className="flex flex-col items-center justify-between w-full p-3 border-l">
@@ -45,12 +36,11 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
             {
               totalPromptTokens > 0 && isAdmin && (
                 <div className="flex items-center justify-center gap-2">
-                  <p>Tokens:</p>
-                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens)}</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens)} pt</p>
                   <p>+</p>
-                  <p>{Intl.NumberFormat("es-UY").format(totalCompletionTokens)}</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalCompletionTokens)} ct</p>
                   <p>=</p>
-                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens + totalCompletionTokens)}</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens + totalCompletionTokens)} tokens</p>
                   <Separator orientation="vertical" className="h-6 mx-1" />
                   <CircleDollarSign size={18} />
                   <p>{Intl.NumberFormat("es-UY").format(promptTokensValue + completionTokensValue)} USD</p>
@@ -67,11 +57,13 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
             }
           </div>          
         </div>  
+
+        <div className="w-full max-w-3xl mt-5 ">
         {
           messages.map((message, i) => (
             <div key={i} className="w-full">
               <div className={clsx(
-                  "flex w-full items-center justify-center border-b border-gray-200 py-5",
+                  "flex w-full items-center justify-between px-1 lg:px-4 border-b border-gray-200 py-5",
                   i % 2 === 0 ? "bg-gray-100" : "bg-white",
                 )}
               >
@@ -105,28 +97,30 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion> :
-                    <ReactMarkdown
-                      className="w-full mt-1 prose break-words prose-p:leading-relaxed"
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        // open links in new tab
-                        a: (props) => (
-                          <a {...props} target="_blank" rel="noopener noreferrer" />
-                        ),
-                      }}
-                    >
-                      {message.content}
-                    </ReactMarkdown>
+                    <div className="w-full">
+                      <ReactMarkdown                        
+                        className="prose break-words prose-p:leading-relaxed"
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          // open links in new tab
+                          a: (props) => (
+                            <a {...props} target="_blank" rel="noopener noreferrer" />
+                          ),
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
                 }
                 </div>
                 {
-                  message.promptTokens > 0 && isAdmin && (
-                    <div className="grid text-right">
-                      <p>Tokens:</p>
-                      <p>{Intl.NumberFormat("es-UY").format(message.promptTokens)}</p>
-                      <p>{Intl.NumberFormat("es-UY").format(message.completionTokens)}</p>
+                  message.promptTokens > 0 && isAdmin ? (
+                    <div className="grid p-2 text-right border rounded-md">
+                      <p className="whitespace-nowrap">{Intl.NumberFormat("es-UY").format(message.promptTokens)} pt</p>
+                      <p>{Intl.NumberFormat("es-UY").format(message.completionTokens)} ct</p>
                     </div>
-                  )
+                  ) : 
+                  <div></div>
                 }
               </div>
               {
@@ -137,6 +131,8 @@ export default function ConversationBox({ conversation, isAdmin, showSystem, set
             </div>
           ))
         }
+        </div>
+
       </main>
     );
   }

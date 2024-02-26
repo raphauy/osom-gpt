@@ -1,18 +1,24 @@
 import { prisma } from "@/lib/db"
 import { getFunctionsDefinitions } from "./function-services"
+import openaiTokenCounter from 'openai-gpt-token-counter'
 
 async function main() {
 
-    const jmv= "clskc1ets0002b1efh6yz2tfd"
-    const cantina= "clsnvcntc003okaqc2gfrme4b"
+    const text = "Hola, buenos días!"
+    const model = "gpt-4"
 
-    let functions= await getFunctionsDefinitions(cantina)
-    console.log("jmv:")    
-    console.log(functions)
+    let tokenCount = openaiTokenCounter.text(text, model)
+    console.log(`Token count: ${tokenCount}`)
 
-    functions= await getFunctionsDefinitions(jmv)
-    console.log("cantina:")
-    console.log(functions)
+    const messages = [
+        { role: "system", content: "Usted es un asistente virtual muy entusiasta" },
+        { role: "user", content: "Hola, buenos días!" },
+        { role: "assistant", content: "¡Buenos días! ¿En qué puedo asistirte hoy con mi entusiasmo y energía? 😄" },
+    ]
+
+    tokenCount = openaiTokenCounter.chat(messages, model)
+    console.log(`Message token count: ${tokenCount}`)
+
 }
   
 main()

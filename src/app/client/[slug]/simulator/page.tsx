@@ -3,9 +3,12 @@
 import { getActiveMessagesAction } from "@/app/admin/chat/actions";
 import { getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { Separator } from "@/components/ui/separator";
+import { getFormat } from "@/lib/utils";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { Bot, Loader, RefreshCcw, SendIcon, Terminal, User } from "lucide-react";
+import { format } from "date-fns";
+import { Bot, CircleDollarSign, Loader, RefreshCcw, SendIcon, Terminal, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -45,9 +48,17 @@ export default function Chat({ params }: Props) {
     onFinish: () => {setFinishedCount((prev) => prev + 1)}
   })
 
+  // @ts-ignore
+  const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
+  // @ts-ignore
+  const totalCompletionTokens= messages.reduce((acc, message) => acc + message.completionTokens, 0)
+  const promptTokensValue= totalPromptTokens / 1000 * 0.01
+  const completionTokensValue= totalCompletionTokens / 1000 * 0.03
+  
   const searchParams= useSearchParams()
 
   useEffect(() => {
+    setLoading(true)
     
     getDataClientBySlug(slug)
     .then(client => {
@@ -59,11 +70,13 @@ export default function Chat({ params }: Props) {
     .catch(error => console.log(error))
 
     // empty messages
-    setMessages([])    
+    setMessages([]) 
+    setLoading(false)   
   }, [slug, setMessages, router, searchParams])
 
 
   useEffect(() => {
+    setLoading(true)
     const email= session?.data?.user?.email
     setUserEmail(email as string)
     console.log("updating messages")
@@ -82,6 +95,7 @@ export default function Chat({ params }: Props) {
         console.log(err)
       })
     }
+    setLoading(false)
   }, [session, setMessages, clientId, showSystem, finishedCount])
 
 
@@ -94,62 +108,97 @@ export default function Chat({ params }: Props) {
           <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/client/${slug}/simulator?r=${new Date().getMilliseconds()}`} />
         </div>
       </div>
-      
-      {messages.length > 0 ? (
-        messages.map((message, i) => (
-          <div
-            key={i}
-            className={clsx(
-              "flex w-full items-center justify-center border-b border-gray-200 py-4",
-              i % 2 === 0 ? "bg-gray-100" : "bg-white",
-            )}
-          >
-            <div className="flex items-start w-full max-w-screen-md px-5 space-x-4 sm:px-0">
-              <div
-                className={clsx(
-                  "p-1.5 text-white",
-                  message.role === "assistant" ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
-                )}
-              >
-              {message.role === "user" ? (
-              <User width={20} />
-              ) : message.role === "system" ? (
-              <Terminal width={20} />
-              ) : (
-              <Bot width={20} />
-              )
-              }
 
-              </div>
-              {message.role !== "system" &&
-                <ReactMarkdown
-                  className="w-full mt-1 prose break-words prose-p:leading-relaxed"
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    // open links in new tab
-                    a: (props) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" />
-                    ),
-                  }}
+      <div>
+        {
+          loading ? 
+            <Loader className="animate-spin" /> :         
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date()) + ")"}</p>
+        }
+        {
+          totalPromptTokens > 0 && (
+            <div className="flex items-center justify-center gap-2">
+              <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens)} pt</p>
+              <p>+</p>
+              <p>{Intl.NumberFormat("es-UY").format(totalCompletionTokens)} ct</p>
+              <p>=</p>
+              <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens + totalCompletionTokens)} tokens</p>
+              <Separator orientation="vertical" className="h-6 mx-1" />
+              <CircleDollarSign size={18} />
+              <p>{Intl.NumberFormat("es-UY").format(promptTokensValue + completionTokensValue)} USD</p>
+            </div>                  
+          )
+        }
+      </div>
+
+      <div className="w-full max-w-3xl mt-5 ">
+        {messages.length > 0 ? (
+          messages.map((message, i) => (
+            <div
+              key={i}
+              className={clsx(
+                "flex w-full px-1 items-center justify-center border-b border-gray-200 py-4",
+                i % 2 === 0 ? "bg-gray-100" : "bg-white",
+              )}
+            >
+              <div className="flex items-start w-full max-w-screen-md px-5 space-x-4 sm:px-0">
+                <div
+                  className={clsx(
+                    "p-1.5 text-white",
+                    message.role === "assistant" ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
+                  )}
                 >
-                  {message.content}
-                </ReactMarkdown>            
+                {message.role === "user" ? (
+                <User width={20} />
+                ) : message.role === "system" ? (
+                <Terminal width={20} />
+                ) : (
+                <Bot width={20} />
+                )
+                }
+
+                </div>
+                {message.role !== "system" &&
+                  <ReactMarkdown
+                    className="w-full mt-1 prose break-words prose-p:leading-relaxed"
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      // open links in new tab
+                      a: (props) => (
+                        <a {...props} target="_blank" rel="noopener noreferrer" />
+                      ),
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>            
+                }
+              </div>                         
+              {
+                // @ts-ignore
+                message.promptTokens > 0 && (
+                  <div className="grid p-2 text-right border rounded-md">
+                    {/** @ts-ignore */}
+                    <p className="whitespace-nowrap">{Intl.NumberFormat("es-UY").format(message.promptTokens)} pt</p>
+                    {/** @ts-ignore */}
+                    <p>{Intl.NumberFormat("es-UY").format(message.completionTokens)} ct</p>
+                  </div>
+                )
               }
-            </div>            
+            </div>
+          ))
+        ) : clientName && (
+          <div className="max-w-screen-md mx-5 border rounded-md border-gray-200sm:mx-0 sm:w-full">
+            <div className="flex flex-col space-y-4 p-7 sm:p-10">
+              <h1 className="text-lg font-semibold text-black">
+                Bienvenido al asistente de {clientName}!
+              </h1>
+              <p className="text-gray-500">
+                Este es un simulador de conversaciones.
+              </p>
+            </div>
           </div>
-        ))
-      ) : clientName && (
-        <div className="max-w-screen-md mx-5 border rounded-md border-gray-200sm:mx-0 sm:w-full">
-          <div className="flex flex-col space-y-4 p-7 sm:p-10">
-            <h1 className="text-lg font-semibold text-black">
-              Bienvenido al asistente de {clientName}!
-            </h1>
-            <p className="text-gray-500">
-              Este es un simulador de conversaciones.
-            </p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
       
       <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 max-w-[350px] sm:max-w-[400px] md:max-w-[550px] lg:max-w-screen-md bg-gradient-to-b from-transparent via-gray-100 to-gray-100 sm:px-0">
         <form
@@ -163,7 +212,7 @@ export default function Chat({ params }: Props) {
             required
             rows={1}
             autoFocus
-            placeholder="Send a message"
+            placeholder="Escribe aquí"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {

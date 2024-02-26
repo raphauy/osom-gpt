@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { Client, Conversation, Message } from "@prisma/client"
 import { deleteConversation, getConversation, getConversationsOfClient, getLastConversation } from "@/services/conversationService"
 import { format } from "date-fns"
+import { getFormat } from "@/lib/utils"
 
 
 export type DataMessage = {
@@ -78,15 +79,6 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
     return data
 }
 
-function getFormat(date: Date): string {
-    // if date is today return only the time
-    const today= new Date()
-    if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
-        return format(date, "HH:mm")
-    } else {
-        return format(date, "yyyy/MM/dd")
-    }
-}
 
 export async function getDataConversations(clientId: string) {
     const conversations= await getConversationsOfClient(clientId)

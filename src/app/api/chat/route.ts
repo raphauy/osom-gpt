@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getContext, setSectionsToMessage } from "@/services/section-services";
 import { removeSectionTexts } from "@/lib/utils";
 import { getFunctionsDefinitions } from "@/services/function-services";
+import openaiTokenCounter from 'openai-gpt-token-counter'
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -53,9 +54,11 @@ export async function POST(req: Request) {
     temperature: 0,
     stream: true,
   };
+  let promptTokens= 0
+  let completionTokens= 0
 
   // @ts-ignore
-  baseArgs = { ...baseArgs, messages: messages };
+  baseArgs = { ...baseArgs, messages: messages }
 
   // Si el array de functions tiene al menos un elemento, añade el parámetro functions
   const args = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
@@ -102,9 +105,22 @@ export async function POST(req: Request) {
     },
     onCompletion: async (completion) => {
       console.log("completion: ", completion)
-      // check if is text
+
+      const partialPromptToken = openaiTokenCounter.chat(messages, "gpt-4") + 1
+      console.log(`\tPartial prompt token count: ${partialPromptToken}`)      
+      promptTokens += partialPromptToken
+
+      const completionMessages = [
+        { role: "assistant", content: completion },
+      ]
+      const partialCompletionTokens = openaiTokenCounter.chat(completionMessages, "gpt-4")
+      console.log(`\tPartial completion token count: ${partialCompletionTokens}`)
+      completionTokens += partialCompletionTokens
+
       if (!completion.includes("function_call")) {
-        const messageStored= await messageArrived(phone, completion, client.id, "assistant", "")
+        console.log(`Prompt token count: ${promptTokens}`)
+        console.log(`Completion token count: ${completionTokens}`)
+        const messageStored= await messageArrived(phone, completion, client.id, "assistant", "", promptTokens, completionTokens)
         if (messageStored) console.log("assistant message stored")
       }
     },

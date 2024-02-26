@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
+import { format } from "date-fns"
 import { twMerge } from "tailwind-merge"
  
 export function cn(...inputs: ClassValue[]) {
@@ -34,3 +35,13 @@ export function removeSectionTexts(inputText: string): string {
   return resultText;
 }
   
+
+export function getFormat(date: Date): string {
+  // if date is today return only the time
+  const today= new Date()
+  if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+      return format(date, "HH:mm")
+  } else {
+      return format(date, "yyyy/MM/dd")
+  }
+}
