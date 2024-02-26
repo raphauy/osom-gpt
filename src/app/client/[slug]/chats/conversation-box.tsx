@@ -1,3 +1,4 @@
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
@@ -9,21 +10,23 @@ import remarkGfm from "remark-gfm"
 import { DeleteConversationDialog } from "./(delete-conversation)/delete-dialogs"
 import { DataConversation } from "./actions"
 import GPTData from "./gpt-data"
+import { getClient } from "@/services/clientService"
 
 interface Props {
   conversation: DataConversation
+  promptTokensPrice: number
+  completionTokensPrice: number
   isAdmin: boolean
   showSystem: boolean
   setShowSystem: (showSystem: boolean) => void
-  similarityThreshold: number
 }
   
-export default function ConversationBox({ conversation, isAdmin, showSystem, setShowSystem, similarityThreshold }: Props) {
+export default function ConversationBox({ conversation, promptTokensPrice, completionTokensPrice, isAdmin, showSystem, setShowSystem}: Props) {
 
   const totalPromptTokens= conversation.messages.reduce((acc, message) => acc + message.promptTokens, 0)
   const totalCompletionTokens= conversation.messages.reduce((acc, message) => acc + message.completionTokens, 0)
-  const promptTokensValue= totalPromptTokens / 1000 * 0.01
-  const completionTokensValue= totalCompletionTokens / 1000 * 0.03
+  const promptTokensValue= totalPromptTokens / 1000 * promptTokensPrice
+  const completionTokensValue= totalCompletionTokens / 1000 * completionTokensPrice
 
   const messages= showSystem && isAdmin ? conversation.messages : conversation.messages.filter(message => message.role !== "system")
 

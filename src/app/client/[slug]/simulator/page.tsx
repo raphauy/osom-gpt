@@ -32,6 +32,8 @@ export default function Chat({ params }: Props) {
 
   const [clientId, setClientId] = useState("")
   const [clientName, setClientName] = useState("")
+  const [promptTokensPrice, setPromptTokensPrice] = useState(0)
+  const [completionTokensPrice, setCompletionTokensPrice] = useState(0)
   const [conversationId, setConversationId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
@@ -52,8 +54,8 @@ export default function Chat({ params }: Props) {
   const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
   // @ts-ignore
   const totalCompletionTokens= messages.reduce((acc, message) => acc + message.completionTokens, 0)
-  const promptTokensValue= totalPromptTokens / 1000 * 0.01
-  const completionTokensValue= totalCompletionTokens / 1000 * 0.03
+  const promptTokensValue= totalPromptTokens / 1000 * promptTokensPrice
+  const completionTokensValue= totalCompletionTokens / 1000 * completionTokensPrice
   
   const searchParams= useSearchParams()
 
@@ -65,6 +67,8 @@ export default function Chat({ params }: Props) {
       if (client) {
         setClientId(client.id)
         setClientName(client.nombre)
+        client.promptTokensPrice && setPromptTokensPrice(client.promptTokensPrice)
+        client.completionTokensPrice && setCompletionTokensPrice(client.completionTokensPrice)
       }
     })
     .catch(error => console.log(error))

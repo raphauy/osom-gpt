@@ -113,7 +113,14 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
         {
           loadingChat ?
           <Loader className="w-6 h-6 animate-spin" /> :
-          <ConversationBox conversation={conversation} isAdmin={isAdmin} showSystem={showSystem} setShowSystem={setShowSystem} similarityThreshold={similarityThreshold} />
+          <ConversationBox 
+            conversation={conversation} 
+            isAdmin={isAdmin} 
+            showSystem={showSystem} 
+            setShowSystem={setShowSystem} 
+            promptTokensPrice={0.01}
+            completionTokensPrice={0.03}
+          />
         }
         
       </div>
