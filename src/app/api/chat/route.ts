@@ -9,12 +9,9 @@ import { removeSectionTexts } from "@/lib/utils";
 import { getFunctionsDefinitions } from "@/services/function-services";
 import openaiTokenCounter from 'openai-gpt-token-counter'
 
-// Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-//export const runtime = "edge";
 
 export async function POST(req: Request) {
 
