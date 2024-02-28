@@ -108,7 +108,7 @@ export async function registrarPedido(clientId: string,
   }
   if (!created) return "Error al registrar el pedido"
 
-  let NARVAEZ_Respuesta= await getValue("NARVAEZ_Comercial")
+  let NARVAEZ_Respuesta= await getValue("NARVAEZ_Respuesta")
   if (!NARVAEZ_Respuesta) {
     console.log("NARVAEZ_Respuesta not found")    
     NARVAEZ_Respuesta= "Pedido registrado, dile esto al usuario hablándole por su nombre lo siguiente: 'con la información que me pasaste un asesor te contactará a la brevedad'"
