@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Briefcase, ChevronRightSquare, FunctionSquare, LayoutDashboard, MessageCircle, Receipt, Settings, User } from "lucide-react";
+import { Briefcase, ChevronRightSquare, FunctionSquare, LayoutDashboard, MessageCircle, Receipt, Settings, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -80,6 +80,10 @@ export default function SideBar() {
             </Link>
           )
         })}
+        <Link href="/admin/narvaez" className={cn(commonClasses, path.endsWith("narvaez") && selectedClasses)}>
+          <Warehouse size={23} />
+          <p className={cn("hidden md:block md:w-36")}>Narvaez</p>
+        </Link>
 
       </section>
       <section className="mb-4">

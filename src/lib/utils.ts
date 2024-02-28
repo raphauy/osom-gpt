@@ -45,3 +45,16 @@ export function getFormat(date: Date): string {
       return format(date, "yyyy/MM/dd")
   }
 }
+
+
+export function preprocessTextForJsonParse(text: string | undefined): string {
+  // Verifica si el texto es undefined o no es un string.
+  if (typeof text !== 'string') {
+    console.error('preprocessTextForJsonParse was called with a non-string argument:', text);
+    return ''; // Retorna un string vacío o podrías manejar este caso de otra manera.
+  }
+  
+  // Reemplaza secuencias de escape Unicode por sus caracteres representativos
+  const unicodeEscapeRegex = /\\u([\d\w]{4})/gi;
+  return text.replace(unicodeEscapeRegex, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+}

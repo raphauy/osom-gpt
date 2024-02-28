@@ -5,7 +5,7 @@ import { getClientBySlug } from "@/services/clientService";
 import { redirect } from "next/navigation";
 import SideBar from "./side-bar";
 
-interface Props {
+type Props= {
   children: React.ReactNode
   params: {
     slug: string

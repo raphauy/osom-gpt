@@ -195,7 +195,7 @@ export async function processMessage(id: string) {
   if (!client.prompt) throw new Error("Client prompt not found")
   const input= message.content
 
-  const contextResponse= await getContext(client.id, input)
+  const contextResponse= await getContext(client.id, conversation.phone, input)
   console.log("contextContent: " + removeSectionTexts(contextResponse.contextString))
 
   const systemMessage= getSystemMessage(client.prompt, contextResponse.contextString)

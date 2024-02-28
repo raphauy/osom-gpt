@@ -1,55 +1,10 @@
 import { JSONValue } from "ai";
 import { getDocumentDAO } from "./document-services";
 import { getSectionOfDocument } from "./section-services";
-
-// export const functions= [
-//   {
-//     name: "getSection",
-//     description:
-//       "Devuelve la información de una Section de un documento. La información debe utilizarse para responder a las preguntas del usuario. Los documentos están divididos en secciones y cada sección tiene un texto. Las secciones se numeran con secuencias comenzando desde 1.",
-//     parameters: {
-//       type: "object",
-//       properties: {
-//         docId: {
-//           type: "string",
-//           description: "Id del documento que se quiere consultar consultar.",
-//         },
-//         secuence: {
-//           type: "string",
-//           description: "Secuencia que identifica la sección del documento que se quiere consultar.",
-//         },
-//       },
-//       required: ["id", "secuence"],
-//     },    
-//   },
-//   {
-//     name: "getDocument",
-//     description:
-//       "Devuelve la información completa de un documento a partir de su id. Los documentos deben utilizarse para responder a las preguntas del usuario.",
-//     parameters: {
-//       type: "object",
-//       properties: {
-//         docId: {
-//           type: "string",
-//           description: "Id del documento que se quiere consultar consultar.",
-//         },
-//       },
-//       required: ["docId"],
-//     },    
-//   },
-//   {
-//     name: "notifyHuman",
-//     description:
-//       "Se debe invocar esta función para notificar a un agente inmobiliario cuando la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita.",
-//     parameters: {
-//       type: "object",
-//       properties: {},
-//       required: [],
-//     },
-//   },
-// ];
-
-
+import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
+import { getActiveConversation } from "./conversationService";
+import { getValue } from "./config-services";
+import { preprocessTextForJsonParse } from "@/lib/utils";
 
 
 export async function notifyHuman(clientId: string){
@@ -106,18 +61,104 @@ export async function getDateOfNow(){
   return res
 }
 
+export async function registrarPedido(clientId: string, 
+  conversationId: string, 
+  clasificacion: string, 
+  consulta: string, 
+  nombre: string, 
+  email: string | undefined, 
+  horarioContacto: string | undefined, 
+  idTrackeo: string | undefined, 
+  urlPropiedad: string | undefined, 
+  consultaAdicional: string | undefined, 
+  resumenConversacion: string
+  )
+{
+
+  console.log("registrarPedido")
+  console.log(`\tclasificacion: ${clasificacion}`)
+  console.log(`\tconsulta: ${consulta}`)
+  console.log(`\tnombre: ${nombre}`)
+  console.log(`\temail: ${email}`)
+  console.log(`\thorarioContacto: ${horarioContacto}`)
+  console.log(`\tidTrackeo: ${idTrackeo}`)
+  console.log(`\turlPropiedad: ${urlPropiedad}`)
+  console.log(`\tconsultaAdicional: ${consultaAdicional}`)
+  console.log(`\tresumenConversacion: ${resumenConversacion}`)  
+
+  const data: NarvaezFormValues = {
+    conversationId,
+    clasificacion,
+    consulta,
+    nombre,
+    email,
+    horarioContacto,
+    idTrackeo,
+    urlPropiedad,
+    consultaAdicional,
+    resumenPedido: resumenConversacion,
+  }
+
+  let created= null
+
+  try {
+    created= await createOrUpdateNarvaez(data)    
+  } catch (error) {
+    return "Error al registrar el pedido, pregunta al usuario si quiere que tu reintentes"
+  }
+  if (!created) return "Error al registrar el pedido"
+
+  let NARVAEZ_Respuesta= await getValue("NARVAEZ_Comercial")
+  if (!NARVAEZ_Respuesta) {
+    console.log("NARVAEZ_Respuesta not found")    
+    NARVAEZ_Respuesta= "Pedido registrado, dile esto al usuario hablándole por su nombre lo siguiente: 'con la información que me pasaste un asesor te contactará a la brevedad'"
+  }
+  console.log("NARVAEZ_Respuesta: ", NARVAEZ_Respuesta)      
+
+  return NARVAEZ_Respuesta
+
+  // switch (clasificacion) {
+
+  //   case "Comercial":
+  //     const NARVAEZ_Comercial= await getValue("NARVAEZ_Comercial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso comercial de la propiedad"
+  //     return NARVAEZ_Respuesta
+  //   case "Residencial":
+  //     const NARVAEZ_Residencial= await getValue("NARVAEZ_Residencial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso residencial de la propiedad"
+  //     return NARVAEZ_Residencial
+  //   case "Industrial":
+  //     const NARVAEZ_Industrial= await getValue("NARVAEZ_Industrial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso industrial de la propiedad"
+  //     return NARVAEZ_Industrial
+
+  //   default:
+  //     return "Pedido registrado"
+  // }
+}
+
 export async function runFunction(name: string, args: any, clientId: string){
   switch (name) {
     case "getSection":
-      return getSection(args.docId, args.secuence);
+      return getSection(args.docId, args.secuence)
     case "getDocument":
-      return getDocument(args.docId);
+      return getDocument(args.docId)
     case "notifyHuman":
-      return notifyHuman(clientId);
+      return notifyHuman(clientId)
     case "getDateOfNow":
-      return getDateOfNow();
+      return getDateOfNow()
+    case "registrarPedido":
+      return registrarPedido(clientId, 
+        args.conversationId, 
+        args.clasificacion, 
+        preprocessTextForJsonParse(args.consulta),
+        preprocessTextForJsonParse(args.nombre),
+        args.email, 
+        preprocessTextForJsonParse(args.horarioContacto),
+        args.idTrackeo, 
+        args.urlPropiedad, 
+        preprocessTextForJsonParse(args.consultaAdicional),
+        preprocessTextForJsonParse(args.resumenConversacion),
+      )
     default:
-      return null;
+      return null
   }
 }
 

@@ -33,7 +33,8 @@ export async function POST(req: Request) {
   const input= messages[messages.length - 1].content
   console.log("input: " + input)
   
-  const contextResponse= await getContext(clientId, input)
+
+  const contextResponse= await getContext(clientId, phone, input)
   console.log("contextContent: " + removeSectionTexts(contextResponse.contextString))
 
   const systemMessage= getSystemMessage(client.prompt, contextResponse.contextString)

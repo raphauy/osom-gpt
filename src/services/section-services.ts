@@ -6,6 +6,7 @@ import { DocumentDAO, getDocumentsDAOByClient } from "./document-services";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getFunctionsOfClient } from "./clientService";
+import { getActiveConversation } from "./conversationService";
 
 export type SectionDAO = {
 	id: string
@@ -207,13 +208,20 @@ export type SimilaritySearchResult = {
     return result;
   }
   
-export async function getContext(clientId: string, userInput: string) {
+export async function getContext(clientId: string, phone: string, userInput: string) {
 
   const functioins= await getFunctionsOfClient(clientId)
   const functionsNames= functioins.map((f) => f.name)
 
   let contextString= ""
   let sectionsIds: string[] = []
+
+  if (functionsNames.includes("registrarPedido")) {
+    const conversation= await getActiveConversation(phone, clientId)
+    if (conversation) {
+      contextString+= "\nconversationId: " + conversation.id + "\n"
+    }
+  }
 
   if (functionsNames.includes("getDateOfNow")) {
     contextString+= "\n**** Fecha y hora ****\n"

@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User } from "lucide-react";
+import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -81,6 +81,12 @@ export default function SideBar({ slug }: Props) {
             </Link>
           )
         })}
+        <Link href="/client/narvaez/narvaez" className={cn(commonClasses, path.endsWith("narvaez/narvaez") && selectedClasses, slug !== "narvaez" && "hidden")}>
+          <div className="pb-1">
+            <Warehouse size={23} />
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Narvaez</p>                  
+        </Link>
 
         {divider()}
 

@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
+import { getDateOfNow, getDocument, getSection, notifyHuman, registrarPedido } from "./functions";
+import { preprocessTextForJsonParse } from "@/lib/utils";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -98,6 +99,20 @@ export async function processFunctionCall(clientId: string, name: string, argume
       case "getSection":
         content= await getSection(argumentObj.docId, argumentObj.secuence)
         break
+      case "registrarPedido":
+        content= await registrarPedido(clientId, 
+          argumentObj.conversationId, 
+          argumentObj.clasificacion, 
+          preprocessTextForJsonParse(argumentObj.consulta),
+          preprocessTextForJsonParse(argumentObj.nombre),
+          argumentObj.email, 
+          preprocessTextForJsonParse(argumentObj.horarioContacto),
+          argumentObj.idTrackeo, 
+          argumentObj.urlPropiedad, 
+          preprocessTextForJsonParse(argumentObj.consultaAdicional),
+          preprocessTextForJsonParse(argumentObj.resumenConversacion),
+        )
+        break
 
       default:
         break
@@ -113,3 +128,4 @@ export async function processFunctionCall(clientId: string, name: string, argume
 function getAgentes(name: string): boolean {
   return name === "notifyHuman"
 }
+

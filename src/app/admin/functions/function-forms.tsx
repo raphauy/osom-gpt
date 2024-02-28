@@ -26,13 +26,13 @@ export function FunctionForm({ id, closeDialog }: Props) {
       description: "",
       definition: `
 {
-  name: "getDateOfNow",
-  description: "Función que devuelve la fecha y hora actuales.",
-  parameters: {
-    type: "object",
-    properties: {},
-    required: [],
-  },
+  "name": "getDateOfNow",
+  "description": "Función que devuelve la fecha y hora actuales.",
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
 }
 `,
     },
