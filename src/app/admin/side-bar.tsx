@@ -80,10 +80,10 @@ export default function SideBar() {
             </Link>
           )
         })}
-        <Link href="/admin/narvaez" className={cn(commonClasses, path.endsWith("narvaez") && selectedClasses)}>
+        {/* <Link href="/admin/narvaez" className={cn(commonClasses, path.endsWith("narvaez") && selectedClasses)}>
           <Warehouse size={23} />
           <p className={cn("hidden md:block md:w-36")}>Narvaez</p>
-        </Link>
+        </Link> */}
 
       </section>
       <section className="mb-4">
