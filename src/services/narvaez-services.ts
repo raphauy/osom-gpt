@@ -76,15 +76,12 @@ export async function createOrUpdateNarvaez(data: NarvaezFormValues) {
   })
 
   if (found) {
-    const resumenPedido= found.resumenPedido ? found.resumenPedido + "\n" + data.resumenPedido : data.resumenPedido
+    // const resumenPedido= found.resumenPedido ? found.resumenPedido + "\n" + data.resumenPedido : data.resumenPedido
     const updated = await prisma.narvaez.update({
       where: {
         id: found.id
       },
-      data : {
-        ...data,
-        resumenPedido 
-      }
+      data
     })
     return updated
   } else {
