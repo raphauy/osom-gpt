@@ -1,8 +1,8 @@
-import { getDocumentsDAO, getDocumentsDAOByClient } from "@/services/document-services"
+import { getClientBySlug } from "@/services/clientService"
 import { DocumentDialog } from "./document-dialogs"
 import { DataTable } from "./document-table"
 import { columns } from "./document-columns"
-import { getClientBySlug } from "@/services/clientService"
+import { getDocumentsDAOByClient } from "@/services/document-services"
 
 type Props= {
   params: {

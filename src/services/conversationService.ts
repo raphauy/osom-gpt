@@ -1,21 +1,18 @@
 import { prisma } from "@/lib/db";
 
-import { OpenAI } from "openai";
-import { DocumentResult, SectionResult, getDateOfNow, getDocument, getSection, notifyHuman } from "./functions";
-import { sendWapMessage } from "./osomService";
-import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
-import { format, set } from "date-fns";
 import { BillingData, CompleteData } from "@/app/admin/billing/actions";
-import { getContext, setSectionsToMessage } from "./section-services";
 import { removeSectionTexts } from "@/lib/utils";
+import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { getFunctionsDefinitions } from "./function-services";
+import { sendWapMessage } from "./osomService";
+import { getContext, setSectionsToMessage } from "./section-services";
 import { completionInit } from "./function-call-services";
 
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  //organization: "org-"
-})
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+//   //organization: "org-"
+// })
 
 export default async function getConversations() {
 

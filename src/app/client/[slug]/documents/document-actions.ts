@@ -1,7 +1,6 @@
 "use server"
   
 import { revalidatePath } from "next/cache"
-import { getCurrentUser } from "@/lib/auth"
 import { DocumentDAO, DocumentFormValues, createDocument, updateDocument, getFullDocumentDAO, deleteDocument, updateContent } from "@/services/document-services"
 
 
@@ -21,7 +20,7 @@ export async function createOrUpdateDocumentAction(id: string | null, data: Docu
         updated= await updateDocument(updated.id, data)
     }     
 
-    revalidatePath("/[slug]/documents")
+    revalidatePath("/")
 
     return updated as DocumentDAO
 }

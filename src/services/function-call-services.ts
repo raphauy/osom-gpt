@@ -3,10 +3,6 @@ import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/r
 import { getDateOfNow, getDocument, getSection, notifyHuman, registrarPedido } from "./functions";
 import { preprocessTextForJsonParse } from "@/lib/utils";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
 type CompletionInitResponse = {
   assistantResponse: string | null
   promptTokens: number
@@ -15,6 +11,9 @@ type CompletionInitResponse = {
 }
 
 export async function completionInit(clientId: string, functions: ChatCompletionCreateParams.Function[], messages: ChatCompletionMessageParam[]): Promise<CompletionInitResponse | null>{
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
 
   let completionResponse= null
   let agentes= false

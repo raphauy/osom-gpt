@@ -1,6 +1,5 @@
-import * as z from "zod"
 import { prisma } from "@/lib/db"
-import { getActiveConversation } from "./conversationService"
+import * as z from "zod"
 
 
 export type ConversationInfo = {
