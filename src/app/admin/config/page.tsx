@@ -2,12 +2,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ClientSelector, SelectorData } from "../client-selector"
 import { getDataClients, updatePrompt } from "../clients/(crud)/actions"
-import Hook from "./hook"
-import TokensPrice from "./tokens-price"
 import { ClientFunctionsBox } from "../clients/(crud)/client-dialog"
-import { getFirstClient } from "@/services/clientService"
 import ConfigsPage from "../configs/page"
 import { PromptForm } from "../prompts/prompt-form"
+import Hook from "./hook"
+import TokensPrice from "./tokens-price"
+import CopyHook from "./copy-hook"
+import { getClientBySlug } from "@/services/clientService"
 
 type Props = {
     searchParams: {
@@ -23,6 +24,7 @@ export default async function ConfigPage({ searchParams }: Props) {
     if (!client) return <div>No hay clientes</div>
     console.log(client)    
     const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
+    const narvaezClient= await getClientBySlug("narvaez")
 
     const BASE_PATH= process.env.NEXTAUTH_URL || "NOT-CONFIGURED"
 
@@ -50,6 +52,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                 </TabsContent>
                 <TabsContent value="hooks">
                     <Hook basePath={BASE_PATH} />
+                    <CopyHook name="Narvaez Entry" path={`${BASE_PATH}/api/${narvaezClient?.id}/narvaez`} clientId={narvaezClient?.id || ""} />
                 </TabsContent>
                 <TabsContent value="general">
                     <ConfigsPage />

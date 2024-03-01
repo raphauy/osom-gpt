@@ -333,26 +333,6 @@ export async function setSearch(id: string, operacion: string, tipo: string, pre
   return updated
 }
 
-export async function getLastSearch(clientId: string, phone: string){
-  console.log("clientId: ", clientId)
-  console.log("phone: ", phone)
-  
-  const found = await prisma.conversation.findFirst({
-    where: {
-      clientId,
-      phone,
-      operacion: {
-        not: null
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
-
-  return found
-
-}
 
 export async function deleteConversation(id: string) {
   

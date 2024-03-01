@@ -1,14 +1,13 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
-import { getClientsCount, getFirstClient } from "@/services/clientService";
+import { getClientsCount, getLastClient } from "@/services/clientService";
+import { getDocumentsCount } from "@/services/document-services";
 import getUsers from "@/services/userService";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { BookOpen, Briefcase, Settings, User } from "lucide-react";
 import Link from "next/link";
-import { getDataClients } from "./clients/(crud)/actions";
-import { getDocumentsCount } from "@/services/document-services";
-import { Button } from "@/components/ui/button";
 
 export default async function AdminPage() {
 
@@ -19,7 +18,7 @@ export default async function AdminPage() {
   const user= await getCurrentUser()
   console.log(format(new Date(), "MM-dd HH:mm:ss", {locale: es}), user?.name, "(admin page)")    
 
-  const firstClient= await getFirstClient()
+  const firstClient= await getLastClient()
 
   return (
     <div className="flex flex-col">

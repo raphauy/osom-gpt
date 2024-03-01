@@ -169,3 +169,20 @@ export async function getFullNarvaezDAO(id: string) {
   return res
 }
 
+export async function getNarvaezEntry(clientId: string, phone: string){
+  console.log("clientId: ", clientId)
+  console.log("phone: ", phone)
+  
+  const found = await prisma.narvaez.findFirst({
+    where: {
+      conversation: {
+        phone
+      }
+    },
+    orderBy: {
+      updatedAt: 'desc'
+    }
+  })
+
+  return found
+}

@@ -5,7 +5,7 @@ import { Briefcase, ChevronRightSquare, FunctionSquare, LayoutDashboard, Message
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getFirstClientIdAction } from "./clients/(crud)/actions";
+import { getLastClientIdAction } from "./clients/(crud)/actions";
 
 export default function SideBar() {
 
@@ -56,7 +56,7 @@ export default function SideBar() {
 
   const [firstClientId, setFirstClientId] = useState("")
   useEffect(() => {
-    getFirstClientIdAction().then((id) => setFirstClientId(id || ""))
+    getLastClientIdAction().then((id) => setFirstClientId(id || ""))
   }, [])
   
 

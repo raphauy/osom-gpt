@@ -28,12 +28,24 @@ export async function getFirstClient() {
   
     const found = await prisma.client.findFirst({
       orderBy: {
-        id: 'asc',
+        createdAt: 'asc',
       },
     })
   
     return found;
   
+}
+
+export async function getLastClient() {
+    
+    const found = await prisma.client.findFirst({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+  
+    return found;
+
 }
 
 

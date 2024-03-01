@@ -10,7 +10,7 @@ import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
 import { ClientSelector, SelectorData } from "../client-selector";
-import { getDataClients, getFirstClientAction } from "../clients/(crud)/actions";
+import { getDataClients, getLastClientAction } from "../clients/(crud)/actions";
 import { getActiveMessagesAction, getSectionsOfMessageAction } from "./actions";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
@@ -56,7 +56,7 @@ export default function Chat() {
     if (clientId) {
       setClientId(clientId)
     } else {
-      getFirstClientAction()
+      getLastClientAction()
       .then(client => {
         if (client) {
           router.push("/admin/chat?clientId=" + client.id)

@@ -20,7 +20,7 @@ export async function createOrUpdateDocumentAction(id: string | null, data: Docu
         updated= await updateDocument(updated.id, data)
     }     
 
-    revalidatePath("/")
+    revalidatePath("/client/[slug]/documents", 'page')
 
     return updated as DocumentDAO
 }
@@ -28,7 +28,7 @@ export async function createOrUpdateDocumentAction(id: string | null, data: Docu
 export async function deleteDocumentAction(id: string): Promise<DocumentDAO | null> {    
     const deleted= await deleteDocument(id)
 
-    revalidatePath("/[slug]/documents")
+    revalidatePath("/client/[slug]/documents", 'page')
 
     return deleted as DocumentDAO
 }
@@ -37,7 +37,7 @@ export async function updateContentAction(id: string, textContent: string, jsonC
     
     const updated= await updateContent(id, textContent, jsonContent)
 
-    revalidatePath("/[slug]/documents")
+    revalidatePath("/client/[slug]/documents", 'page')
   
     return updated as DocumentDAO
 }

@@ -1,6 +1,6 @@
 "use server"
 
-import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFirstClient, getFunctionsOfClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
+import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFunctionsOfClient, getLastClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
 import { getUser } from "@/services/userService";
 import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -92,8 +92,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
     return data
 }
 
-export async function getFirstClientAction(): Promise<DataClient | null>{
-    const client= await getFirstClient()
+export async function getLastClientAction(): Promise<DataClient | null>{
+    const client= await getLastClient()
     if (!client) return null
 
     const propertiesCount= 0
@@ -206,7 +206,7 @@ export async function setFunctionsAction(clientId: string, functionIs: string[])
     return setFunctions(clientId, functionIs)
 }
 
-export async function getFirstClientIdAction() {
-    const client= await getFirstClient()
+export async function getLastClientIdAction() {
+    const client= await getLastClient()
     return client?.id
 }

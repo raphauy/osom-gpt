@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import useCopyToClipboard from "@/lib/useCopyToClipboard"
 import { Copy, Edit } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { EndpointDialog } from "./(crud)/endpoint-dialog"
 import { DataClient, getDataClient, updateEndpoint } from "../clients/(crud)/actions"
-import { usePathname, useSearchParams } from "next/navigation"
+import { EndpointDialog } from "./(crud)/endpoint-dialog"
 
 interface Props {
     basePath: string
@@ -51,7 +51,7 @@ export default function Hook({ basePath }: Props) {
 
     return (
         <div className="w-full p-4 border rounded-lg">
-            <p className="text-2xl font-bold">Hooks ({client?.nombre})</p>
+            <p className="text-2xl font-bold">Whatsapp ({client?.nombre})</p>
             <div className="flex items-end gap-4 pb-3 mb-3 border-b">
                 <p className="mt-5"><strong>Entrante</strong>: {hook}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyHookToClipboard} /></Button>
