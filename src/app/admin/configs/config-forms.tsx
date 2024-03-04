@@ -110,7 +110,7 @@ export function ConfigForm({ id, closeDialog }: Props) {
             >
               Cancel
             </Button>
-            <Button type="submit" className="w-32 ml-2">
+            <Button type="submit" variant="outline" className="w-32 ml-2">
               {loading ? (
                 <Loader className="w-4 h-4 animate-spin" />
               ) : (

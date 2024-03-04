@@ -179,7 +179,7 @@ export function UserForm({ id, create, update, closeDialog }: Props) {
       />
       <div className="flex justify-end">
         <Button onClick={() => closeDialog()} type="button" variant="secondary" className="w-32">Cancelar</Button>
-        <Button type="submit" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Guardar</p>}</Button>
+        <Button type="submit"  variant="outline" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Guardar</p>}</Button>
       </div>
       </form>
     </Form>

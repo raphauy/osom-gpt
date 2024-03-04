@@ -12,7 +12,7 @@ export default async function WinesPage() {
   
   const users= await getDataUsers()
 
-  const addTrigger= (<Button><PlusCircle size={22} className="mr-2"/>Agregar</Button>)
+  const addTrigger= (<Button variant="outline"><PlusCircle size={22} className="mr-2"/>Agregar</Button>)
 
   return (
     <div className="w-full">      

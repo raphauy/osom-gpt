@@ -16,9 +16,10 @@ import Link from "next/link"
 type Props= {
   id?: string
   closeDialog: () => void
+  isAdmin?: boolean
 }
 
-export function FunctionForm({ id, closeDialog }: Props) {
+export function FunctionForm({ id, closeDialog, isAdmin }: Props) {
   const form = useForm<FunctionFormValues>({
     resolver: zodResolver(functionSchema),
     defaultValues: {
@@ -82,7 +83,7 @@ export function FunctionForm({ id, closeDialog }: Props) {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Function's name" {...field} />
+                  <Input placeholder="Function's name" {...field} disabled={!isAdmin} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +113,7 @@ export function FunctionForm({ id, closeDialog }: Props) {
 
         <div className="flex justify-end">
             <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
-            <Button type="submit" className="w-32 ml-2">
+            <Button type="submit" variant="outline" className="w-32 ml-2">
               {loading ? <Loader className="w-4 h-4 animate-spin" /> : <p>Save</p>}
             </Button>
           </div>

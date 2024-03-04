@@ -10,13 +10,13 @@ import { getFunctionDAOAction } from "./function-actions"
 
 type Props= {
   id?: string
-  create?: boolean
+  isAdmin?: boolean
 }
 
-const addTrigger= <Button><PlusCircle size={22} className="mr-2"/>Create Function</Button>
+const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Create Function</Button>
 const updateTrigger= <Pencil size={30} className="pr-2 hover:cursor-pointer"/>
 
-export function FunctionDialog({ id }: Props) {
+export function FunctionDialog({ id, isAdmin }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,7 +29,7 @@ export function FunctionDialog({ id }: Props) {
           <DialogTitle>{id ? 'Update' : 'Create'} Function
           </DialogTitle>
         </DialogHeader>
-        <FunctionForm closeDialog={() => setOpen(false)} id={id} />
+        <FunctionForm closeDialog={() => setOpen(false)} id={id} isAdmin={isAdmin} />
       </DialogContent>
     </Dialog>
   )

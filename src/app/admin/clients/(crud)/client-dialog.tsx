@@ -196,7 +196,7 @@ export function ClientFunctionsBox({ clientId, closeDialog }: ClientFunctionBoxP
             </div>
 
           <div className="flex justify-end mt-4">
-              <Button className={cn("w-32 ml-2", haveToSave && "text-white bg-red-500")} onClick={handleSave} disabled={!haveToSave} >
+              <Button variant="outline" className={cn("w-32 ml-2", haveToSave && "text-white bg-red-500")} onClick={handleSave} disabled={!haveToSave} >
                 {loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}
               </Button>
           </div>

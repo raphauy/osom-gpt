@@ -93,7 +93,7 @@ export function PromptForm({ id, update, prompt }: Props) {
           )}
         /> 
       <div className="flex justify-end">
-          <Button className={cn("w-32 ml-2", charCount !== charCountSaved && "text-white bg-red-500")} type="submit" disabled={charCount === charCountSaved} >
+          <Button variant="outline" className={cn("w-32 ml-2", charCount !== charCountSaved && "text-white bg-red-500")} type="submit" disabled={charCount === charCountSaved} >
             {loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}
           </Button>
         </div>
