@@ -1,9 +1,16 @@
 "use client";
 
+import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { getFormat, removeSectionTexts } from "@/lib/utils";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { Bot, CircleDollarSign, Loader, RefreshCcw, SendIcon, Terminal, User } from "lucide-react";
+import { Bot, CircleDollarSign, Loader, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -11,13 +18,8 @@ import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
 import { ClientSelector, SelectorData } from "../client-selector";
 import { getDataClients, getLastClientAction } from "../clients/(crud)/actions";
-import { getActiveMessagesAction, getSectionsOfMessageAction } from "./actions";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Switch } from "@/components/ui/switch";
-import { getFormat, removeSectionTexts } from "@/lib/utils";
+import { getActiveMessagesAction, getCustomInfoAction, getSectionsOfMessageAction } from "./actions";
 import { SectionDialog } from "./section-dialogs";
-import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
-import { Separator } from "@/components/ui/separator";
 
 export default function Chat() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -27,6 +29,7 @@ export default function Chat() {
   const [clientName, setClientName] = useState("")
   const [clients, setClients] = useState<SelectorData[]>([])
   const [conversationId, setConversationId] = useState("")
+  const [summitId, setSummitId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
@@ -39,8 +42,21 @@ export default function Chat() {
     body: {
       clientId,
     },
-    onFinish: () => {setFinishedCount((prev) => prev + 1)}
+    onFinish: () => {onFinishActions()}
   })
+
+  function onFinishActions() {
+    setFinishedCount((prev) => prev + 1)
+    getCustomInfoAction(conversationId)
+    .then((customInfo) => {
+      if (customInfo) {
+        customInfo.summitId && setSummitId(customInfo.summitId)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
   
   // @ts-ignore
   const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
@@ -51,6 +67,18 @@ export default function Chat() {
 
   const searchParams= useSearchParams()
 
+  useEffect(() => {
+    getCustomInfoAction(conversationId)
+    .then((customInfo) => {
+      if (customInfo) {
+        customInfo.summitId && setSummitId(customInfo.summitId)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [conversationId])
+  
   useEffect(() => {
     const clientId= searchParams.get('clientId')
     if (clientId) {
@@ -298,17 +326,27 @@ export default function Chat() {
           </button>
         </form>
         
-        <p className="text-xs text-center text-gray-400">
-          Creado por {" "}
-          <a
-            href="https://www.osomdigital.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-black"
-          >            
-            Osom Digital
-          </a>
-        </p>
+        <div className="flex justify-between w-full">
+          <div>
+          {summitId && 
+            <Link href={`/client/summit/summit?summitId=${summitId}`}>
+              <Button variant="ghost" className="h-3"><Ticket /></Button>
+            </Link>
+          }
+          </div>
+          <p className="text-xs text-center text-gray-400">
+            Creado por {" "}
+            <a
+              href="https://www.osomdigital.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-black"
+            >            
+              Osom Digital
+            </a>
+          </p>
+          <p></p>
+        </div>
       </div>
 
     </main>

@@ -37,7 +37,7 @@ export const columns: ColumnDef<DataConversation>[] = [
  
       return (
         <div className="flex items-center justify-start flex-1">
-          <Link href={`/client/${data.clienteSlug}/chats?id=${data.id}`}>
+          <Link href={`/client/${data.clienteSlug}/chats?id=${data.id}`} prefetch={false}>
               <Button variant="link" className="pl-0 dark:text-white">
                 {data.celular.slice(0, 12)}
               </Button>

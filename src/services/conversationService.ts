@@ -9,11 +9,6 @@ import { getContext, setSectionsToMessage } from "./section-services";
 import { completionInit } from "./function-call-services";
 
 
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-//   //organization: "org-"
-// })
-
 export default async function getConversations() {
 
   const found = await prisma.conversation.findMany({

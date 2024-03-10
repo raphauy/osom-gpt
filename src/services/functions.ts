@@ -5,6 +5,9 @@ import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
 import { getActiveConversation } from "./conversationService";
 import { getValue } from "./config-services";
 import { preprocessTextForJsonParse } from "@/lib/utils";
+import { SummitFormValues, createSummit } from "./summit-services";
+import { parse } from "path";
+import { sendWapMessage } from "./osomService";
 
 
 export async function notifyHuman(clientId: string){
@@ -106,7 +109,7 @@ export async function registrarPedido(clientId: string,
   } catch (error) {
     return "Error al registrar el pedido, pregunta al usuario si quiere que tu reintentes"
   }
-  if (!created) return "Error al registrar el pedido"
+  if (!created) return "Error al registrar el pedido, pregunta al usuario si quiere que tu reintentes"
 
   let NARVAEZ_Respuesta= await getValue("NARVAEZ_Respuesta")
   if (!NARVAEZ_Respuesta) {
@@ -116,22 +119,70 @@ export async function registrarPedido(clientId: string,
   console.log("NARVAEZ_Respuesta: ", NARVAEZ_Respuesta)      
 
   return NARVAEZ_Respuesta
+}
 
-  // switch (clasificacion) {
+// nombreReserva: string | undefined
+// nombreCumpleanero: string | undefined
+// fechaReserva: Date | undefined
+// email: string | undefined
+// resumenConversacion: string | undefined
 
-  //   case "Comercial":
-  //     const NARVAEZ_Comercial= await getValue("NARVAEZ_Comercial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso comercial de la propiedad"
-  //     return NARVAEZ_Respuesta
-  //   case "Residencial":
-  //     const NARVAEZ_Residencial= await getValue("NARVAEZ_Residencial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso residencial de la propiedad"
-  //     return NARVAEZ_Residencial
-  //   case "Industrial":
-  //     const NARVAEZ_Industrial= await getValue("NARVAEZ_Industrial") || "Pedido registrado, dile esto al usuario: Que le vaya bien con el uso industrial de la propiedad"
-  //     return NARVAEZ_Industrial
+export async function reservarSummit(clientId: string, conversationId: string, nombreReserva: string | undefined, nombreCumpleanero: string | undefined, cantidadInvitados: number | undefined, fechaReserva: string | undefined, email: string | undefined, resumenConversacion: string | undefined){
+  console.log("reservarSummit")
+  console.log(`\tconversationId: ${conversationId}`)
+  console.log(`\tnombreReserva: ${nombreReserva}`)
+  console.log(`\tnombreCumpleanero: ${nombreCumpleanero}`)
+  console.log(`\tcantidadInvitados: ${cantidadInvitados}`)
+  console.log(`\tfechaReserva: ${fechaReserva}`)
+  console.log(`\temail: ${email}`)
+  console.log(`\tresumenConversacion: ${resumenConversacion}`)
 
-  //   default:
-  //     return "Pedido registrado"
-  // }
+  const data: SummitFormValues = {
+    conversationId,
+    nombreReserva,
+    nombreCumpleanero,
+    cantidadInvitados,
+    fechaReserva,
+    email,
+    resumenConversacion,
+  }
+
+  let created= null
+
+  try {
+    created= await createSummit(data)    
+  } catch (error) {
+    return "Error al reservar, pregunta al usuario si quiere que tu reintentes"
+  }
+
+  if (!created) return "Error al reservar, pregunta al usuario si quiere que tu reintentes"
+
+  let SUMMIT_Respuesta= await getValue("SUMMIT_Respuesta")
+  if (!SUMMIT_Respuesta) {
+    console.log("SUMMIT_Respuesta not found")    
+    SUMMIT_Respuesta= "Reserva realizada, dile esto al usuario lo siguiente: 'con la información que me pasaste un asesor te contactará a la brevedad'"
+  }
+  console.log("SUMMIT_Respuesta: ", SUMMIT_Respuesta)      
+
+  let SUMMIT_Celulares= await getValue("SUMMIT_Celulares")
+  if (!SUMMIT_Celulares) {
+    console.log("SUMMIT_Celulares not found")    
+  } else {
+    console.log("SUMMIT_Celulares: ", SUMMIT_Celulares)      
+    const celulares= SUMMIT_Celulares.split(",")
+    for (const phone of celulares) {
+      console.log("enviar mensaje a: ", phone)
+      if (resumenConversacion) {
+        const textoMensaje= getTextoMensaje(data)
+        console.log("textoMensaje:")
+        console.log(textoMensaje)
+        
+        await sendWapMessage(phone, textoMensaje, false, clientId)
+      } else console.log("resumenConversacion not found")
+    }
+  }
+
+  return SUMMIT_Respuesta
 }
 
 export async function runFunction(name: string, args: any, clientId: string){
@@ -157,8 +208,29 @@ export async function runFunction(name: string, args: any, clientId: string){
         preprocessTextForJsonParse(args.consultaAdicional),
         preprocessTextForJsonParse(args.resumenConversacion),
       )
+    case "reservarSummit":
+      return reservarSummit(clientId, 
+        args.conversationId, 
+        preprocessTextForJsonParse(args.nombreReserva),
+        preprocessTextForJsonParse(args.nombreCumpleanero),
+        parseInt(args.cantidadInvitados),
+        preprocessTextForJsonParse(args.fechaReserva),
+        preprocessTextForJsonParse(args.email),
+        preprocessTextForJsonParse(args.resumenConversacion),
+      )
     default:
       return null
   }
 }
 
+
+function getTextoMensaje(data: SummitFormValues): string {
+  const textoMensaje= `Nombre: ${data.nombreReserva}
+Cumpleañero: ${data.nombreCumpleanero}
+Cantidad de invitados: ${data.cantidadInvitados}
+Fecha de la reserva: ${data.fechaReserva}
+Email: ${data.email}
+Resumen: ${data.resumenConversacion}
+`
+  return textoMensaje
+}

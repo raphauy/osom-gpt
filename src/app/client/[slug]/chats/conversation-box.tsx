@@ -1,16 +1,19 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { removeSectionTexts } from "@/lib/utils"
 import clsx from "clsx"
-import { Bot, CircleDollarSign, Terminal, User } from "lucide-react"
+import { Bot, CircleDollarSign, Terminal, Ticket, User } from "lucide-react"
+import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { DeleteConversationDialog } from "./(delete-conversation)/delete-dialogs"
 import { DataConversation } from "./actions"
 import GPTData from "./gpt-data"
-import { getClient } from "@/services/clientService"
+import { useEffect, useState } from "react"
+import { getCustomInfoAction } from "@/app/admin/chat/actions"
 
 interface Props {
   conversation: DataConversation
@@ -30,10 +33,31 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
 
   const messages= showSystem && isAdmin ? conversation.messages : conversation.messages.filter(message => message.role !== "system")
 
+  const [summitId, setSummitId]= useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    getCustomInfoAction(conversation.id)
+    .then((customInfo) => {
+      if (customInfo) {
+        customInfo.summitId && setSummitId(customInfo.summitId)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [conversation.id])
+  
+
   return (
       <main className="flex flex-col items-center justify-between w-full p-3 border-l">
         <div className="flex justify-between w-full pb-2 text-center border-b">
-          <p></p>
+          <div className="place-self-end">
+            {summitId && 
+              <Link href={`/client/summit/summit?summitId=${summitId}`}>
+                <Button variant="ghost" className="h-7"><Ticket /></Button>
+              </Link>
+            }
+          </div>
           <div>
             <p className="text-lg font-bold">{conversation.celular} ({conversation.fecha})</p>
             {

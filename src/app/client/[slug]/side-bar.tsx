@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, User, Warehouse } from "lucide-react";
+import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -86,6 +86,13 @@ export default function SideBar({ slug }: Props) {
             <Warehouse size={23} />
           </div>
           <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Narvaez</p>                  
+        </Link>
+
+        <Link href="/client/summit/summit" className={cn(commonClasses, path.endsWith("summit/summit") && selectedClasses, slug !== "summit" && "hidden")}>
+          <div>
+            <Ticket size={23} />
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Reservas</p>                  
         </Link>
 
         {divider()}

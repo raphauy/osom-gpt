@@ -113,7 +113,6 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
           </p>
           <DeleteNarvaezDialog description={deleteDescription} id={data.id} />
         </div>
-
       )
     },
   },

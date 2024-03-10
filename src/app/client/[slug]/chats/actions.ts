@@ -5,6 +5,7 @@ import { Client, Conversation, Message } from "@prisma/client"
 import { deleteConversation, getConversation, getConversationsOfClient, getLastConversation } from "@/services/conversationService"
 import { format } from "date-fns"
 import { getFormat } from "@/lib/utils"
+import { getSummitIdByConversationId } from "@/services/summit-services"
 
 
 export type DataMessage = {
@@ -108,3 +109,6 @@ export async function eliminate(conversationId: string): Promise<Conversation | 
     return deleted
 }
 
+// export async function getSummitIdByConversationIdAction(conversationId: string): Promise<string | undefined> {
+//     return getSummitIdByConversationId(conversationId)
+// }

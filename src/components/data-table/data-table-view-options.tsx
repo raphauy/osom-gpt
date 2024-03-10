@@ -69,6 +69,8 @@ function getSpanishName(name: string) {
       return "Descripción"
     case "definition":
       return "Definición"
+    case "updatedAt":
+      return "Reservado"
     default:
       return name
   }

@@ -1,15 +1,17 @@
 "use client";
 
-import { getActiveMessagesAction } from "@/app/admin/chat/actions";
+import { getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getFormat } from "@/lib/utils";
 import { useChat } from "ai/react";
 import clsx from "clsx";
 import { format } from "date-fns";
-import { Bot, CircleDollarSign, Loader, RefreshCcw, SendIcon, Terminal, User } from "lucide-react";
+import { Bot, CircleDollarSign, Loader, RefreshCcw, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -35,6 +37,7 @@ export default function Chat({ params }: Props) {
   const [promptTokensPrice, setPromptTokensPrice] = useState(0)
   const [completionTokensPrice, setCompletionTokensPrice] = useState(0)
   const [conversationId, setConversationId] = useState("")
+  const [summitId, setSummitId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
@@ -47,8 +50,21 @@ export default function Chat({ params }: Props) {
     body: {
       clientId,
     },
-    onFinish: () => {setFinishedCount((prev) => prev + 1)}
+    onFinish: () => {onFinishActions()}
   })
+
+  function onFinishActions() {
+    setFinishedCount((prev) => prev + 1)
+    getCustomInfoAction(conversationId)
+    .then((customInfo) => {
+      if (customInfo) {
+        customInfo.summitId && setSummitId(customInfo.summitId)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
 
   // @ts-ignore
   const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
@@ -58,6 +74,18 @@ export default function Chat({ params }: Props) {
   const completionTokensValue= totalCompletionTokens / 1000 * completionTokensPrice
   
   const searchParams= useSearchParams()
+
+  useEffect(() => {
+    getCustomInfoAction(conversationId)
+    .then((customInfo) => {
+      if (customInfo) {
+        customInfo.summitId && setSummitId(customInfo.summitId)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [conversationId])
 
   useEffect(() => {
     setLoading(true)
@@ -250,17 +278,27 @@ export default function Chat({ params }: Props) {
           </button>
         </form>
         
-        <p className="text-xs text-center text-gray-400">
-          Creado por {" "}
-          <a
-            href="https://www.osomdigital.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-black"
-          >            
-            Osom Digital
-          </a>
-        </p>
+        <div className="grid w-full grid-cols-3">
+          <div>
+          {summitId && 
+            <Link href={`/client/summit/summit?summitId=${summitId}`}>
+              <Button variant="ghost" className="h-3"><Ticket /></Button>
+            </Link>
+          }
+          </div>
+          <p className="text-xs text-center text-gray-400">
+            Creado por {" "}
+            <a
+              href="https://www.osomdigital.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-black"
+            >            
+              Osom Digital
+            </a>
+          </p>
+          <p></p>
+        </div>
       </div>
 
     </main>

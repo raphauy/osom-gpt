@@ -216,7 +216,7 @@ export async function getContext(clientId: string, phone: string, userInput: str
   let contextString= ""
   let sectionsIds: string[] = []
 
-  if (functionsNames.includes("registrarPedido")) {
+  if (functionsNames.includes("registrarPedido") || functionsNames.includes("reservarSummit")) {
     const conversation= await getActiveConversation(phone, clientId)
     if (conversation) {
       contextString+= "\nconversationId: " + conversation.id + "\n"
