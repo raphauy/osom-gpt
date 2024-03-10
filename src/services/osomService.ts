@@ -18,7 +18,10 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
 
   const osomEndpoint= client.whatsappEndpoint
 
-  if (!osomEndpoint) throw new Error("whatsappEndpoint not found")
+  if (!osomEndpoint) {
+    console.error("osomEndpoint not found")
+    return
+  }
 
   let text= quitarUrlEntreParentesisRectos(body)
   text= quitarCorchetes(text)
