@@ -213,10 +213,10 @@ export async function getContext(clientId: string, phone: string, userInput: str
   const functioins= await getFunctionsOfClient(clientId)
   const functionsNames= functioins.map((f) => f.name)
 
-  let contextString= ""
+  let contextString= "Hablas correctamente el español, incluyendo el uso adecuado de tildes y eñes.\n"
   let sectionsIds: string[] = []
 
-  if (functionsNames.includes("registrarPedido") || functionsNames.includes("reservarSummit")) {
+  if (functionsNames.includes("registrarPedido") || functionsNames.includes("reservarSummit") || functionsNames.includes("echoRegister")) {
     const conversation= await getActiveConversation(phone, clientId)
     if (conversation) {
       contextString+= "\nconversationId: " + conversation.id + "\n"

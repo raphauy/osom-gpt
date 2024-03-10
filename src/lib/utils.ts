@@ -58,3 +58,10 @@ export function preprocessTextForJsonParse(text: string | undefined): string {
   const unicodeEscapeRegex = /\\u([\d\w]{4})/gi;
   return text.replace(unicodeEscapeRegex, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
 }
+
+export function decodeUnicode(str: string): string {
+  // Reemplaza las secuencias de escape Unicode por el carácter que representan
+  return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
+    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+  });
+}

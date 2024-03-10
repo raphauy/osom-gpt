@@ -185,7 +185,34 @@ export async function reservarSummit(clientId: string, conversationId: string, n
   return SUMMIT_Respuesta
 }
 
+export async function echoRegister(clientId: string, conversationId: string, texto: string | undefined){
+  console.log("echoRegister")
+  console.log(`\tconversationId: ${conversationId}`)
+  console.log(`\ttexto: ${texto}`)
+
+  if (texto) {
+    const data: SummitFormValues = {
+      conversationId,
+      resumenConversacion: texto,
+    }
+    let created= null
+
+    try {
+      created= await createSummit(data)    
+      return "Echo registrado"
+    } catch (error) {
+      return "Error al reservar, pregunta al usuario si quiere que tu reintentes"
+    }
+  
+  } else console.log("texto not found")
+
+  return "Mensaje enviado"
+
+}
+
 export async function runFunction(name: string, args: any, clientId: string){
+  console.log("raw args.texto: ", args.texto)
+  
   switch (name) {
     case "getSection":
       return getSection(args.docId, args.secuence)
@@ -211,12 +238,17 @@ export async function runFunction(name: string, args: any, clientId: string){
     case "reservarSummit":
       return reservarSummit(clientId, 
         args.conversationId, 
-        preprocessTextForJsonParse(args.nombreReserva),
-        preprocessTextForJsonParse(args.nombreCumpleanero),
+        decodeUnicode(args.nombreReserva),
+        decodeUnicode(args.nombreCumpleanero),
         parseInt(args.cantidadInvitados),
-        preprocessTextForJsonParse(args.fechaReserva),
-        preprocessTextForJsonParse(args.email),
-        preprocessTextForJsonParse(args.resumenConversacion),
+        decodeUnicode(args.fechaReserva),
+        args.email,
+        decodeUnicode(args.resumenConversacion),
+      )
+    case "echoRegister":
+      return echoRegister(clientId, 
+        args.conversationId, 
+        decodeUnicode(args.texto)
       )
     default:
       return null
@@ -233,4 +265,11 @@ Email: ${data.email}
 Resumen: ${data.resumenConversacion}
 `
   return textoMensaje
+}
+
+function decodeUnicode(str: string): string {
+  // Reemplaza las secuencias de escape Unicode por el carácter que representan
+  return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
+    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+  });
 }

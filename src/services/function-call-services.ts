@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { getDateOfNow, getDocument, getSection, notifyHuman, registrarPedido, reservarSummit } from "./functions";
-import { preprocessTextForJsonParse } from "@/lib/utils";
+import { decodeUnicode, preprocessTextForJsonParse } from "@/lib/utils";
 
 type CompletionInitResponse = {
   assistantResponse: string | null
@@ -115,12 +115,12 @@ export async function processFunctionCall(clientId: string, name: string, argume
       case "reservarSummit":
         content= await reservarSummit(clientId,
           argumentObj.conversationId,
-          preprocessTextForJsonParse(argumentObj.nombreReserva),
-          preprocessTextForJsonParse(argumentObj.nombreCumpleanero),
+          decodeUnicode(argumentObj.nombreReserva),
+          decodeUnicode(argumentObj.nombreCumpleanero),
           parseInt(argumentObj.cantidadInvitados),
-          preprocessTextForJsonParse(argumentObj.fechaReserva),
-          preprocessTextForJsonParse(argumentObj.email),
-          preprocessTextForJsonParse(argumentObj.resumenConversacion),
+          decodeUnicode(argumentObj.fechaReserva),
+          decodeUnicode(argumentObj.email),
+          decodeUnicode(argumentObj.resumenConversacion),
         )
         break
 

@@ -46,11 +46,16 @@ export async function getSummitDAO(id: string) {
 }
     
 export async function createSummit(data: SummitFormValues) {
-  // TODO: implement createSummit
-  const created = await prisma.summit.create({
-    data
+  
+  const updated= await prisma.summit.upsert({
+    where: {
+      conversationId: data.conversationId
+    },
+    update: data,
+    create: data
   })
-  return created
+
+  return updated
 }
 
 export async function updateSummit(id: string, data: SummitFormValues) {
