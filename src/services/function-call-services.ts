@@ -136,6 +136,20 @@ export async function processFunctionCall(clientId: string, name: string, argume
 }
 
 function getAgentes(name: string): boolean {
-  return name === "notifyHuman"
+  let res= false
+  switch (name) {
+    case "notifyHuman":
+      res= true
+      break
+    case "registrarPedido":
+      res= true
+      break
+    case "reservarSummit":
+      res= true
+      break
+    default:
+      break
+  }
+  return res
 }
 
