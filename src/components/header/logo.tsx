@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 
@@ -13,9 +14,10 @@ export default function Logo() {
     // </Link>
     <Link href="/">
       <div className="text-3xl font-bold">
-        <span className="text-rosa-osom">Osom</span>
+        {/* <span className="text-rosa-osom">Osom</span>
         <span className="text-verde-openai">GPT</span>
-        <span className="text-gray-300">.com</span>
+        <span className="text-gray-300">.com</span> */}
+        <Image src="/Oso-OsomGPT-logo.png" width={240} height={50} alt="Osom logo" />
       </div>
     </Link>
 
