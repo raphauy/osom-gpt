@@ -1,13 +1,10 @@
-import { JSONValue } from "ai";
-import { getDocumentDAO } from "./document-services";
-import { getSectionOfDocument } from "./section-services";
-import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
-import { getActiveConversation } from "./conversationService";
+import { decodeAndCorrectText } from "@/lib/utils";
 import { getValue } from "./config-services";
-import { preprocessTextForJsonParse } from "@/lib/utils";
-import { SummitFormValues, createSummit } from "./summit-services";
-import { parse } from "path";
+import { getDocumentDAO } from "./document-services";
+import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
 import { sendWapMessage } from "./osomService";
+import { getSectionOfDocument } from "./section-services";
+import { SummitFormValues, createSummit } from "./summit-services";
 
 
 export async function notifyHuman(clientId: string){
@@ -210,6 +207,31 @@ export async function echoRegister(clientId: string, conversationId: string, tex
 
 }
 
+export async function completarFrase(clientId: string, conversationId: string, texto: string | undefined){
+  console.log("completarFrase")
+  console.log(`\tconversationId: ${conversationId}`)
+  console.log(`\ttexto: ${texto}`)
+
+  if (texto) {
+    const data: SummitFormValues = {
+      conversationId,
+      resumenConversacion: texto,
+    }
+    let created= null
+
+    try {
+      created= await createSummit(data)    
+      return "Frase completada"
+    } catch (error) {
+      return "Error al completar la frase, pregunta al usuario si quiere que tu reintentes"
+    }
+  
+  } else console.log("texto not found")
+
+  return "Mensaje enviado"
+
+}
+
 export async function runFunction(name: string, args: any, clientId: string){
   console.log("raw args.texto: ", args.texto)
   
@@ -226,29 +248,34 @@ export async function runFunction(name: string, args: any, clientId: string){
       return registrarPedido(clientId, 
         args.conversationId, 
         args.clasificacion, 
-        preprocessTextForJsonParse(args.consulta),
-        preprocessTextForJsonParse(args.nombre),
+        decodeAndCorrectText(args.consulta),
+        decodeAndCorrectText(args.nombre),
         args.email, 
-        preprocessTextForJsonParse(args.horarioContacto),
+        decodeAndCorrectText(args.horarioContacto),
         args.idTrackeo, 
         args.urlPropiedad, 
-        preprocessTextForJsonParse(args.consultaAdicional),
-        preprocessTextForJsonParse(args.resumenConversacion),
+        decodeAndCorrectText(args.consultaAdicional),
+        decodeAndCorrectText(args.resumenConversacion),
       )
     case "reservarSummit":
       return reservarSummit(clientId, 
         args.conversationId, 
-        decodeUnicode(args.nombreReserva),
-        decodeUnicode(args.nombreCumpleanero),
+        decodeAndCorrectText(args.nombreReserva),
+        decodeAndCorrectText(args.nombreCumpleanero),
         parseInt(args.cantidadInvitados),
-        decodeUnicode(args.fechaReserva),
+        decodeAndCorrectText(args.fechaReserva),
         args.email,
-        decodeUnicode(args.resumenConversacion),
+        decodeAndCorrectText(args.resumenConversacion),
       )
     case "echoRegister":
       return echoRegister(clientId, 
         args.conversationId, 
-        decodeUnicode(args.texto)
+        decodeAndCorrectText(args.texto)
+      )
+    case "completarFrase":
+      return completarFrase(clientId, 
+        args.conversationId, 
+        decodeAndCorrectText(args.texto)
       )
     default:
       return null
@@ -267,9 +294,3 @@ Resumen: ${data.resumenConversacion}
   return textoMensaje
 }
 
-function decodeUnicode(str: string): string {
-  // Reemplaza las secuencias de escape Unicode por el carácter que representan
-  return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
-    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-  });
-}

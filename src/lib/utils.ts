@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { format } from "date-fns"
 import { twMerge } from "tailwind-merge"
+import he from 'he';
  
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -47,21 +48,50 @@ export function getFormat(date: Date): string {
 }
 
 
-export function preprocessTextForJsonParse(text: string | undefined): string {
-  // Verifica si el texto es undefined o no es un string.
-  if (typeof text !== 'string') {
-    console.error('preprocessTextForJsonParse was called with a non-string argument:', text);
-    return ''; // Retorna un string vacío o podrías manejar este caso de otra manera.
-  }
+// export function preprocessTextForJsonParse(text: string | undefined): string {
+//   // Verifica si el texto es undefined o no es un string.
+//   if (typeof text !== 'string') {
+//     console.error('preprocessTextForJsonParse was called with a non-string argument:', text);
+//     return ''; // Retorna un string vacío o podrías manejar este caso de otra manera.
+//   }
   
-  // Reemplaza secuencias de escape Unicode por sus caracteres representativos
-  const unicodeEscapeRegex = /\\u([\d\w]{4})/gi;
-  return text.replace(unicodeEscapeRegex, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
-}
+//   // Reemplaza secuencias de escape Unicode por sus caracteres representativos
+//   const unicodeEscapeRegex = /\\u([\d\w]{4})/gi;
+//   return text.replace(unicodeEscapeRegex, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+// }
 
-export function decodeUnicode(str: string): string {
-  // Reemplaza las secuencias de escape Unicode por el carácter que representan
-  return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
-    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+// export function decodeUnicode(str: string): string {
+//   // Reemplaza las secuencias de escape Unicode por el carácter que representan
+//   return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
+//     return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+//   });
+// }
+
+export function decodeAndCorrectText(str: string): string {
+    // Verifica si el input es undefined o null y devuelve una cadena vacía
+  if (str === undefined || str === null) {
+    return '';
+  }
+
+  // Primero, decodifica las entidades HTML
+  let decodedStr: string = he.decode(str);
+
+  // Corrige la codificación incorrecta de tildes y eñes
+  const replacements: { [key: string]: string } = {
+    'Ã¡': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
+    'Ã±': 'ñ', 'Ã': 'Á', 'Ã‰': 'É', 'Ã': 'Í', 'Ã“': 'Ó',
+    'Ãš': 'Ú', 'Ã‘': 'Ñ'
+  };
+
+  Object.keys(replacements).forEach((key) => {
+    const value: string = replacements[key];
+    decodedStr = decodedStr.replace(new RegExp(key, 'g'), value);
   });
+
+  // Luego, decodifica las secuencias de escape Unicode
+  decodedStr = decodedStr.replace(/\\u([\dA-F]{4})/gi, (match, numStr) => {
+    return String.fromCharCode(parseInt(numStr, 16));
+  });
+
+  return decodedStr;
 }

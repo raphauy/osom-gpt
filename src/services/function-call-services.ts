@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { getDateOfNow, getDocument, getSection, notifyHuman, registrarPedido, reservarSummit } from "./functions";
-import { decodeUnicode, preprocessTextForJsonParse } from "@/lib/utils";
+import { decodeAndCorrectText } from "@/lib/utils";
 
 type CompletionInitResponse = {
   assistantResponse: string | null
@@ -102,25 +102,25 @@ export async function processFunctionCall(clientId: string, name: string, argume
         content= await registrarPedido(clientId, 
           argumentObj.conversationId, 
           argumentObj.clasificacion, 
-          preprocessTextForJsonParse(argumentObj.consulta),
-          preprocessTextForJsonParse(argumentObj.nombre),
+          decodeAndCorrectText(argumentObj.consulta),
+          decodeAndCorrectText(argumentObj.nombre),
           argumentObj.email, 
-          preprocessTextForJsonParse(argumentObj.horarioContacto),
+          decodeAndCorrectText(argumentObj.horarioContacto),
           argumentObj.idTrackeo, 
           argumentObj.urlPropiedad, 
-          preprocessTextForJsonParse(argumentObj.consultaAdicional),
-          preprocessTextForJsonParse(argumentObj.resumenConversacion),
+          decodeAndCorrectText(argumentObj.consultaAdicional),
+          decodeAndCorrectText(argumentObj.resumenConversacion),
         )
         break
       case "reservarSummit":
         content= await reservarSummit(clientId,
           argumentObj.conversationId,
-          decodeUnicode(argumentObj.nombreReserva),
-          decodeUnicode(argumentObj.nombreCumpleanero),
+          decodeAndCorrectText(argumentObj.nombreReserva),
+          decodeAndCorrectText(argumentObj.nombreCumpleanero),
           parseInt(argumentObj.cantidadInvitados),
-          decodeUnicode(argumentObj.fechaReserva),
-          decodeUnicode(argumentObj.email),
-          decodeUnicode(argumentObj.resumenConversacion),
+          decodeAndCorrectText(argumentObj.fechaReserva),
+          decodeAndCorrectText(argumentObj.email),
+          decodeAndCorrectText(argumentObj.resumenConversacion),
         )
         break
 
