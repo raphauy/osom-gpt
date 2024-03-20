@@ -20,7 +20,7 @@ export default function CopyHook({ name, path, clientId }: Props) {
     const [hook, setHook] = useState(path)
 
     const searchParams= useSearchParams()
-    const visible= searchParams.get("clientId") === clientId
+    const visible= searchParams.get("clientId") === clientId || clientId === "all"
 
     function copyHookToClipboard(){   
         copy(hook)    

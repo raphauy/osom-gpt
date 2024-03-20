@@ -14,10 +14,10 @@ export async function createOrUpdateDocumentAction(id: string | null, data: Docu
         updated= await updateDocument(id, data)
     } else {
         updated= await createDocument(data)
-        const BASE_PATH= process.env.NEXTAUTH_URL
-        const url= `${BASE_PATH}/d/${updated.id}`
-        data.url= url
-        updated= await updateDocument(updated.id, data)
+        // const BASE_PATH= process.env.NEXTAUTH_URL
+        // const url= `${BASE_PATH}/d/${updated.id}`
+        // data.url= url
+        // updated= await updateDocument(updated.id, data)
     }     
 
     revalidatePath("/client/[slug]/documents", 'page')

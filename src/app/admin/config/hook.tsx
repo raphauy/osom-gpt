@@ -51,7 +51,7 @@ export default function Hook({ basePath }: Props) {
 
     return (
         <div className="w-full p-4 border rounded-lg">
-            <p className="text-2xl font-bold">Whatsapp ({client?.nombre})</p>
+            <p className="text-2xl font-bold">Whatsapp</p>
             <div className="flex items-end gap-4 pb-3 mb-3 border-b">
                 <p className="mt-5"><strong>Entrante</strong>: {hook}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyHookToClipboard} /></Button>

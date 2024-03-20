@@ -318,3 +318,12 @@ export async function getSectionOfDocument(documentId: string, secuence: number)
   })
   return section
 }
+
+export async function getSectionCountOfDocument(documentId: string) {
+  const count= await prisma.section.count({
+    where: {
+      documentId
+    }
+  })
+  return count
+}

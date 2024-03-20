@@ -9,6 +9,7 @@ import Hook from "./hook"
 import TokensPrice from "./tokens-price"
 import CopyHook from "./copy-hook"
 import { getClientBySlug } from "@/services/clientService"
+import DocumentsHook from "./documents-hook"
 
 type Props = {
     searchParams: {
@@ -52,6 +53,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                 </TabsContent>
                 <TabsContent value="hooks">
                     <Hook basePath={BASE_PATH} />
+                    <DocumentsHook basePath={BASE_PATH} />
                     <CopyHook name="Narvaez Entry" path={`${BASE_PATH}/api/${narvaezClient?.id}/narvaez`} clientId={narvaezClient?.id || ""} />
                     <CopyHook name="Summit Entry" path={`${BASE_PATH}/api/${summitClient?.id}/summit`} clientId={summitClient?.id || ""} />
                 </TabsContent>

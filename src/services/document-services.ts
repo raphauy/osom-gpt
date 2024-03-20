@@ -84,6 +84,20 @@ export async function getDocumentsDAOByClient(clientId: string) {
   return res as DocumentDAO[]
 }
 
+export async function getDocumentsByClient(clientId: string) {
+  const found = await prisma.document.findMany({
+    where: {
+      clientId
+    },
+    include: {
+      client: true,
+      sections: true
+    }
+  })
+  return found
+
+}
+
 export async function getDocumentsCount() {
   const count = await prisma.document.count()
   return count
@@ -114,7 +128,20 @@ export async function createDocument(data: DocumentFormValues) {
   const created = await prisma.document.create({
     data
   })
-  return created
+
+  if (!created) return null
+
+  const BASE_PATH= process.env.NEXTAUTH_URL
+  const url= `${BASE_PATH}/d/${created.id}`
+  data.url= url
+  const updated= await updateDocument(created.id, data)
+
+  if (updated.textContent){
+    const sections= await processSections(updated.textContent, updated.id)
+    console.log("sections", sections)
+  }
+
+  return updated
 }
 
 export async function updateDocument(id: string, data: DocumentFormValues) {
