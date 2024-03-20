@@ -20,6 +20,9 @@ export default async function SlugLayout({ children, params }: Props) {
     return redirect("/unauthorized?message=Deberías estar logueado.")
   }
 
+  if (currentUser.role !== 'admin' && currentUser.role !== 'cliente' && currentUser.role !== 'osom')
+    return redirect("/unauthorized?message=No estas autorizado a acceder a esta página, contacta con los administradores de OsomGPT")
+
   let client= null
   if (currentUser.role === "admin" || currentUser.role === "osom") {
     client = await getDataClientBySlug(slug)

@@ -16,6 +16,9 @@ export default async function Home() {
 
   console.log("user: ", user.email)  
 
+  if (user.role !== 'admin' && user.role !== 'cliente')
+    return redirect("/unauthorized?message=No estas autorizado a acceder a esta página, contacta con los administradores de OsomGPT")
+
   if (user.role === "cliente") {
     const client= await getDataClientOfUser(user.id)
     if (!client) return <div>Usuario sin cliente asignado</div>
