@@ -20,7 +20,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             id: document.id,
             name: document.name,
             description: document.description || "",
-            content: document.jsonContent || "",
+            content: document.textContent || "",
             type: document.type,
             wordsCount: document.wordsCount || 0,
             url: document.url || "",
