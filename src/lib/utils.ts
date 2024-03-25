@@ -117,6 +117,17 @@ export function decodeAndCorrectText(str: string): string {
 
   const additionalReplacements: { [key: string]: string } = {
     'est�': 'está',
+    'ma�ana': 'mañana',
+    'a�o': 'año',
+    'a�os': 'años',
+    'cumplea�os': 'cumpleaños',    
+    'Mart�n': 'Martín',
+    'Malv�n': 'Malvín',
+    'Juli�n': 'Julián',
+    'Ger�nimo': 'Gerónimo',
+    'Germ�n': 'Germán',
+    'Gast�n': 'Gastón',
+    'Est�vez': 'Estévez',    
   }
   
   Object.keys(additionalReplacements).forEach((key) => {
