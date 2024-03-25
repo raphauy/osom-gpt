@@ -7,8 +7,9 @@ import { usePathname } from "next/navigation";
 
 interface Props {
   slug: string
+  showRegistro?: boolean
 }
-export default function SideBar({ slug }: Props) {
+export default function SideBar({ slug, showRegistro }: Props) {
 
   const data= [
     {
@@ -81,11 +82,11 @@ export default function SideBar({ slug }: Props) {
             </Link>
           )
         })}
-        <Link href="/client/narvaez/narvaez" className={cn(commonClasses, path.endsWith("narvaez/narvaez") && selectedClasses, slug !== "narvaez" && "hidden")}>
+        <Link href={`/client/${slug}/registro`} className={cn(commonClasses, path.endsWith("registro") && selectedClasses, !showRegistro && "hidden")}>
           <div className="pb-1">
             <Warehouse size={23} />
           </div>
-          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Narvaez</p>                  
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Registro</p>                  
         </Link>
 
         <Link href="/client/summit/summit" className={cn(commonClasses, path.endsWith("summit/summit") && selectedClasses, slug !== "summit" && "hidden")}>

@@ -91,7 +91,7 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
             <div key={i} className="w-full">
               <div className={clsx(
                   "flex w-full items-center justify-between px-1 lg:px-4 border-b border-gray-200 py-5",
-                  i % 2 === 0 ? "bg-gray-100" : "bg-white",
+                  message.role === "user" ? "bg-gray-100" : "bg-white",
                 )}
               >
                 <div className="flex items-center w-full max-w-screen-md px-5 space-x-4 sm:px-0">
@@ -99,13 +99,13 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
                     <div
                         className={clsx(
                         "p-1.5 text-white flex justify-center",
-                        message.role === "assistant" ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
+                        (message.role === "assistant" || message.role === "function") ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
                         )}
                     >
                         {message.role === "user" ? (
                         <User width={20} />
-                        ) : message.role === "system" ? (
-                        <Terminal width={20} />
+                        ) : message.role === "system" || message.role === "function" ? (
+                          <Terminal width={20} />
                         ) : (
                         <Bot width={20} />
                         )

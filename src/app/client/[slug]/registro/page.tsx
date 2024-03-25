@@ -1,8 +1,8 @@
-import { getDataClientBySlug, getDataClientOfUser } from "@/app/admin/clients/(crud)/actions"
+import { getDataClientBySlug } from "@/app/admin/clients/(crud)/actions"
 import { columns } from "@/app/admin/narvaez/narvaez-columns"
 import { DataTable } from "@/app/admin/narvaez/narvaez-table"
-import { getCurrentUser } from "@/lib/auth"
-import { getFullNarvaezsDAO, getNarvaezsDAO } from "@/services/narvaez-services"
+import { getClientsOfFunctionByName } from "@/services/function-services"
+import { getFullNarvaezsDAOByClient } from "@/services/narvaez-services"
 import { redirect } from "next/navigation"
 
 type Props= {
@@ -12,12 +12,19 @@ type Props= {
 }
 
 export default async function NarvaezPage({ params }: Props) {
+
   const slug = params.slug
+
+  const clientsOfNarvaez= await getClientsOfFunctionByName("registrarPedido")
   
-  if (slug !== "narvaez")
+  if (!clientsOfNarvaez.map(c => c.slug).includes(slug))
     return redirect(`/client/${slug}`)
 
-  const data= await getFullNarvaezsDAO()
+  const client= await getDataClientBySlug(slug)
+  if (!client)
+    return <div>Cliente no encontrado</div>
+
+  const data= await getFullNarvaezsDAOByClient(client.id)
 
   return (
     <div className="w-full">      

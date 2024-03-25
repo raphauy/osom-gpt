@@ -34,12 +34,6 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
           onChange={(event) => table.getColumn("idTrackeo")?.setFilterValue(event.target.value)}                
       />         
   
-      <Input className="max-w-xs" placeholder="idPropiedad filter..."
-          value={(table.getColumn("idPropiedad")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("idPropiedad")?.setFilterValue(event.target.value)}                
-      />
-      
-  
       <Input className="max-w-xs" placeholder="resumenPedido filter..."
           value={(table.getColumn("resumenPedido")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("resumenPedido")?.setFilterValue(event.target.value)}                

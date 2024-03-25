@@ -170,19 +170,19 @@ export default function Chat({ params }: Props) {
               key={i}
               className={clsx(
                 "flex w-full px-1 items-center justify-center border-b border-gray-200 py-4",
-                i % 2 === 0 ? "bg-gray-100" : "bg-white",
+                message.role === "user" ? "bg-gray-100" : "bg-white",
               )}
             >
               <div className="flex items-start w-full max-w-screen-md px-5 space-x-4 sm:px-0">
                 <div
                   className={clsx(
                     "p-1.5 text-white",
-                    message.role === "assistant" ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
+                    (message.role === "assistant" || message.role === "function") ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
                   )}
                 >
                 {message.role === "user" ? (
                 <User width={20} />
-                ) : message.role === "system" ? (
+                ) : message.role === "system" || message.role === "function" ? (
                 <Terminal width={20} />
                 ) : (
                 <Bot width={20} />

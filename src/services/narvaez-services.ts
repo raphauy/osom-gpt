@@ -49,23 +49,23 @@ export const narvaezSchema = z.object({
 export type NarvaezFormValues = z.infer<typeof narvaezSchema>
 
 
-export async function getNarvaezsDAO() {
-  const found = await prisma.narvaez.findMany({
-    orderBy: {
-      id: 'asc'
-    },
-  })
-  return found as NarvaezDAO[]
-}
+// export async function getNarvaezsDAO() {
+//   const found = await prisma.narvaez.findMany({
+//     orderBy: {
+//       id: 'asc'
+//     },
+//   })
+//   return found as NarvaezDAO[]
+// }
 
-export async function getNarvaezDAO(id: string) {
-  const found = await prisma.narvaez.findUnique({
-    where: {
-      id
-    },
-  })
-  return found as NarvaezDAO
-}
+// export async function getNarvaezDAO(id: string) {
+//   const found = await prisma.narvaez.findUnique({
+//     where: {
+//       id
+//     },
+//   })
+//   return found as NarvaezDAO
+// }
     
 export async function createOrUpdateNarvaez(data: NarvaezFormValues) {
   const found = await prisma.narvaez.findUnique({
@@ -75,19 +75,19 @@ export async function createOrUpdateNarvaez(data: NarvaezFormValues) {
   })
 
   if (found) {
-    // const resumenPedido= found.resumenPedido ? found.resumenPedido + "\n" + data.resumenPedido : data.resumenPedido
-    const updated = await prisma.narvaez.update({
-      where: {
-        id: found.id
-      },
-      data
-    })
-    return updated
+    return await getFullNarvaezDAO(found.id) as NarvaezDAO
+    // const updated = await prisma.narvaez.update({
+    //   where: {
+    //     id: found.id
+    //   },
+    //   data
+    // })
+    // return updated
   } else {
     const created = await prisma.narvaez.create({
       data
     })
-    return created
+    return await getFullNarvaezDAO(created.id) as NarvaezDAO
   }
 }
 
@@ -98,7 +98,16 @@ export async function updateNarvaez(id: string, data: NarvaezFormValues) {
     },
     data
   })
-  return updated
+
+  const res: NarvaezDAO = {
+    ...updated,
+    conversation: {
+      id: updated.conversationId,
+      phone: updated.telefono || "",
+      messagesCount: 0
+    }
+  }
+  return res
 }
 
 export async function deleteNarvaez(id: string) {
@@ -107,7 +116,17 @@ export async function deleteNarvaez(id: string) {
       id
     },
   })
-  return deleted
+
+  const res: NarvaezDAO = {
+    ...deleted,
+    conversation: {
+      id: deleted.conversationId,
+      phone: deleted.telefono || "",
+      messagesCount: 0
+    }
+  }
+
+  return res
 }
 
 
@@ -137,6 +156,40 @@ export async function getFullNarvaezsDAO() {
   })
   
   return res
+}
+
+export async function getFullNarvaezsDAOByClient(clientId: string) {
+  const found = await prisma.narvaez.findMany({
+    where: {
+      conversation: {
+        clientId
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    include: {
+      conversation: {
+        include: {
+          messages: true
+        }      
+      }
+    }
+  })
+
+  const res: NarvaezDAO[] = found.map((narvaez) => {
+    return {
+      ...narvaez,
+      conversation: {
+        id: narvaez.conversation.id,
+        phone: narvaez.conversation.phone,
+        messagesCount: narvaez.conversation.messages.length
+      }
+    }
+  })
+  
+  return res
+
 }
   
 export async function getFullNarvaezDAO(id: string) {

@@ -17,6 +17,12 @@ export async function POST(req: Request) {
 
   const { messages: origMessages, clientId } = await req.json()
   const messages= origMessages.filter((message: any) => message.role !== "system")
+  // replac role function by system
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].role === "function") {
+      messages[i].role = "system"
+    }
+  }
 
   const client= await getClient(clientId)
   if (!client) {
@@ -120,6 +126,14 @@ export async function POST(req: Request) {
         console.log(`Completion token count: ${completionTokens}`)
         const messageStored= await messageArrived(phone, completion, client.id, "assistant", "", promptTokens, completionTokens)
         if (messageStored) console.log("assistant message stored")
+      } else {
+        // console.log("function call")
+        // const completionObj= JSON.parse(completion)
+        // const { name, arguments: args }= completionObj.function_call
+//        const text= `Llamando a la función ${name} con los argumentos: ${args}`
+        // const text= `Función invocada.`
+        // const messageStored= await messageArrived(phone, text, client.id, "function", "", 0, 0)
+        // if (messageStored) console.log("function message stored")
       }
     },
   });

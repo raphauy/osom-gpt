@@ -123,6 +123,7 @@ export default function NovelOnClient({ document, initialContent, basePath }: Pr
             <NovelEditor
                 
                 defaultValue={jsonContent ? JSON.parse(jsonContent) : {}}
+                // @ts-ignore
                 onDebouncedUpdate={onUpdate}
                 disableLocalStorage
             />

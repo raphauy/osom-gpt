@@ -1,9 +1,8 @@
-import { getCurrentUser } from "@/lib/auth";
-import NotAlowedPage from "@/app/(auth)/unauthorized/page";
 import { getDataClientBySlug, getDataClientOfUser } from "@/app/admin/clients/(crud)/actions";
-import { getClientBySlug } from "@/services/clientService";
+import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import SideBar from "./side-bar";
+import { getClientsOfFunctionByName } from "@/services/function-services";
 
 type Props= {
   children: React.ReactNode
@@ -35,10 +34,13 @@ export default async function SlugLayout({ children, params }: Props) {
   if (slug !== client.slug)
     return redirect("/unauthorized?message=No tienes permisos para ver este cliente.")
 
+  const clientsOfNarvaez= await getClientsOfFunctionByName("registrarPedido")
+  const showRegistro= clientsOfNarvaez.map(c => c.slug).includes(slug)
+
   return (
     <>
       <div className="flex flex-grow w-full">
-        <SideBar slug={slug} />
+        <SideBar slug={slug} showRegistro={showRegistro}/>
         <div className="flex flex-col items-center flex-grow p-1">{children}</div>
       </div>
     </>

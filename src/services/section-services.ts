@@ -213,7 +213,7 @@ export async function getContext(clientId: string, phone: string, userInput: str
   const functioins= await getFunctionsOfClient(clientId)
   const functionsNames= functioins.map((f) => f.name)
 
-  let contextString= "Hablas correctamente el español, incluyendo el uso adecuado de tildes y eñes.\n"
+  let contextString= "Hablas correctamente el español, incluyendo el uso adecuado de tildes y eñes.\nPor favor, utiliza solo caracteres compatibles con UTF-8 y adecuados para el idioma español. Ten especial cuidado para no incluir este caracter: �\n"
   let sectionsIds: string[] = []
 
   if (functionsNames.includes("registrarPedido") || functionsNames.includes("reservarSummit") || functionsNames.includes("echoRegister")) {

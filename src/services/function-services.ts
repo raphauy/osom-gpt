@@ -1,6 +1,7 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
 import { ChatCompletionCreateParams } from "openai/resources/index.mjs"
+import { Client } from "@prisma/client"
 
 export type FunctionDAO = {
 	id: string
@@ -89,4 +90,19 @@ export async function getFunctionsDefinitions(clientId: string): Promise<ChatCom
   } catch (error) {
     throw new Error("Error al parsear las definiciones de las funciones.")    
   }
+}
+
+export async function getClientsOfFunctionByName(name: string): Promise<Client[]> {
+  const found = await prisma.clientFunction.findMany({
+    where: {
+      function: {
+        name
+      }
+    },
+    include: {
+      client: true
+    }
+  })
+
+  return found.map((f) => f.client)
 }

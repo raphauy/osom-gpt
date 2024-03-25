@@ -1,10 +1,11 @@
 import { decodeAndCorrectText } from "@/lib/utils";
-import { getValue } from "./config-services";
+import { getValue, setValue } from "./config-services";
 import { getDocumentDAO } from "./document-services";
 import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
 import { sendWapMessage } from "./osomService";
 import { getSectionOfDocument } from "./section-services";
 import { SummitFormValues, createSummit } from "./summit-services";
+import { getConversation, messageArrived } from "./conversationService";
 
 
 export async function notifyHuman(clientId: string){
@@ -108,14 +109,24 @@ export async function registrarPedido(clientId: string,
   }
   if (!created) return "Error al registrar el pedido, pregunta al usuario si quiere que tu reintentes"
 
-  let NARVAEZ_Respuesta= await getValue("NARVAEZ_Respuesta")
-  if (!NARVAEZ_Respuesta) {
-    console.log("NARVAEZ_Respuesta not found")    
-    NARVAEZ_Respuesta= "Pedido registrado, dile esto al usuario hablándole por su nombre lo siguiente: 'con la información que me pasaste un asesor te contactará a la brevedad'"
-  }
-  console.log("NARVAEZ_Respuesta: ", NARVAEZ_Respuesta)      
+  const conversation= await getConversation(conversationId)
+  if (!conversation) return "Error al obtener la conversación"
 
-  return NARVAEZ_Respuesta
+  const text= `Función registrarPedido invocada.`
+  const messageStored= await messageArrived(conversation?.phone, text, clientId, "function", "", 0, 0)
+  if (messageStored) console.log("function message stored")
+
+  const slug= conversation.client.slug
+  const key= `${slug.toUpperCase()}_Registro_Respuesta`
+  let Registro_Respuesta= await getValue(key)
+  if (!Registro_Respuesta) {
+    console.log(`${key} not found`)    
+    Registro_Respuesta= "Pedido registrado, dile esto al usuario hablándole por su nombre lo siguiente: 'con la información que me pasaste un asesor te contactará a la brevedad'"
+    await setValue(key, Registro_Respuesta)
+  }
+  console.log("Registro_Respuesta: ", Registro_Respuesta)      
+
+  return Registro_Respuesta
 }
 
 // nombreReserva: string | undefined
