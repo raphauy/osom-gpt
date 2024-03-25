@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   const { messages: origMessages, clientId } = await req.json()
   const messages= origMessages.filter((message: any) => message.role !== "system")
-  // replac role function by system
+  // replace role function by system
   for (let i = 0; i < messages.length; i++) {
     if (messages[i].role === "function") {
       messages[i].role = "system"
