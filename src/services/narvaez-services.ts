@@ -75,14 +75,14 @@ export async function createOrUpdateNarvaez(data: NarvaezFormValues) {
   })
 
   if (found) {
-    return await getFullNarvaezDAO(found.id) as NarvaezDAO
-    // const updated = await prisma.narvaez.update({
-    //   where: {
-    //     id: found.id
-    //   },
-    //   data
-    // })
-    // return updated
+    //return await getFullNarvaezDAO(found.id) as NarvaezDAO
+    const updated = await prisma.narvaez.update({
+      where: {
+        id: found.id
+      },
+      data
+    })
+    return updated
   } else {
     const created = await prisma.narvaez.create({
       data
