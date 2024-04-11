@@ -127,7 +127,11 @@ export function decodeAndCorrectText(str: string): string {
     'Ger�nimo': 'Gerónimo',
     'Germ�n': 'Germán',
     'Gast�n': 'Gastón',
-    'Est�vez': 'Estévez',    
+    'Est�vez': 'Estévez',
+    'M�nimo': 'Mínimo',
+    'M�ximo': 'Máximo',
+    'M�nica': 'Mónica',
+    'M�dico': 'Médico',
   }
   
   Object.keys(additionalReplacements).forEach((key) => {

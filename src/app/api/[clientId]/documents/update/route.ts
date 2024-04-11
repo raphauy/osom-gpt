@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { DocumentResponse } from "../route";
 import { getClient } from "@/services/clientService";
 import { getSectionCountOfDocument, getSectionOfDocument } from "@/services/section-services";
+import { revalidatePath } from "next/cache";
 
 
 export async function POST(request: Request, { params }: { params: { clientId: string } }) {
@@ -61,6 +62,8 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             clientName: client?.name || "",
             sectioinsCount
         }
+
+        revalidatePath("/client/[slug]/documents", 'page')
         
         return NextResponse.json( { "data": documentResponse }, { status: 200 })
 
