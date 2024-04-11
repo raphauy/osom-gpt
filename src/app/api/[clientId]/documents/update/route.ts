@@ -63,7 +63,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             sectioinsCount
         }
 
-        revalidatePath("/client/[slug]/documents", 'page')
+        revalidatePath("/client/[slug]/", 'page')
         
         return NextResponse.json( { "data": documentResponse }, { status: 200 })
 
