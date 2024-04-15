@@ -132,6 +132,9 @@ export function decodeAndCorrectText(str: string): string {
     'M�ximo': 'Máximo',
     'M�nica': 'Mónica',
     'M�dico': 'Médico',
+    'ni�os': 'niños',
+    'Espa�a': 'España',
+    'calefacci�o': 'calefacción',
   }
   
   Object.keys(additionalReplacements).forEach((key) => {

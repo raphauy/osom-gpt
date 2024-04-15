@@ -215,7 +215,7 @@ export async function processMessage(id: string) {
     return
   }
   
-  const assistantResponse= completionResponse.assistantResponse
+  let assistantResponse= completionResponse.assistantResponse
   const gptData= null
   const notificarAgente= completionResponse.agentes
   const promptTokens= completionResponse.promptTokens
@@ -223,16 +223,22 @@ export async function processMessage(id: string) {
 
   if (assistantResponse) {
     const gptDataString= JSON.stringify(gptData)
+    if (assistantResponse.includes("notifyHuman")) {
+      assistantResponse= "Un agente se comunicará contigo a la brevedad"
+    }
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
+
+    console.log("notificarAgente: " + notificarAgente)    
+    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   }
 
-  if (assistantResponse) {
-    console.log("notificarAgente: " + notificarAgente)
+  // if (assistantResponse) {
+  //   console.log("notificarAgente: " + notificarAgente)
     
-    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
-  } else {
-    console.log("assistantResponse is null")
-  }   
+  //   sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+  // } else {
+  //   console.log("assistantResponse is null")
+  // }   
   
   
 }

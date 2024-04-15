@@ -45,7 +45,7 @@ export const columns: ColumnDef<DocumentDAO>[] = [
     )},
     cell: ({ row }) => {
       const data= row.original
-      const dateStr= data.updatedAt && format(new Date(data.updatedAt), "dd MMM")
+      const dateStr= data.updatedAt && format(new Date(data.updatedAt), "dd MMM HH:mm")
       return (        
         <div className="flex flex-col justify-between h-24">
           <div className="w-40 text-base font-bold">
@@ -56,7 +56,7 @@ export const columns: ColumnDef<DocumentDAO>[] = [
               <FileStack /><p>{data.sectionsCount === 1 ? "1 sección" : data.sectionsCount > 1 ? data.sectionsCount + " secciones" : ""}</p>
             </div>
           </div>
-          <p>Actualizado: {dateStr}</p>
+          <p>Act.: {dateStr}</p>
         </div>
       )
     }
