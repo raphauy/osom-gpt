@@ -226,6 +226,8 @@ export async function processMessage(id: string) {
     if (assistantResponse.includes("notifyHuman")) {
       assistantResponse= "Un agente se comunicará contigo a la brevedad"
     }
+    // replace all characters ` with '
+    assistantResponse= assistantResponse.replace(/`/g, "'")
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
 
     console.log("notificarAgente: " + notificarAgente)    
@@ -419,4 +421,17 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
   }
   
   return res
+}
+
+export async function getMessagesCountOfActiveConversation(phone: string, clientId: string) {
+  const activeConversation= await getActiveConversation(phone, clientId)
+  if (!activeConversation) return 0
+
+  const messages= await prisma.message.count({
+    where: {
+      conversationId: activeConversation.id
+    }
+  })
+
+  return messages
 }
