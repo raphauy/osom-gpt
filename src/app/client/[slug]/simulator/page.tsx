@@ -26,8 +26,6 @@ type Props= {
 
 export default function Chat({ params }: Props) {
   const slug= params.slug
-  console.log(slug)
-  
   
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
