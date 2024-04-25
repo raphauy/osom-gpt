@@ -7,6 +7,13 @@ import { getSectionOfDocument } from "./section-services";
 import { SummitFormValues, createSummit } from "./summit-services";
 import { getConversation, messageArrived } from "./conversationService";
 
+export type CompletionInitResponse = {
+  assistantResponse: string | null
+  promptTokens: number
+  completionTokens: number
+  agentes: boolean  
+}
+
 
 export async function notifyHuman(clientId: string){
   console.log("notifyHuman")
@@ -181,7 +188,7 @@ export async function reservarSummit(clientId: string, conversationId: string, n
     for (const phone of celulares) {
       console.log("enviar mensaje a: ", phone)
       if (resumenConversacion) {
-        const textoMensaje= getTextoMensaje(data)
+        const textoMensaje= getTextoMensajeSummit(data)
         console.log("textoMensaje:")
         console.log(textoMensaje)
         
@@ -193,26 +200,37 @@ export async function reservarSummit(clientId: string, conversationId: string, n
   return SUMMIT_Respuesta
 }
 
-export async function echoRegister(clientId: string, conversationId: string, texto: string | undefined){
+function getTextoMensajeSummit(data: SummitFormValues): string {
+  const textoMensaje= `Nombre: ${data.nombreReserva}
+Cumpleañero: ${data.nombreCumpleanero}
+Cantidad de invitados: ${data.cantidadInvitados}
+Fecha de la reserva: ${data.fechaReserva}
+Email: ${data.email}
+Resumen: ${data.resumenConversacion}
+`
+  return textoMensaje
+}
+
+export async function echoRegister(clientId: string, conversationId: string, text: string | undefined){
   console.log("echoRegister")
   console.log(`\tconversationId: ${conversationId}`)
-  console.log(`\ttexto: ${texto}`)
+  console.log(`\ttexto: ${text}`)
 
-  if (texto) {
+  if (text) {
     const data: SummitFormValues = {
       conversationId,
-      resumenConversacion: texto,
+      resumenConversacion: text,
     }
     let created= null
 
     try {
       created= await createSummit(data)    
-      return "Echo registrado"
+      return "Echo registrado. Dile al usuario que su texto ya está registrado en el sistema"
     } catch (error) {
-      return "Error al reservar, pregunta al usuario si quiere que tu reintentes"
+      return "Error al registrar, pregunta al usuario si quiere que tu reintentes"
     }
   
-  } else console.log("texto not found")
+  } else console.log("text not found")
 
   return "Mensaje enviado"
 
@@ -243,20 +261,80 @@ export async function completarFrase(clientId: string, conversationId: string, t
 
 }
 
-export async function runFunction(name: string, args: any, clientId: string){
-  console.log("raw args.texto: ", args.texto)
+// export async function runFunction(name: string, args: any, clientId: string){
+//   console.log("raw args.texto: ", args.texto)
   
+//   switch (name) {
+//     case "getSection":
+//       return getSection(args.docId, args.secuence)
+//     case "getDocument":
+//       return getDocument(args.docId)
+//     case "notifyHuman":
+//       return notifyHuman(clientId)
+//     case "getDateOfNow":
+//       return getDateOfNow()
+//     case "registrarPedido":
+//       return registrarPedido(clientId, 
+//         args.conversationId, 
+//         args.clasificacion, 
+//         decodeAndCorrectText(args.consulta),
+//         decodeAndCorrectText(args.nombre),
+//         args.email, 
+//         decodeAndCorrectText(args.horarioContacto),
+//         args.idTrackeo, 
+//         args.urlPropiedad, 
+//         decodeAndCorrectText(args.consultaAdicional),
+//         decodeAndCorrectText(args.resumenConversacion),
+//       )
+//     case "reservarSummit":
+//       return reservarSummit(clientId, 
+//         args.conversationId, 
+//         decodeAndCorrectText(args.nombreReserva),
+//         decodeAndCorrectText(args.nombreCumpleanero),
+//         parseInt(args.cantidadInvitados),
+//         decodeAndCorrectText(args.fechaReserva),
+//         args.email,
+//         decodeAndCorrectText(args.resumenConversacion),
+//       )
+//     case "echoRegister":
+//       return echoRegister(clientId, 
+//         args.conversationId, 
+//         decodeAndCorrectText(args.texto)
+//       )
+//     case "completarFrase":
+//       return completarFrase(clientId, 
+//         args.conversationId, 
+//         decodeAndCorrectText(args.texto)
+//       )
+//     default:
+//       return null
+//   }
+// }
+
+
+export async function processFunctionCall(clientId: string, name: string, args: any) {
+  console.log("function_call: ", name, args)
+
+  let content= null
+
   switch (name) {
-    case "getSection":
-      return getSection(args.docId, args.secuence)
-    case "getDocument":
-      return getDocument(args.docId)
-    case "notifyHuman":
-      return notifyHuman(clientId)
     case "getDateOfNow":
-      return getDateOfNow()
+      content = await getDateOfNow()
+      break
+
+    case "notifyHuman":
+      content = await notifyHuman(clientId)
+      break
+
+    case "getDocument":
+      content= await getDocument(args.docId)
+      break
+
+    case "getSection":
+      content= await getSection(args.docId, args.secuence)
+      break
     case "registrarPedido":
-      return registrarPedido(clientId, 
+      content= await registrarPedido(clientId, 
         args.conversationId, 
         args.clasificacion, 
         decodeAndCorrectText(args.consulta),
@@ -268,40 +346,57 @@ export async function runFunction(name: string, args: any, clientId: string){
         decodeAndCorrectText(args.consultaAdicional),
         decodeAndCorrectText(args.resumenConversacion),
       )
+      break
     case "reservarSummit":
-      return reservarSummit(clientId, 
-        args.conversationId, 
+      content= await reservarSummit(clientId,
+        args.conversationId,
         decodeAndCorrectText(args.nombreReserva),
         decodeAndCorrectText(args.nombreCumpleanero),
         parseInt(args.cantidadInvitados),
         decodeAndCorrectText(args.fechaReserva),
-        args.email,
+        decodeAndCorrectText(args.email),
         decodeAndCorrectText(args.resumenConversacion),
       )
+      break
     case "echoRegister":
-      return echoRegister(clientId, 
+      content= echoRegister(clientId, 
         args.conversationId, 
-        decodeAndCorrectText(args.texto)
+        decodeAndCorrectText(args.text)
       )
+      break
     case "completarFrase":
-      return completarFrase(clientId, 
+      content= completarFrase(clientId, 
         args.conversationId, 
-        decodeAndCorrectText(args.texto)
+        decodeAndCorrectText(args.texto)        
       )
+      break
+  
     default:
-      return null
+      break
+  }
+
+  if (content !== null) {      
+    return JSON.stringify(content)
+  } else {
+    return "function call not found"
   }
 }
 
-
-function getTextoMensaje(data: SummitFormValues): string {
-  const textoMensaje= `Nombre: ${data.nombreReserva}
-Cumpleañero: ${data.nombreCumpleanero}
-Cantidad de invitados: ${data.cantidadInvitados}
-Fecha de la reserva: ${data.fechaReserva}
-Email: ${data.email}
-Resumen: ${data.resumenConversacion}
-`
-  return textoMensaje
+export function getAgentes(name: string): boolean {
+let res= false
+switch (name) {
+  case "notifyHuman":
+    res= true
+    break
+  case "registrarPedido":
+    res= true
+    break
+  case "reservarSummit":
+    res= true
+    break
+  default:
+    break
+}
+return res
 }
 

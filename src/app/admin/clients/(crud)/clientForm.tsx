@@ -13,6 +13,9 @@ import { toast } from "@/components/ui/use-toast"
 import { Client } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { getDataClient } from "./actions"
+import { ModelDAO } from "@/services/model-services"
+import { getModelsDAOAction } from "../../models/model-actions"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const formSchema = z.object({
   name: z.string()
@@ -20,12 +23,18 @@ const formSchema = z.object({
     .max(60,{ message: "Title must not be longer than 60 characters." }),
   description: z.string().optional(),
   url: z.string().optional(),
+  modelId: z.string(),
 })
 
 export type ClientFormValues = z.infer<typeof formSchema>
 
 // This can come from your database or API.
-const defaultValues: Partial<ClientFormValues> = {}
+const defaultValues: Partial<ClientFormValues> = {
+  modelId: "",
+  name: "",
+  description: "",
+  url: "",
+}
 
 interface Props{
   id?: string
@@ -40,7 +49,20 @@ export function ClientForm({ id, create, update, closeDialog }: Props) {
     defaultValues,
     mode: "onChange",
   })
+  const [models, setModels] = useState<ModelDAO[]>([])
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    getModelsDAOAction()
+    .then((data) => {
+      setModels(data)
+    })
+    .finally(() => {
+      setLoading(false)
+    })
+
+  }, [])
 
   async function onSubmit(data: ClientFormValues) {
 
@@ -66,6 +88,7 @@ export function ClientForm({ id, create, update, closeDialog }: Props) {
         if (!data) return
         form.setValue("name", data.nombre)
         form.setValue("description", data.descripcion)
+        data.modelId && form.setValue("modelId", data.modelId)
         data.url && form.setValue("url", data.url)
       })
     }  
@@ -124,6 +147,31 @@ export function ClientForm({ id, create, update, closeDialog }: Props) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="modelId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Modelo (LLM):</FormLabel>
+                <Select onValueChange={(value) => field.onChange(value)} value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un Modelo" /> 
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {models.map((model => ( 
+                      <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>  
+                    )))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           
           <div className="flex justify-end">
             <Button onClick={() => closeDialog()} type="button" variant="secondary" className="w-32">Cancelar</Button>

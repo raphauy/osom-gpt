@@ -14,6 +14,7 @@ export type DataClient = {
     slug: string
     descripcion: string
     url: string
+    modelId: string | null
     cantPropiedades: number
     rentPercentage?: string
     salePercentage?: string
@@ -36,6 +37,7 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         slug: client.slug,
         descripcion: client.description || '',
         url: client.url || '',
+        modelId: client.modelId,
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
@@ -61,6 +63,7 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         slug: client.slug,
         descripcion: client.description || '',
         url: client.url || '',
+        modelId: client.modelId,
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
@@ -83,6 +86,7 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         slug: client.slug,
         descripcion: client.description || '',
         url: client.url || '',
+        modelId: client.modelId,
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
@@ -104,6 +108,7 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         slug: client.slug,
         descripcion: client.description || '',
         url: client.url || '',
+        modelId: client.modelId,
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
@@ -131,6 +136,7 @@ export async function getDataClients() {
                 slug: client.slug,
                 descripcion: client.description || "",
                 url: client.url || "",
+                modelId: client.modelId,
                 cantPropiedades: propertiesCount,
                 rentPercentage: "0",
                 salePercentage: "0",
@@ -153,6 +159,7 @@ export async function create(data: ClientFormValues): Promise<Client | null> {
     console.log(created);
 
     revalidatePath(`/admin`)
+    revalidatePath(`/client/[slug]`, "layout")
 
     return created
 }

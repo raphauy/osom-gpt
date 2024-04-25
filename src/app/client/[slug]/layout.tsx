@@ -3,6 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import SideBar from "./side-bar";
 import { getClientsOfFunctionByName } from "@/services/function-services";
+import { getFullModelDAO, getFullModelsDAO } from "@/services/model-services";
+import { ModelSelector, SelectorData } from "@/components/header/model-selector";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 type Props= {
   children: React.ReactNode
@@ -37,11 +40,20 @@ export default async function SlugLayout({ children, params }: Props) {
   const clientsOfNarvaez= await getClientsOfFunctionByName("registrarPedido")
   const showRegistro= clientsOfNarvaez.map(c => c.slug).includes(slug)
 
+  const model= await getFullModelDAO(client.modelId as string)
+  const provider= model.provider
+
+  const simStreaming= provider.streaming && model.streaming
+
   return (
     <>
       <div className="flex flex-grow w-full">
-        <SideBar slug={slug} showRegistro={showRegistro}/>
-        <div className="flex flex-col items-center flex-grow p-1">{children}</div>
+        <SideBar slug={slug} showRegistro={showRegistro} simStreaming={simStreaming} />
+        <div className="flex flex-col items-center flex-grow p-1">
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+        </div>
       </div>
     </>
   )

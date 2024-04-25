@@ -8,8 +8,9 @@ import { usePathname } from "next/navigation";
 interface Props {
   slug: string
   showRegistro?: boolean
+  simStreaming?: boolean
 }
-export default function SideBar({ slug, showRegistro }: Props) {
+export default function SideBar({ slug, showRegistro, simStreaming }: Props) {
 
   const data= [
     {

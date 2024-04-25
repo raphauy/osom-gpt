@@ -1,26 +1,31 @@
 import OpenAI from "openai";
 import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { getDateOfNow, getDocument, getSection, notifyHuman, registrarPedido, reservarSummit } from "./functions";
+import { CompletionInitResponse, getAgentes, getDateOfNow, getDocument, getSection, notifyHuman, processFunctionCall, registrarPedido, reservarSummit } from "./functions";
 import { decodeAndCorrectText } from "@/lib/utils";
+import { Client } from "@prisma/client";
+import { getFullModelDAO } from "./model-services";
 
-type CompletionInitResponse = {
-  assistantResponse: string | null
-  promptTokens: number
-  completionTokens: number
-  agentes: boolean  
-}
 
-export async function completionInit(clientId: string, functions: ChatCompletionCreateParams.Function[], messages: ChatCompletionMessageParam[]): Promise<CompletionInitResponse | null>{
+export async function completionInit(client: Client, functions: ChatCompletionCreateParams.Function[], messages: ChatCompletionMessageParam[], modelName?: string): Promise<CompletionInitResponse | null> {
+
+  if (!client.modelId) throw new Error("Client modelId not found")
+
+  const model= await getFullModelDAO(client.modelId)
+  const provider= model.provider
+
+  modelName= modelName || model.name
+  
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: provider.apiKey,
+    baseURL: provider.baseUrl,
   })
 
   let completionResponse= null
   let agentes= false
 
   let baseArgs = {
-    model: "gpt-4-1106-preview",
-    temperature: 0,
+    model: modelName,
+    temperature: 0.1,
     messages
   }  
 
@@ -48,7 +53,7 @@ export async function completionInit(clientId: string, functions: ChatCompletion
     const name= functionCall.name
     let args = JSON.parse(functionCall.arguments || "{}")      
 
-    const content= await processFunctionCall(clientId, name, args)
+    const content= await processFunctionCall(client.id, name, args)
 
     messages.push(initialResponse.choices[0].message)
     messages.push({
@@ -58,7 +63,7 @@ export async function completionInit(clientId: string, functions: ChatCompletion
     })
     agentes= getAgentes(name)
 
-    const stepResponse = await completionInit(clientId, functions, messages)
+    const stepResponse = await completionInit(client, functions, messages, modelName)
     if (!stepResponse) return null
 
     return {
@@ -76,80 +81,4 @@ export async function completionInit(clientId: string, functions: ChatCompletion
   }
 }
 
-
-export async function processFunctionCall(clientId: string, name: string, argumentObj: any) {
-    console.log("function_call: ", name, argumentObj)
-
-    let content= null
-
-    switch (name) {
-      case "getDateOfNow":
-        content = await getDateOfNow()
-        break
-
-      case "notifyHuman":
-        content = await notifyHuman(clientId)
-        break
-
-      case "getDocument":
-        content= await getDocument(argumentObj.docId)
-        break
-
-      case "getSection":
-        content= await getSection(argumentObj.docId, argumentObj.secuence)
-        break
-      case "registrarPedido":
-        content= await registrarPedido(clientId, 
-          argumentObj.conversationId, 
-          argumentObj.clasificacion, 
-          decodeAndCorrectText(argumentObj.consulta),
-          decodeAndCorrectText(argumentObj.nombre),
-          argumentObj.email, 
-          decodeAndCorrectText(argumentObj.horarioContacto),
-          argumentObj.idTrackeo, 
-          argumentObj.urlPropiedad, 
-          decodeAndCorrectText(argumentObj.consultaAdicional),
-          decodeAndCorrectText(argumentObj.resumenConversacion),
-        )
-        break
-      case "reservarSummit":
-        content= await reservarSummit(clientId,
-          argumentObj.conversationId,
-          decodeAndCorrectText(argumentObj.nombreReserva),
-          decodeAndCorrectText(argumentObj.nombreCumpleanero),
-          parseInt(argumentObj.cantidadInvitados),
-          decodeAndCorrectText(argumentObj.fechaReserva),
-          decodeAndCorrectText(argumentObj.email),
-          decodeAndCorrectText(argumentObj.resumenConversacion),
-        )
-        break
-
-      default:
-        break
-    }
-
-    if (content !== null) {      
-      return JSON.stringify(content)
-    } else {
-      return "function call not found"
-    }
-}
-
-function getAgentes(name: string): boolean {
-  let res= false
-  switch (name) {
-    case "notifyHuman":
-      res= true
-      break
-    case "registrarPedido":
-      res= true
-      break
-    case "reservarSummit":
-      res= true
-      break
-    default:
-      break
-  }
-  return res
-}
 

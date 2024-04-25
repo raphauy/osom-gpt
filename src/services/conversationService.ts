@@ -6,7 +6,11 @@ import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompl
 import { getFunctionsDefinitions } from "./function-services";
 import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
+import { googleCompletionInit } from "./google-function-call-services";
+import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
+import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
 import { completionInit } from "./function-call-services";
+import { groqCompletionInit } from "./groq-function-call-services";
 
 
 export default async function getConversations() {
@@ -146,6 +150,11 @@ export async function getLastConversation(slug: string) {
 // find an active conversation or create a new one to connect the messages
 export async function messageArrived(phone: string, text: string, clientId: string, role: string, gptData: string, promptTokens?: number, completionTokens?: number) {
 
+  if (!clientId) throw new Error("clientId is required")
+
+  console.log("phone: ", phone)
+  console.log("clientId: ", clientId)  
+
   const activeConversation= await getActiveConversation(phone, clientId)
   if (activeConversation) {
     const message= await createMessage(activeConversation.id, role, text, gptData, promptTokens, completionTokens)
@@ -163,7 +172,7 @@ export async function messageArrived(phone: string, text: string, clientId: stri
 }
 
 
-export async function processMessage(id: string) {
+export async function processMessage(id: string, modelName?: string) {
   const message= await prisma.message.findUnique({
     where: {
       id
@@ -171,7 +180,11 @@ export async function processMessage(id: string) {
     include: {
       conversation: {
         include: {
-          messages: true,
+          messages: {
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
           client: true
         }
       }
@@ -209,7 +222,24 @@ export async function processMessage(id: string) {
   //TODO
   const functions= await getFunctionsDefinitions(client.id)
 
-  const completionResponse= await completionInit(client.id,functions, messages)
+//  const completionResponse= await completionInit(client,functions, messages as ChatCompletion.Choice.Message[], modelName)
+  if (!client.modelId) throw new Error("Client modelId not found")
+
+  let completionResponse= null
+
+  let model= modelName && await getFullModelDAOByName(modelName)
+  if (!model) {
+    model= await getFullModelDAO(client.modelId)
+  }
+  const providerName= model.providerName
+
+  if (providerName === "OpenAI") {
+    completionResponse= await completionInit(client,functions, messages, modelName)
+  } else if (providerName === "Google") {
+    completionResponse= await googleCompletionInit(client,functions, messages, systemMessage.content, modelName)
+  } else if (providerName === "Groq") {
+    completionResponse= await groqCompletionInit(client,functions, messages as ChatCompletion.Choice.Message[], modelName)
+  }
   if (completionResponse === null) {
     console.log("completionInit returned null")
     return

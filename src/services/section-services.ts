@@ -161,7 +161,7 @@ export async function processSections(allText: string, documentId: string) {
 
 async function embedAndSave(text: string, sectionId: string) {
   const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPENAI_API_KEY,
+    openAIApiKey: process.env.OPENAI_API_KEY_FOR_EMBEDDINGS,
     verbose: true,
     modelName: "text-embedding-3-large",    
   })
@@ -186,7 +186,7 @@ export type SimilaritySearchResult = {
     console.log(`Searching for similar sections for: ${text} and clientId: ${clientId}`)
 
     const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY,
+      openAIApiKey: process.env.OPENAI_API_KEY_FOR_EMBEDDINGS,
       verbose: true,
       modelName: "text-embedding-3-large",
     });
@@ -244,7 +244,8 @@ export async function getContext(clientId: string, phone: string, userInput: str
 `
     })
 
-    const similarity= await similaritySearch(clientId, userInput, 3)
+//    const similarity= await similaritySearch(clientId, userInput, 3)
+    const similarity: SimilaritySearchResult[] = []
 
     if (similarity.length > 0) {
       contextString+= "\n**** Sections ****\n"

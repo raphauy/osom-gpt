@@ -48,24 +48,9 @@ export function getFormat(date: Date): string {
 }
 
 
-// export function preprocessTextForJsonParse(text: string | undefined): string {
-//   // Verifica si el texto es undefined o no es un string.
-//   if (typeof text !== 'string') {
-//     console.error('preprocessTextForJsonParse was called with a non-string argument:', text);
-//     return ''; // Retorna un string vacío o podrías manejar este caso de otra manera.
-//   }
-  
-//   // Reemplaza secuencias de escape Unicode por sus caracteres representativos
-//   const unicodeEscapeRegex = /\\u([\d\w]{4})/gi;
-//   return text.replace(unicodeEscapeRegex, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
-// }
-
-// export function decodeUnicode(str: string): string {
-//   // Reemplaza las secuencias de escape Unicode por el carácter que representan
-//   return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
-//     return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-//   });
-// }
+export function formatCurrency(value: number): string {
+  return Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(value)  
+}
 
 export function decodeAndCorrectText(str: string): string {
     // Verifica si el input es undefined o null y devuelve una cadena vacía
