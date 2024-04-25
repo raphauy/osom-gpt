@@ -3,7 +3,7 @@ import { removeSectionTexts } from "@/lib/utils";
 import { getClient } from "@/services/clientService";
 import { getSystemMessage, messageArrived } from "@/services/conversationService";
 import { getFunctionsDefinitions } from "@/services/function-services";
-import { getFullModelDAO } from "@/services/model-services";
+import { getFullModelDAO, getFullModelDAOByName } from "@/services/model-services";
 import { getContext, setSectionsToMessage } from "@/services/section-services";
 import { GoogleGenerativeAIStream, OpenAIStream, StreamingTextResponse } from "ai";
 import { OpenAI } from "openai";
@@ -14,7 +14,7 @@ import { processFunctionCall } from "@/services/functions";
 
 export async function POST(req: Request) {
 
-  const { messages: origMessages, clientId } = await req.json()
+  const { messages: origMessages, clientId, modelName } = await req.json()
   const messages= origMessages.filter((message: any) => message.role !== "system")
   // replace role function by system
   for (let i = 0; i < messages.length; i++) {
@@ -40,9 +40,12 @@ export async function POST(req: Request) {
 
   if (!client.modelId) return NextResponse.json({ message: "Este cliente no tiene modelo asignado" }, { status: 502 })
 
-  const model= await getFullModelDAO(client.modelId)
+  let model= modelName && await getFullModelDAOByName(modelName)
+  if (!model) {
+    model= await getFullModelDAO(client.modelId)
+  }
   const provider= model.provider
-
+  
   if (!provider.streaming || !model.streaming) return NextResponse.json({ error: "Proveedor o modelo no soporta streaming" }, { status: 502 })
 
   const contextResponse= await getContext(clientId, phone, input)

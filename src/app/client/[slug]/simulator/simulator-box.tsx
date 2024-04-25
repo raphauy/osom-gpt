@@ -43,6 +43,7 @@ export default function SimulatorBox() {
   const { messages, setMessages, input, setInput, handleSubmit, isLoading, error } = useChat({
     body: {
       clientId: client?.id,
+      modelName: model
     },
     onFinish: () => {onFinishActions()}
   })
