@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { Check, ChevronsRight, ChevronsUpDown, LayoutDashboard, PlusCircle, Search } from "lucide-react"
+import { Ban, Check, ChevronsRight, ChevronsUpDown, LayoutDashboard, PlusCircle, Search } from "lucide-react"
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Separator } from "../ui/separator"
 import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 
 export type SelectorData={
     slug: string,
@@ -102,6 +103,7 @@ export function ModelSelector({ selectors }: Props) {
                     }}
                   >
                     <Check className={cn("mr-2 h-4 w-4", value.toLowerCase() === item.name.toLowerCase() ? "opacity-100" : "opacity-0")}/>
+                    <Image src={getImage(item.name)} alt={item.name} width={20} height={20} className="w-4 h-4 ml-2 mr-2" />
                     {item.name}
                   </CommandItem>
               )})}
@@ -122,3 +124,15 @@ export function ModelSelector({ selectors }: Props) {
   )
 }
   
+function getImage(name: string) {
+  if (name.includes("gpt")) 
+    return "/openai.svg"
+  else if (name.includes("llama"))
+    return "/meta.svg"
+  else if (name.includes("gemini"))
+    return "/google.svg"
+  else if (name.includes("mixtral"))
+    return "/mistral.svg"
+  else return "/openai.svg"
+  
+}

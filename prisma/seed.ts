@@ -8,7 +8,7 @@ async function main() {
   // const adminUser= await seedAdmin(prisma)
   // console.log({ adminUser })
   
-  // await seedModels(prisma)
+  //await seedModels(prisma)
 
   console.log("Seeding complete")
 }
