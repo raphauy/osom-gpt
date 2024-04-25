@@ -28,6 +28,7 @@ export function ModelForm({ id, closeDialog }: Props) {
       inputPrice: "0",
       outputPrice: "0",
       streaming: false,
+      contextSize: "0",
     },
     mode: "onChange",
   })
@@ -68,6 +69,7 @@ export function ModelForm({ id, closeDialog }: Props) {
           form.setValue("outputPrice", data.outputPrice.toString())
           form.setValue("providerId", data.providerId)
           form.setValue("streaming", data.streaming)
+          form.setValue("contextSize", data.contextSize.toString())
         }
         Object.keys(form.getValues()).forEach((key: any) => {
           if (form.getValues(key) === null) {
@@ -149,7 +151,21 @@ export function ModelForm({ id, closeDialog }: Props) {
               </FormItem>
             )}
           />
-          
+
+          <FormField
+            control={form.control}
+            name="contextSize"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ventana de contexto en tokens:</FormLabel>
+                <FormControl>
+                  <Input placeholder="ej: 32000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="streaming"

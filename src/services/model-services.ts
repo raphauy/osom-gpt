@@ -9,6 +9,7 @@ export type ModelDAO = {
   outputPrice: number
 	providerName: string
   streaming: boolean
+  contextSize: number
 	createdAt: Date
 	updatedAt: Date
 	provider: ProviderDAO
@@ -19,7 +20,8 @@ export const modelSchema = z.object({
 	name: z.string().min(1, "name is required."),
 	inputPrice: z.string().refine((val) => !isNaN(Number(val)), { message: "(debe ser un número)" }).optional(),
   outputPrice: z.string().refine((val) => !isNaN(Number(val)), { message: "(debe ser un número)" }).optional(),
-  streaming: z.boolean().default(false),	
+  streaming: z.boolean().default(false),
+  contextSize: z.string().refine((val) => !isNaN(Number(val)), { message: "(debe ser un número)" }).optional(),
 	providerId: z.string().min(1, "providerId is required."),
 })
 
@@ -64,12 +66,14 @@ export async function createModel(data: ModelFormValues) {
   const providerName= provider.name
   const inputPrice = data.inputPrice ? Number(data.inputPrice) : 0
   const outputPrice = data.outputPrice ? Number(data.outputPrice) : 0
+  const contextSize = data.contextSize ? Number(data.contextSize) : 0
   const created = await prisma.model.create({
     data: {
       ...data,
       providerName,
       inputPrice,
-      outputPrice
+      outputPrice,
+      contextSize
     }
   })
   return created
@@ -81,6 +85,7 @@ export async function updateModel(id: string, data: ModelFormValues) {
   const providerName= provider.name
   const inputPrice = data.inputPrice ? Number(data.inputPrice) : 0
   const outputPrice = data.outputPrice ? Number(data.outputPrice) : 0
+  const contextSize = data.contextSize ? Number(data.contextSize) : 0
   const updated = await prisma.model.update({
     where: {
       id
@@ -89,7 +94,8 @@ export async function updateModel(id: string, data: ModelFormValues) {
       ...data,
       providerName,
       inputPrice,
-      outputPrice
+      outputPrice,
+      contextSize
     }
   })
   return updated

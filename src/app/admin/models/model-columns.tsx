@@ -68,6 +68,21 @@ export const columns: ColumnDef<ModelDAO>[] = [
   },
 
   {
+    accessorKey: "contextSize",
+    header: ({ column }) => {
+        return (
+          <Button variant="ghost" className="pl-0 dark:text-white"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Contexto (tokens)
+          </Button>
+    )},
+    cell: ({ row }) => {
+      const data= row.original
+      return <div className="pr-10 text-right">{data.contextSize}</div>
+    },  
+  },
+
+  {
     accessorKey: "streaming",
     header: ({ column }) => {
         return (

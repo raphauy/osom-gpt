@@ -1,6 +1,4 @@
 import { PrismaClient } from "@prisma/client"
-import { seedAdmin } from "./seed-admin"
-import { seedModels } from "./seed-models"
 
 const prisma = new PrismaClient()
 
@@ -10,7 +8,7 @@ async function main() {
   // const adminUser= await seedAdmin(prisma)
   // console.log({ adminUser })
   
-  await seedModels(prisma)
+  // await seedModels(prisma)
 
   console.log("Seeding complete")
 }
