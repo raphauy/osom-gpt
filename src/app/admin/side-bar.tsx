@@ -36,14 +36,14 @@ export default function SideBar() {
     {
       href: "divider", icon: User
     },
-    {
-      href: `/admin/chat`,
-      icon: MessageCircle,
-      text: "Simulador"
-    },
-    {
-      href: "divider", icon: User
-    },
+    // {
+    //   href: `/admin/chat`,
+    //   icon: MessageCircle,
+    //   text: "Simulador"
+    // },
+    // {
+    //   href: "divider", icon: User
+    // },
     {
       href: `/admin/billing`,
       icon: Receipt,
