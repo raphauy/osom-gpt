@@ -54,7 +54,8 @@ export async function POST(req: Request) {
 
   // Inicializa el objeto de argumentos con propiedades comunes
   let baseArgs = {
-    model: "gpt-4-1106-preview",
+    // model: "gpt-4-1106-preview",
+    model: "gpt-4-turbo",
     temperature: 0,
     stream: true,
   };
@@ -80,7 +81,8 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(result);
 
       let baseArgs = {
-        model: "gpt-4-1106-preview",
+        // model: "gpt-4-1106-preview",
+        model: "gpt-4-turbo",
         stream: true,
       };
     

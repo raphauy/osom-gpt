@@ -19,7 +19,8 @@ export async function completionInit(clientId: string, functions: ChatCompletion
   let agentes= false
 
   let baseArgs = {
-    model: "gpt-4-1106-preview",
+    // model: "gpt-4-1106-preview",
+    model: "gpt-4-turbo",
     temperature: 0,
     messages
   }  
