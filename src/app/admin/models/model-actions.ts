@@ -1,11 +1,15 @@
 "use server"
   
-import { ModelDAO, ModelFormValues, createModel, deleteModel, getFullModelDAO, getModelsDAO, getSimilarModels, updateModel } from "@/services/model-services"
+import { ModelDAO, ModelFormValues, createModel, deleteModel, getFullModelDAO, getFullModelDAOByName, getModelsDAO, getSimilarModels, updateModel } from "@/services/model-services"
 import { revalidatePath } from "next/cache"
 
 
 export async function getModelDAOAction(id: string): Promise<ModelDAO | null> {
     return getFullModelDAO(id)
+}
+
+export async function getModelDAOActionByName(name: string): Promise<ModelDAO | null> {
+    return getFullModelDAOByName(name)
 }
 
 export async function getModelsDAOAction(): Promise<ModelDAO[]> {

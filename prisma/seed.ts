@@ -10,6 +10,8 @@ async function main() {
   
   //await seedModels(prisma)
 
+  //await seedTokensPrice(prisma)
+
   console.log("Seeding complete")
 }
 

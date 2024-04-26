@@ -62,11 +62,11 @@ export function Overview({ billingData }: Props) {
     const data: { name: string; Compra: number; Venta: number }[] = []
 
     billingData?.billingData.map((item) => {
-          const totalPromptCost = (item.promptTokens / 1000) * billingData.pricePerPromptToken
-          const totalCompletionCost = (item.completionTokens / 1000) * billingData.pricePerCompletionToken
+          const totalPromptCost = (item.promptTokens / 1000000) * item.promptTokensCost
+          const totalCompletionCost = (item.completionTokens / 1000000) * item.completionTokensCost
           const totalCost = Math.round((totalPromptCost + totalCompletionCost) * 100) / 100
-          const totalPromptSell = (item.promptTokens / 1000) * item.clientPricePerPromptToken
-          const totalCompletionSell = (item.completionTokens / 1000) * item.clientPricePerCompletionToken
+          const totalPromptSell = (item.promptTokens / 1000000) * item.clientPricePerPromptToken
+          const totalCompletionSell = (item.completionTokens / 1000000) * item.clientPricePerCompletionToken
           const totalSell = Math.round((totalPromptSell + totalCompletionSell) * 100) / 100
           const clientData = {
             name: item.clientName,

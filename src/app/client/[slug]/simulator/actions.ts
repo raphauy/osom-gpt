@@ -1,7 +1,10 @@
 "use server"
 
+import { DataClient } from "@/app/admin/clients/(crud)/actions"
 import { getCurrentUser } from "@/lib/auth"
+import { getClientBySlug } from "@/services/clientService"
 import { getMessagesCountOfActiveConversation, messageArrived, processMessage } from "@/services/conversationService"
+import { getFullModelDAOByName } from "@/services/model-services"
 
 export async function insertMessageAction(text: string, clientId: string, modelName: string) {
 
@@ -35,4 +38,36 @@ export async function insertMessageAction(text: string, clientId: string, modelN
 
 
     return "ok"
+}
+
+export async function getDataClientWithModel(slug: string, modelName?: string): Promise<DataClient | null>{ 
+    
+  const client= await getClientBySlug(slug)
+  if (!client) return null
+
+  let model= client.model
+  if (modelName) {
+    model= await getFullModelDAOByName(modelName)
+  }
+  const promptCostTokenPrice= model?.inputPrice || 0
+  const completionCostTokenPrice= model?.outputPrice || 0
+
+  const propertiesCount= 0
+
+  const data: DataClient= {
+      id: client.id,
+      nombre: client.name,
+      slug: client.slug,
+      descripcion: client.description || '',
+      url: client.url || '',
+      modelId: client.modelId,
+      cantPropiedades: propertiesCount,
+      whatsAppEndpoint: client.whatsappEndpoint,
+      prompt: client.prompt,
+      promptTokensPrice: client.promptTokensPrice,
+      completionTokensPrice: client.completionTokensPrice,
+      promptCostTokenPrice,
+      completionCostTokenPrice
+  }
+  return data
 }

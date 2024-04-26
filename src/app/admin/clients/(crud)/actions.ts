@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { EndpointFormValues } from "../../config/(crud)/endpoint-form";
 import { PromptFormValues } from "../../prompts/prompt-form";
 import { ClientFormValues } from "./clientForm";
+import { getFullModelDAO } from "@/services/model-services";
 
 export type DataClient = {
     id: string
@@ -22,12 +23,18 @@ export type DataClient = {
     prompt?: string | null
     promptTokensPrice?: number | null
     completionTokensPrice?: number | null
+    promptCostTokenPrice: number
+    completionCostTokenPrice: number
   }
     
 
 export async function getDataClient(clientId: string): Promise<DataClient | null>{
     const client= await getClient(clientId)
     if (!client) return null
+
+    const model= await getFullModelDAO(client.modelId!)
+    const promptCostTokenPrice= model?.inputPrice || 0
+    const completionCostTokenPrice= model?.outputPrice || 0
 
     const propertiesCount= 0
 
@@ -42,7 +49,9 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        promptCostTokenPrice: promptCostTokenPrice,
+        completionCostTokenPrice: completionCostTokenPrice
     }
     return data
 }
@@ -55,6 +64,10 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
     const client= user.client
     if (!client) return null
 
+    const model= await getFullModelDAO(client.modelId!)
+    const promptCostTokenPrice= model?.inputPrice || 0
+    const completionCostTokenPrice= model?.outputPrice || 0
+
     const propertiesCount= 0
 
     const data: DataClient= {
@@ -68,7 +81,9 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        promptCostTokenPrice,
+        completionCostTokenPrice
     }
     return data
 }
@@ -78,6 +93,10 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
     const client= await getClientBySlug(slug)
     if (!client) return null
 
+    const model= client.model
+    const promptCostTokenPrice= model?.inputPrice || 0
+    const completionCostTokenPrice= model?.outputPrice || 0
+
     const propertiesCount= 0
 
     const data: DataClient= {
@@ -91,7 +110,9 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        promptCostTokenPrice,
+        completionCostTokenPrice
     }
     return data
 }
@@ -100,6 +121,10 @@ export async function getLastClientAction(): Promise<DataClient | null>{
     const client= await getLastClient()
     if (!client) return null
 
+    const model= client.model
+    const promptCostTokenPrice= model?.inputPrice || 0
+    const completionCostTokenPrice= model?.outputPrice || 0
+
     const propertiesCount= 0
 
     const data: DataClient= {
@@ -113,7 +138,9 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        promptCostTokenPrice,
+        completionCostTokenPrice
     }
     return data
 }
@@ -129,7 +156,10 @@ export async function getDataClients() {
     const data: DataClient[] = await Promise.all(
         clients.map(async (client) => {
             const propertiesCount = 0
-
+            const model= client.model
+            const promptCostTokenPrice= model?.inputPrice || 0
+            const completionCostTokenPrice= model?.outputPrice || 0
+        
             return {
                 id: client.id,
                 nombre: client.name,
@@ -143,7 +173,9 @@ export async function getDataClients() {
                 whatsAppEndpoint: client.whatsappEndpoint,
                 prompt: client.prompt,
                 promptTokensPrice: client.promptTokensPrice,
-                completionTokensPrice: client.completionTokensPrice
+                completionTokensPrice: client.completionTokensPrice,
+                promptCostTokenPrice,
+                completionCostTokenPrice
             };
         })
     );

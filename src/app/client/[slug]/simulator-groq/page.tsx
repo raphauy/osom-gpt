@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
-import { insertMessageAction } from "./actions";
+import { insertMessageAction } from "../simulator/actions";
 import { Select } from "@/components/ui/select";
 import { ModelDAO } from "@/services/model-services";
 import { getSimilarModelsAction } from "@/app/admin/models/model-actions";

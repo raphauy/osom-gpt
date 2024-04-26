@@ -2,10 +2,13 @@
 
 import { getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
+import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getFormat } from "@/lib/utils";
+import { ModelDAO } from "@/services/model-services";
 import { useChat } from "ai/react";
 import clsx from "clsx";
 import { Bot, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
@@ -16,7 +19,6 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function SimulatorBox() {
   const params= useParams()
@@ -30,14 +32,18 @@ export default function SimulatorBox() {
   const [client, setClient] = useState<DataClient | null>(null)
   const [promptTokensPrice, setPromptTokensPrice] = useState(0)
   const [completionTokensPrice, setCompletionTokensPrice] = useState(0)
+  const [promptCostTokenValue, setPromptCostTokenValue] = useState(0)
+  const [completionCostTokenValue, setCompletionCostTokenValue] = useState(0)
   const [conversationId, setConversationId] = useState("")
   const [summitId, setSummitId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
   const [finishedCount, setFinishedCount] = useState(0)
+  const [modelDAO, setModelDAO] = useState<ModelDAO | null>(null)
 
   const session= useSession()
+  const isAdmin= session?.data?.user?.role === "admin"
   const router= useRouter()
 
   const { messages, setMessages, input, setInput, handleSubmit, isLoading, error } = useChat({
@@ -65,9 +71,27 @@ export default function SimulatorBox() {
   const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
   // @ts-ignore
   const totalCompletionTokens= messages.reduce((acc, message) => acc + message.completionTokens, 0)
-  const promptTokensValue= totalPromptTokens / 1000 * promptTokensPrice
-  const completionTokensValue= totalCompletionTokens / 1000 * completionTokensPrice
-  
+  const promptTokensValue= totalPromptTokens / 1000000 * promptTokensPrice
+  const completionTokensValue= totalCompletionTokens / 1000000 * completionTokensPrice
+
+  useEffect(() => {
+    if (model) {
+      getModelDAOActionByName(model)
+      .then((modelDAO) => {
+        if (modelDAO) {
+          setModelDAO(modelDAO)
+          const promptCostTokenValue= totalPromptTokens / 1000000 * (modelDAO.inputPrice || 0)          
+          const completionCostTokenValue= totalCompletionTokens / 1000000 * (modelDAO.outputPrice || 0)
+          setPromptCostTokenValue(promptCostTokenValue)
+          setCompletionCostTokenValue(completionCostTokenValue)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [model, totalPromptTokens, totalCompletionTokens])
+
   useEffect(() => {
     getCustomInfoAction(conversationId)
     .then((customInfo) => {
@@ -163,6 +187,13 @@ export default function SimulatorBox() {
               <Separator orientation="vertical" className="h-6 mx-1" />
               <CircleDollarSign size={18} />
               <p>{Intl.NumberFormat("es-UY").format(promptTokensValue + completionTokensValue)} USD</p>
+              {isAdmin && 
+              <>
+                <Separator orientation="vertical" className="h-6 mx-1" />
+                <CircleDollarSign size={18} />
+                <p>{Intl.NumberFormat("es-UY").format(promptCostTokenValue + completionCostTokenValue)} USD (costo)</p>
+              </>
+              }
             </div>                  
           )
         }

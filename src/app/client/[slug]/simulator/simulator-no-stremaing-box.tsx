@@ -17,7 +17,9 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
-import { insertMessageAction } from "../simulator-groq/actions";
+import { insertMessageAction } from "./actions";
+import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
+import { ModelDAO } from "@/services/model-services";
 
 
 export default function SimulatorNoStreamingBox() {
@@ -33,13 +35,16 @@ export default function SimulatorNoStreamingBox() {
   const [client, setClient] = useState<DataClient | null>(null)
   const [promptTokensPrice, setPromptTokensPrice] = useState(0)
   const [completionTokensPrice, setCompletionTokensPrice] = useState(0)
+  const [promptCostTokenValue, setPromptCostTokenValue] = useState(0)
+  const [completionCostTokenValue, setCompletionCostTokenValue] = useState(0)
   const [conversationId, setConversationId] = useState("")
   const [summitId, setSummitId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
   const [finishedCount, setFinishedCount] = useState(0)
-  const [mapMessageSectioin, setMapMessageSectioin] = useState<Map<string, string[]>>(new Map())
+  const [modelDAO, setModelDAO] = useState<ModelDAO | null>(null)
+
   const session= useSession()
   const router= useRouter()
 
@@ -107,8 +112,26 @@ export default function SimulatorNoStreamingBox() {
   const totalPromptTokens= messages.reduce((acc, message) => acc + message.promptTokens, 0)
   // @ts-ignore
   const totalCompletionTokens= messages.reduce((acc, message) => acc + message.completionTokens, 0)
-  const promptTokensValue= totalPromptTokens / 1000 * promptTokensPrice
-  const completionTokensValue= totalCompletionTokens / 1000 * completionTokensPrice
+  const promptTokensValue= totalPromptTokens / 1000000 * promptTokensPrice
+  const completionTokensValue= totalCompletionTokens / 1000000 * completionTokensPrice
+
+  useEffect(() => {
+    if (model) {
+      getModelDAOActionByName(model)
+      .then((modelDAO) => {
+        if (modelDAO) {
+          setModelDAO(modelDAO)
+          const promptCostTokenValue= totalPromptTokens / 1000000 * (modelDAO.inputPrice || 0)          
+          const completionCostTokenValue= totalCompletionTokens / 1000000 * (modelDAO.outputPrice || 0)
+          setPromptCostTokenValue(promptCostTokenValue)
+          setCompletionCostTokenValue(completionCostTokenValue)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [model, totalPromptTokens, totalCompletionTokens])
   
   useEffect(() => {
     getCustomInfoAction(conversationId)
@@ -203,6 +226,9 @@ export default function SimulatorNoStreamingBox() {
               <Separator orientation="vertical" className="h-6 mx-1" />
               <CircleDollarSign size={18} />
               <p>{Intl.NumberFormat("es-UY").format(promptTokensValue + completionTokensValue)} USD</p>
+              <Separator orientation="vertical" className="h-6 mx-1" />
+              <CircleDollarSign size={18} />
+              <p>{Intl.NumberFormat("es-UY").format(promptCostTokenValue + completionCostTokenValue)} USD (costo)</p>
             </div>                  
           )
         }

@@ -10,7 +10,8 @@ export default async function getClients() {
       createdAt: 'desc'
     },
     include: {
-      users: true
+      users: true,
+      model: true
     }
   })
 
@@ -42,6 +43,9 @@ export async function getLastClient() {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        model: true
+      }
     })
   
     return found;
