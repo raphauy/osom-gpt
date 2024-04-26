@@ -9,6 +9,7 @@ import { useParams, usePathname, useRouter, useSearchParams } from "next/navigat
 import { Separator } from "../ui/separator"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
+import { useSession } from "next-auth/react"
 
 export type SelectorData={
     slug: string,
@@ -33,9 +34,9 @@ export function ModelSelector({ selectors }: Props) {
   const router= useRouter()
   const path= usePathname()
 
+  const user= useSession()?.data?.user
+  const isAdmin= user?.role === "admin"
   
-
-
   useEffect(() => {
     
     const itemName= selectors.find(selector => selector.slug === model)?.name
@@ -59,6 +60,8 @@ export function ModelSelector({ selectors }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value)
   }
+
+  if (!isAdmin) return null
 
   return (
     <div className="w-full px-1 ">

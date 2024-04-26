@@ -156,19 +156,24 @@ export default function SimulatorBox() {
 
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
-      <div className="flex items-center justify-between w-full my-5">        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Podcast className="text-green-500" />
-          </TooltipTrigger>
-          <TooltipContent className="text-sm text-gray-500">
-            Este modelo y proveedor ambos tienen capacidades de streaming de datos.
-          </TooltipContent>
-        </Tooltip>
-        <div className="flex items-center gap-2">
-          <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/client/${slug}/simulator?r=${new Date().getMilliseconds()}`} />
+      {
+        isAdmin ?
+        <div className="flex items-center justify-between w-full my-5">        
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Podcast className="text-green-500" />
+            </TooltipTrigger>
+            <TooltipContent className="text-sm text-gray-500">
+              Este modelo y proveedor ambos tienen capacidades de streaming de datos.
+            </TooltipContent>
+          </Tooltip>
+          <div className="flex items-center gap-2">
+            <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/client/${slug}/simulator?r=${new Date().getMilliseconds()}`} />
+          </div>
         </div>
-      </div>
+        :
+        <div className="mt-5"/>
+      }
       
       <div>
         {
