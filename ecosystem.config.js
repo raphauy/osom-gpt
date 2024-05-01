@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
       {
-        name: "testing-osom-gpt",
+        name: "osom-gpt",
         script: "pnpm",
         args: "run start",
       },
