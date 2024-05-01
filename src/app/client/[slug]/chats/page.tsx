@@ -84,8 +84,6 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
 
   if (!conversation) return <div></div>
 
-  const similarityThreshold: number= parseFloat("0.5")
-
   const user= session.data?.user
 
   const isAdmin= user?.role === "admin"

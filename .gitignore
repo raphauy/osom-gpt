@@ -5,6 +5,11 @@ production.Dockerfile.bak
 bun.lockb
 pnpm-lock.yaml
 /sql/delete_tables.sh
+borrar*.json
+borrar*.txt
+
+/prisma/seed-models.ts
+/prisma/seed-tokens-price.ts
 
 /prisma/seed-models.ts
 /prisma/seed-tokens-price.ts

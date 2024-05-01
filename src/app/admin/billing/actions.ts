@@ -5,13 +5,14 @@ import { getBillingData } from "@/services/conversationService"
 
 export type CompleteData= {
     totalCost: number
-    pricePerPromptToken: number
-    pricePerCompletionToken: number
     billingData: BillingData[]
 }
 
 export type BillingData= {
-    clientName: string   
+    clientName: string
+    modelName: string
+    promptTokensCost: number
+    completionTokensCost: number
     promptTokens: number
     completionTokens: number
     clientPricePerPromptToken: number

@@ -6,7 +6,12 @@ import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompl
 import { getFunctionsDefinitions } from "./function-services";
 import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
+import { googleCompletionInit } from "./google-function-call-services";
+import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
+import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
 import { completionInit } from "./function-call-services";
+import { groqCompletionInit } from "./groq-function-call-services";
+import { getClient } from "./clientService";
 
 
 export default async function getConversations() {
@@ -146,6 +151,11 @@ export async function getLastConversation(slug: string) {
 // find an active conversation or create a new one to connect the messages
 export async function messageArrived(phone: string, text: string, clientId: string, role: string, gptData: string, promptTokens?: number, completionTokens?: number) {
 
+  if (!clientId) throw new Error("clientId is required")
+
+  console.log("phone: ", phone)
+  console.log("clientId: ", clientId)  
+
   const activeConversation= await getActiveConversation(phone, clientId)
   if (activeConversation) {
     const message= await createMessage(activeConversation.id, role, text, gptData, promptTokens, completionTokens)
@@ -163,7 +173,7 @@ export async function messageArrived(phone: string, text: string, clientId: stri
 }
 
 
-export async function processMessage(id: string) {
+export async function processMessage(id: string, modelName?: string) {
   const message= await prisma.message.findUnique({
     where: {
       id
@@ -171,7 +181,11 @@ export async function processMessage(id: string) {
     include: {
       conversation: {
         include: {
-          messages: true,
+          messages: {
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
           client: true
         }
       }
@@ -209,7 +223,24 @@ export async function processMessage(id: string) {
   //TODO
   const functions= await getFunctionsDefinitions(client.id)
 
-  const completionResponse= await completionInit(client.id,functions, messages)
+//  const completionResponse= await completionInit(client,functions, messages as ChatCompletion.Choice.Message[], modelName)
+  if (!client.modelId) throw new Error("Client modelId not found")
+
+  let completionResponse= null
+
+  let model= modelName && await getFullModelDAOByName(modelName)
+  if (!model) {
+    model= await getFullModelDAO(client.modelId)
+  }
+  const providerName= model.providerName
+
+  if (providerName === "OpenAI") {
+    completionResponse= await completionInit(client,functions, messages, modelName)
+  } else if (providerName === "Google") {
+    completionResponse= await googleCompletionInit(client,functions, messages, systemMessage.content, modelName)
+  } else if (providerName === "Groq") {
+    completionResponse= await groqCompletionInit(client,functions, messages as ChatCompletion.Choice.Message[], modelName)
+  }
   if (completionResponse === null) {
     console.log("completionInit returned null")
     return
@@ -354,9 +385,6 @@ export async function deleteConversation(id: string) {
   return deleted
 }
 
-const PROMPT_TOKEN_PRICE = 0.01
-const COMPLETION_TOKEN_PRICE = 0.03
-
 export async function getBillingData(from: Date, to: Date, clientId?: string): Promise<CompleteData> {  
 
   const messages= await prisma.message.findMany({
@@ -372,7 +400,11 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
     include: {
       conversation: {
         include: {
-          client: true
+          client: {
+            include: {
+              model: true
+            }
+          }
         }
       }
     }
@@ -384,12 +416,19 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
 
   for (const message of messages) {    
     const clientName= message.conversation.client.name
+    const model= message.conversation.client.model
+    const modelName= model?.name || ""
+    const promptTokensCost= model?.inputPrice || 0
+    const completionTokensCost= model?.outputPrice || 0
     const promptTokens= message.promptTokens ? message.promptTokens : 0
     const completionTokens= message.completionTokens ? message.completionTokens : 0
 
     if (!clientMap[clientName]) {
       clientMap[clientName]= {
         clientName,
+        modelName,
+        promptTokensCost,
+        completionTokensCost,
         promptTokens,
         completionTokens,
         clientPricePerPromptToken: message.conversation.client.promptTokensPrice,
@@ -405,7 +444,7 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
 
   for (const key in clientMap) {
     billingData.push(clientMap[key])
-    totalCost+= (clientMap[key].promptTokens / 1000 * PROMPT_TOKEN_PRICE) + (clientMap[key].completionTokens / 1000 * COMPLETION_TOKEN_PRICE)
+    totalCost+= (clientMap[key].promptTokens / 1000000 * clientMap[key].promptTokensCost) + (clientMap[key].completionTokens / 1000000 * clientMap[key].completionTokensCost)
   }
 
   // sort billingData by promptTokens
@@ -415,8 +454,6 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
 
   const res: CompleteData= {
     totalCost,
-    pricePerPromptToken: PROMPT_TOKEN_PRICE,
-    pricePerCompletionToken: COMPLETION_TOKEN_PRICE,
     billingData
   }
   

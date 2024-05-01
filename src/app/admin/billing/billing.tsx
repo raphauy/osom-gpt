@@ -202,12 +202,12 @@ type BillingCardProps = {
 function BillingCard({ data, adminPanel }: BillingCardProps) {
   return data?.billingData.map((item) => {
 
-    const totalPromptCost = (item.promptTokens / 1000) * data.pricePerPromptToken
-    const totalCompletionCost = (item.completionTokens / 1000) * data.pricePerCompletionToken
+    const totalPromptCost = (item.promptTokens / 1000000) * item.promptTokensCost
+    const totalCompletionCost = (item.completionTokens / 1000000) * item.completionTokensCost
     const totalCost = totalPromptCost + totalCompletionCost
 
-    const totalPromptSell = (item.promptTokens / 1000) * item.clientPricePerPromptToken
-    const totalCompletionSell = (item.completionTokens / 1000) * item.clientPricePerCompletionToken
+    const totalPromptSell = (item.promptTokens / 1000000) * item.clientPricePerPromptToken
+    const totalCompletionSell = (item.completionTokens / 1000000) * item.clientPricePerCompletionToken
 
     const percentage= data.totalCost ? totalCost / data.totalCost * 100 : 0
 
@@ -247,10 +247,10 @@ function BillingCard({ data, adminPanel }: BillingCardProps) {
               </Card>  
 
               {/** Total Compra */}
-              <ValueCard  promptPrice={data.pricePerPromptToken} completionPrice={data.pricePerCompletionToken} promptCost={totalPromptCost} completionCost={totalCompletionCost} costIcon={true} />
+              <ValueCard  promptPrice={item.promptTokensCost} completionPrice={item.completionTokensCost} promptCost={totalPromptCost} completionCost={totalCompletionCost} costIcon={true} modelName={item.modelName} />
 
               {/** Total Venta */}
-              <ValueCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} costIcon={false} />
+              <ValueCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} costIcon={false} modelName="" />
             </>
           ) : (
             <ValueClientCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} />

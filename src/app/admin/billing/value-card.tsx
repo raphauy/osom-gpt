@@ -8,22 +8,24 @@ type Props = {
     promptCost: number
     completionCost: number
     costIcon: boolean
+    modelName: string
 }
 
-export default function ValueCard({ promptPrice, completionPrice, promptCost, completionCost, costIcon }: Props) {
+export default function ValueCard({ promptPrice, completionPrice, promptCost, completionCost, costIcon, modelName }: Props) {
     const totalCost = promptCost + completionCost
   return (
     <Card className={cn("flex flex-col", totalCost === 0 && "opacity-20")}>
         <CardHeader>
         <CardDescription>
             <div className="flex justify-between">
-            {costIcon ? <p>Total de Compra</p> : <p>Total de Venta</p>}
-            {costIcon ? <ArrowDownCircle /> : <ArrowUpCircle />}
+                {costIcon ? <p>Total de Compra</p> : <p>Total de Venta</p>}
+                {costIcon ? <ArrowDownCircle /> : <ArrowUpCircle />}
             </div>
         </CardDescription>
         <CardTitle>
             <div className="flex items-center justify-between">
-            <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
+                <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
+                <p className="text-sm text-muted-foreground">{modelName}</p>
             </div>
         </CardTitle>
         </CardHeader>
@@ -36,8 +38,8 @@ export default function ValueCard({ promptPrice, completionPrice, promptCost, co
         </CardTitle>
         <CardDescription>
             <div className="flex justify-between">
-            <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(promptPrice)})</p>
-            <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(completionPrice)})</p>
+            <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits:2 }).format(promptPrice)})</p>
+            <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits:2 }).format(completionPrice)})</p>
             </div>
         </CardDescription>
         </CardHeader>

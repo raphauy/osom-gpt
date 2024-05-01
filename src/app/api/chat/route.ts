@@ -1,21 +1,20 @@
-import { getSystemMessage, messageArrived } from "@/services/conversationService";
-import { OpenAIStream, StreamingTextResponse } from "ai";
-import { OpenAI } from "openai";
-import { runFunction } from "../../../services/functions";
-import { getClient } from "@/services/clientService";
 import { getCurrentUser } from "@/lib/auth";
-import { getContext, setSectionsToMessage } from "@/services/section-services";
 import { removeSectionTexts } from "@/lib/utils";
+import { getClient } from "@/services/clientService";
+import { getSystemMessage, messageArrived } from "@/services/conversationService";
 import { getFunctionsDefinitions } from "@/services/function-services";
-import openaiTokenCounter from 'openai-gpt-token-counter'
+import { getFullModelDAO, getFullModelDAOByName } from "@/services/model-services";
+import { getContext, setSectionsToMessage } from "@/services/section-services";
+import { GoogleGenerativeAIStream, OpenAIStream, StreamingTextResponse } from "ai";
+import { OpenAI } from "openai";
+import openaiTokenCounter from 'openai-gpt-token-counter';
+import { NextResponse } from "next/server";
+import { processFunctionCall } from "@/services/functions";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 export async function POST(req: Request) {
 
-  const { messages: origMessages, clientId } = await req.json()
+  const { messages: origMessages, clientId, modelName } = await req.json()
   const messages= origMessages.filter((message: any) => message.role !== "system")
   // replace role function by system
   for (let i = 0; i < messages.length; i++) {
@@ -38,7 +37,16 @@ export async function POST(req: Request) {
   // get rid of messages of type system
   const input= messages[messages.length - 1].content
   console.log("input: " + input)
+
+  if (!client.modelId) return NextResponse.json({ message: "Este cliente no tiene modelo asignado" }, { status: 502 })
+
+  let model= modelName && await getFullModelDAOByName(modelName)
+  if (!model) {
+    model= await getFullModelDAO(client.modelId)
+  }
+  const provider= model.provider
   
+  if (!provider.streaming || !model.streaming) return NextResponse.json({ error: "Proveedor o modelo no soporta streaming" }, { status: 502 })
 
   const contextResponse= await getContext(clientId, phone, input)
   console.log("contextContent: " + removeSectionTexts(contextResponse.contextString))
@@ -52,10 +60,20 @@ export async function POST(req: Request) {
 
   const functions= await getFunctionsDefinitions(clientId)
 
+  functions.forEach((functionDefinition) => {
+    console.log("functionDefinition: " + functionDefinition.name);
+  })
+
+  console.log("model: " + model.name)
+  
+  const openai = new OpenAI({
+    apiKey: provider.apiKey,
+    baseURL: provider.baseUrl
+  })
+  
   // Inicializa el objeto de argumentos con propiedades comunes
   let baseArgs = {
-    // model: "gpt-4-1106-preview",
-    model: "gpt-4-turbo",
+    model: model.name,
     temperature: 0,
     stream: true,
   };
@@ -77,7 +95,8 @@ export async function POST(req: Request) {
       { name, arguments: args,  },
       createFunctionCallMessages,
     ) => {
-      const result = await runFunction(name, args, clientId);
+//      const result = await runFunction(name, args, clientId);
+      const result = await processFunctionCall(clientId, name, args);
       const newMessages = createFunctionCallMessages(result);
 
       let baseArgs = {
@@ -92,13 +111,6 @@ export async function POST(req: Request) {
 
       return openai.chat.completions.create(recursiveArgs as any);
 
-      // return openai.chat.completions.create({
-      //   model: "gpt-4-1106-preview",
-      //   stream: true,
-      //   messages: [...messages, ...newMessages],
-      //   functions: functions,
-      //   function_call: "auto",
-      // });
     },
     onStart: async () => {
       console.log("start")

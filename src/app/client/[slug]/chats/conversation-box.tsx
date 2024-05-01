@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { removeSectionTexts } from "@/lib/utils"
 import clsx from "clsx"
-import { Bot, CircleDollarSign, Terminal, Ticket, User } from "lucide-react"
+import { Bot, Car, CircleDollarSign, Terminal, Ticket, User } from "lucide-react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -13,7 +13,8 @@ import { DeleteConversationDialog } from "./(delete-conversation)/delete-dialogs
 import { DataConversation } from "./actions"
 import GPTData from "./gpt-data"
 import { useEffect, useState } from "react"
-import { getCustomInfoAction } from "@/app/admin/chat/actions"
+import { CustomInfo, getCustomInfoAction } from "@/app/admin/chat/actions"
+import { useParams } from "next/navigation"
 
 interface Props {
   conversation: DataConversation
@@ -26,6 +27,9 @@ interface Props {
   
 export default function ConversationBox({ conversation, promptTokensPrice, completionTokensPrice, isAdmin, showSystem, setShowSystem}: Props) {
 
+  const params= useParams()
+  const slug= params.slug as string
+  
   const totalPromptTokens= conversation.messages.reduce((acc, message) => acc + message.promptTokens, 0)
   const totalCompletionTokens= conversation.messages.reduce((acc, message) => acc + message.completionTokens, 0)
   const promptTokensValue= totalPromptTokens / 1000 * promptTokensPrice
@@ -33,13 +37,13 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
 
   const messages= showSystem && isAdmin ? conversation.messages : conversation.messages.filter(message => message.role !== "system")
 
-  const [summitId, setSummitId]= useState<string | undefined>(undefined)
+  const [customInfo, setCustomInfo] = useState<CustomInfo | null>(null)
 
   useEffect(() => {
     getCustomInfoAction(conversation.id)
     .then((customInfo) => {
       if (customInfo) {
-        customInfo.summitId && setSummitId(customInfo.summitId)
+        setCustomInfo(customInfo)
       }
     })
     .catch((err) => {
@@ -52,9 +56,14 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
       <main className="flex flex-col items-center justify-between w-full p-3 border-l">
         <div className="flex justify-between w-full pb-2 text-center border-b">
           <div className="place-self-end">
-            {summitId && 
-              <Link href={`/client/summit/summit?summitId=${summitId}`}>
+            {customInfo?.summitId &&
+              <Link href={`/client/summit/summit?summitId=${customInfo.summitId}`}>
                 <Button variant="ghost" className="h-7"><Ticket /></Button>
+              </Link>
+            }
+            {customInfo?.carServiceName &&
+              <Link href={`/client/${slug}/car-service?name=${customInfo.carServiceName}`}>
+                <Button variant="ghost" className="h-7"><Car /></Button>
               </Link>
             }
           </div>

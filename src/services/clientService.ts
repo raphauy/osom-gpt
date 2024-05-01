@@ -10,7 +10,8 @@ export default async function getClients() {
       createdAt: 'desc'
     },
     include: {
-      users: true
+      users: true,
+      model: true
     }
   })
 
@@ -42,6 +43,9 @@ export async function getLastClient() {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        model: true
+      }
     })
   
     return found;
@@ -67,7 +71,8 @@ export async function getClientBySlug(slug: string) {
       slug
     },
     include: {
-      users: true
+      users: true,
+      model: true,
     }
   })
 
@@ -90,14 +95,14 @@ export async function createClient(data: ClientFormValues) {
 export async function editClient(id: string, data: ClientFormValues) {
   console.log(data);
   
-  const created= await prisma.client.update({
+  const updated= await prisma.client.update({
     where: {
       id
     },
     data
   })
 
-  return created
+  return updated
 }
 
 export async function deleteClient(id: string) {

@@ -5,20 +5,18 @@ const prisma = new PrismaClient()
 async function main() {
   console.log("Seeding...")
   
-  const adminUser= await seedAdmin()
-  console.log({ adminUser })
+  // const adminUser= await seedAdmin(prisma)
+  // console.log({ adminUser })
   
-}
+  //await seedModels(prisma)
 
-async function seedAdmin() {
-  const adminUser = await prisma.user.create({
-    data: {
-      name: "Rapha",
-      email: "rapha.uy@rapha.uy",
-      role: "admin"
-    },
-  })
-  return adminUser
+  //await seedTokensPrice(prisma)
+
+  // development db:
+  // const gpt4TurboId= "clvfs48bd000285wuh6j2bxar"
+  // await setModelToAllClients(gpt4TurboId, prisma)
+
+  console.log("Seeding complete")
 }
 
 main()
