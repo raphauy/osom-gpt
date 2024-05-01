@@ -12,6 +12,10 @@ async function main() {
 
   //await seedTokensPrice(prisma)
 
+  // development db:
+  // const gpt4TurboId= "clvfs48bd000285wuh6j2bxar"
+  // await setModelToAllClients(gpt4TurboId, prisma)
+
   console.log("Seeding complete")
 }
 

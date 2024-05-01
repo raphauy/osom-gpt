@@ -1,6 +1,6 @@
 "use client";
 
-import { getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
+import { CustomInfo, getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
 import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
@@ -11,7 +11,7 @@ import { getFormat } from "@/lib/utils";
 import { ModelDAO } from "@/services/model-services";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { Bot, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
+import { Bot, Car, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -35,7 +35,7 @@ export default function SimulatorBox() {
   const [promptCostTokenValue, setPromptCostTokenValue] = useState(0)
   const [completionCostTokenValue, setCompletionCostTokenValue] = useState(0)
   const [conversationId, setConversationId] = useState("")
-  const [summitId, setSummitId] = useState("")
+  const [customInfo, setCustomInfo] = useState<CustomInfo | null>(null)
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
@@ -59,7 +59,7 @@ export default function SimulatorBox() {
     getCustomInfoAction(conversationId)
     .then((customInfo) => {
       if (customInfo) {
-        customInfo.summitId && setSummitId(customInfo.summitId)
+        setCustomInfo(customInfo)
       }
     })
     .catch((err) => {
@@ -96,7 +96,7 @@ export default function SimulatorBox() {
     getCustomInfoAction(conversationId)
     .then((customInfo) => {
       if (customInfo) {
-        customInfo.summitId && setSummitId(customInfo.summitId)
+        setCustomInfo(customInfo)
       }
     })
     .catch((err) => {
@@ -323,11 +323,17 @@ export default function SimulatorBox() {
         
         <div className="grid w-full grid-cols-3">
           <div>
-          {summitId && 
-            <Link href={`/client/summit/summit?summitId=${summitId}`}>
+          {customInfo?.summitId &&
+            <Link href={`/client/summit/summit?summitId=${customInfo.summitId}`}>
               <Button variant="ghost" className="h-3"><Ticket /></Button>
             </Link>
           }
+          {customInfo?.carServiceName &&
+            <Link href={`/client/${slug}/car-service?name=${customInfo.carServiceName}`}>
+              <Button variant="ghost" className="h-3"><Car /></Button>
+            </Link>
+          }
+          
           </div>
           <p className="text-xs text-center text-gray-400">
             Creado por {" "}

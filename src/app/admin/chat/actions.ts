@@ -1,5 +1,6 @@
 "use server"
 
+import { getServiceNameByConversationId } from "@/services/carservice-services"
 import { getActiveMessages } from "@/services/conversationService"
 import { getSectionsOfMessage } from "@/services/section-services"
 import { getSummitIdByConversationId } from "@/services/summit-services"
@@ -16,18 +17,21 @@ export async function getSectionsOfMessageAction(messageId: string): Promise<str
     return sections.map((section) => section.sectionId)
 }
 
-type CustomInfo = {
+export type CustomInfo = {
     narvaezId: string | undefined
     summitId: string | undefined
+    carServiceName: string | undefined
 }
 
 export async function getCustomInfoAction(conversationId: string): Promise<CustomInfo>{
     const narvaezId= "narvaezId"
     const summitId= await getSummitIdByConversationId(conversationId)
+    const carServiceName= await getServiceNameByConversationId(conversationId)
 
     const res= {
         narvaezId,
-        summitId
+        summitId,
+        carServiceName
     }
 
     return res

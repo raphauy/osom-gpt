@@ -40,15 +40,13 @@ export default async function SlugLayout({ children, params }: Props) {
   const clientsOfNarvaez= await getClientsOfFunctionByName("registrarPedido")
   const showRegistro= clientsOfNarvaez.map(c => c.slug).includes(slug)
 
-  const model= await getFullModelDAO(client.modelId as string)
-  const provider= model.provider
-
-  const simStreaming= provider.streaming && model.streaming
+  const clientsOfCarServices= await getClientsOfFunctionByName("reservarServicio") 
+  const showCarServices= clientsOfCarServices.map(c => c.slug).includes(slug)
 
   return (
     <>
       <div className="flex flex-grow w-full">
-        <SideBar slug={slug} showRegistro={showRegistro} simStreaming={simStreaming} />
+        <SideBar slug={slug} showRegistro={showRegistro} showCarServices={showCarServices} />
         <div className="flex flex-col items-center flex-grow p-1">
           <TooltipProvider>
             {children}

@@ -8,7 +8,7 @@ import { PromptForm } from "../prompts/prompt-form"
 import Hook from "./hook"
 import TokensPrice from "./tokens-price"
 import CopyHook from "./copy-hook"
-import { getClientBySlug } from "@/services/clientService"
+import { getClientBySlug, getFunctionsOfClient } from "@/services/clientService"
 import DocumentsHook from "./documents-hook"
 
 type Props = {
@@ -26,6 +26,8 @@ export default async function ConfigPage({ searchParams }: Props) {
     const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
     const narvaezClient= await getClientBySlug("narvaez")
     const summitClient= await getClientBySlug("summit")
+    const functionsOfClient= await getFunctionsOfClient(clientId)
+    const haveCarServiceFunction= functionsOfClient.find((f) => f.name === "reservarServicio") !== undefined
 
     const BASE_PATH= process.env.NEXTAUTH_URL || "NOT-CONFIGURED"
 
@@ -56,6 +58,9 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <DocumentsHook basePath={BASE_PATH} />
                     <CopyHook name="Narvaez Entry" path={`${BASE_PATH}/api/${narvaezClient?.id}/narvaez`} clientId={narvaezClient?.id || ""} />
                     <CopyHook name="Summit Entry" path={`${BASE_PATH}/api/${summitClient?.id}/summit`} clientId={summitClient?.id || ""} />
+                    { haveCarServiceFunction && 
+                        <CopyHook name="Car Service Entry" path={`${BASE_PATH}/api/${client.id}/car-service`} clientId={client.id} />
+                    }
                 </TabsContent>
                 <TabsContent value="general">
                     <ConfigsPage />

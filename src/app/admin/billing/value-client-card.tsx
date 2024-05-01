@@ -28,8 +28,8 @@ export default function ValueClientCard({ promptPrice, completionPrice, promptCo
                 <p className="text-lg text-muted-foreground">{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(completionCost)}</p>
             </CardTitle>
             <CardDescription className="flex justify-between">
-                <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(promptPrice)})</p>
-                <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(completionPrice)})</p>
+                <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits:2 }).format(promptPrice)})</p>
+                <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits:2 }).format(completionPrice)})</p>
             </CardDescription>
         </CardHeader>
     </Card>

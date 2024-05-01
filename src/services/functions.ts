@@ -6,6 +6,8 @@ import { sendWapMessage } from "./osomService";
 import { getSectionOfDocument } from "./section-services";
 import { SummitFormValues, createSummit } from "./summit-services";
 import { getConversation, messageArrived } from "./conversationService";
+import { CarServiceFormValues, createCarService } from "./carservice-services";
+import { revalidatePath } from "next/cache";
 
 export type CompletionInitResponse = {
   assistantResponse: string | null
@@ -261,6 +263,49 @@ export async function completarFrase(clientId: string, conversationId: string, t
 
 }
 
+export async function reservarServicio(clientId: string, conversationId: string, nombreReserva: string | undefined, telefonoContacto: string | undefined, fechaReserva: string | undefined, localReserva: string | undefined, marcaAuto: string | undefined, modeloAuto: string | undefined, matriculaAuto: string | undefined, kilometraje: string | undefined){
+  console.log("reservarServicio")
+  console.log(`\tconversationId: ${conversationId}`)
+  console.log(`\tnombreReserva: ${nombreReserva}`)
+  console.log(`\ttelefonoContacto: ${telefonoContacto}`)
+  console.log(`\tfechaReserva: ${fechaReserva}`)
+  console.log(`\tlocalReserva: ${localReserva}`)
+  console.log(`\tmarcaAuto: ${marcaAuto}`)
+  console.log(`\tmodeloAuto: ${modeloAuto}`)
+  console.log(`\tmatriculaAuto: ${matriculaAuto}`)
+  console.log(`\tkilometraje: ${kilometraje}`)
+
+  if (!nombreReserva) return "nombreReserva not found"
+  if (!telefonoContacto) return "telefonoContacto not found"
+  if (!fechaReserva) return "fechaReserva not found"
+  if (!localReserva) return "localReserva not found"
+  if (!marcaAuto) return "marcaAuto not found"
+  if (!modeloAuto) return "modeloAuto not found"
+  if (!matriculaAuto) return "matriculaAuto not found"
+  if (!kilometraje) return "kilometraje not found"
+
+  const data: CarServiceFormValues = {
+    conversationId,
+    nombreReserva,
+    telefonoContacto,
+    fechaReserva,
+    localReserva,
+    marcaAuto,
+    modeloAuto,
+    matriculaAuto,
+    kilometraje,
+  }
+
+  const created= await createCarService(data)
+  if (!created) return "Error al reservar, pregunta al usuario si quiere que tu reintentes"
+
+  revalidatePath("/client/[slug]/car-service", "page")
+
+  return "Reserva registrada. Dile exactamente esto al usuario: Gracias por agendar tu service, a la brevedad un asesor te confirmará la fecha del service."
+}
+
+
+
 // export async function runFunction(name: string, args: any, clientId: string){
 //   console.log("raw args.texto: ", args.texto)
   
@@ -368,6 +413,19 @@ export async function processFunctionCall(clientId: string, name: string, args: 
       content= completarFrase(clientId, 
         args.conversationId, 
         decodeAndCorrectText(args.texto)        
+      )
+      break
+    case "reservarServicio":
+      content= await reservarServicio(clientId,
+        args.conversationId,
+        args.nombreReserva,
+        args.telefonoContacto,
+        args.fechaReserva,
+        args.localReserva,
+        args.marcaAuto,
+        args.modeloAuto,
+        args.matriculaAuto,
+        args.kilometraje
       )
       break
   

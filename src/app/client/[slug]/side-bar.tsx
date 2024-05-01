@@ -1,16 +1,16 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
+import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface Props {
   slug: string
   showRegistro?: boolean
-  simStreaming?: boolean
+  showCarServices?: boolean
 }
-export default function SideBar({ slug, showRegistro, simStreaming }: Props) {
+export default function SideBar({ slug, showRegistro, showCarServices }: Props) {
 
   const data= [
     {
@@ -95,6 +95,13 @@ export default function SideBar({ slug, showRegistro, simStreaming }: Props) {
             <Ticket size={23} />
           </div>
           <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Reservas</p>                  
+        </Link>
+
+        <Link href={`/client/${slug}/car-service`} className={cn(commonClasses, path.endsWith("car-service") && selectedClasses, !showCarServices && "hidden")}>
+          <div className="pb-1">
+          <Car size={23} />
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Servicios</p>                  
         </Link>
 
         {divider()}
