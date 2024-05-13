@@ -80,6 +80,10 @@ model Client {
   // Todo: make this field not optional
   model                 Model?    @relation(fields: [modelId], references: [id], onDelete: NoAction)
   modelId               String?
+
+  comClients            ComClient[]
+  products              Product[]
+  categories            Category[]
 }
 
 model Document {
@@ -278,4 +282,68 @@ model CarService {
   conversation        Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId     String @unique
 
+}
+
+model ComClient {
+  id              String  @id @default(cuid())
+  code            String                            // gennext: show.column
+  name            String                            // gennext: show.column
+  departamento    String?                            // gennext: show.column
+  localidad       String?                            // gennext: show.column
+  direccion       String?                            // gennext: show.column
+  telefono        String?                            // gennext: show.column
+
+  client          Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId        String
+
+  sells           Sell[]                            // gennext: skip.list
+}
+
+model Sell {
+  id            String    @id @default(cuid())
+  externalId    String                              // gennext: show.column  
+  quantity      Int                                 // gennext: show.column
+  currency      String                              // gennext: show.column
+
+  comClient     ComClient @relation(fields: [comClientId], references: [id], onDelete: Cascade)
+  comClientId   String
+
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId     String
+
+  vendor        Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  vendorId      String
+}
+
+model Product {
+  id              String    @id @default(cuid())
+  externalId      String                            // gennext: show.column
+  code            String                            // gennext: show.column
+  name            String                            // gennext: show.column
+  stock           Int                               // gennext: show.column
+  pedidoEnOrigen  Int                               // gennext: show.column
+  precioUSD       Float                             // gennext: show.column
+
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  categoryId      String
+
+  client          Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId        String
+
+  sells           Sell[]                            // gennext: skip.list
+}
+
+model Vendor {
+  id              String    @id @default(cuid())
+  name            String                            // gennext: show.column
+  sells           Sell[]                            // gennext: skip.list
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  name            String                            // gennext: show.column
+  products        Product[]                         // gennext: skip.list
+
+  client          Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId        String
 }

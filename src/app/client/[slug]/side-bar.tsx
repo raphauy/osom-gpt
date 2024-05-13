@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
+import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Scan, Tag, Ticket, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -106,7 +106,19 @@ export default function SideBar({ slug, showRegistro, showCarServices }: Props) 
 
         {divider()}
 
+        <Link href={`/client/${slug}/productos`} className={cn(commonClasses, path.endsWith("productos") && selectedClasses)}>
+          <div className="pb-1">
+            <Scan size={23} /> 
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Productos</p>                  
+        </Link>
 
+        <Link href={`/client/${slug}/categorias`} className={cn(commonClasses, path.endsWith("categorias") && selectedClasses)}>
+          <div className="pb-1">
+            <Tag size={23} /> 
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Categorias</p>
+        </Link>
 
       </section>
     </div>

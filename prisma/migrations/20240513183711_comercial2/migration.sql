@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "ComClient" ALTER COLUMN "departamento" DROP NOT NULL,
+ALTER COLUMN "localidad" DROP NOT NULL,
+ALTER COLUMN "direccion" DROP NOT NULL,
+ALTER COLUMN "telefono" DROP NOT NULL;
