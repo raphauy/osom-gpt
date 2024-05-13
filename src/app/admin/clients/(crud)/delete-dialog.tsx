@@ -19,18 +19,8 @@ interface Props{
 
 export function DeleteDialog({ title, description, trigger, id, eliminate }: Props) {
   const [open, setOpen] = useState(false)
-  const [usersCount, setUsersCount] = useState(0)
   const [descriptionDialog, setDescriptionDialog] = useState(description)
   const router= useRouter()
-
-  useEffect(() => {
-    getDataUsersOfClientAction(id).then((users) => {
-      setUsersCount(users.length)
-      if (users.length > 0)
-        setDescriptionDialog("No se puede eliminar el cliente porque tiene usuarios asociados")
-    })
-  
-  }, [id])
 
   function handleClose() {
     setOpen(false)
@@ -47,17 +37,7 @@ export function DeleteDialog({ title, description, trigger, id, eliminate }: Pro
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription className="py-8">{descriptionDialog}</DialogDescription>
         </DialogHeader>
-        {
-          usersCount > 0 ? (
-            <div className="flex flex-col items-center">
-              <p className="text-red-500">Elimine primero los usuarios asociados</p>
-              <Button onClick={() => router.push(`/admin/users`)} className="mt-4">Ir a usuarios</Button>
-            </div>
-            ) :
-            <DeleteForm eliminate={eliminate} closeDialog={handleClose} id={id} />
-          
-        }
-        
+        <DeleteForm eliminate={eliminate} closeDialog={handleClose} id={id} />        
       </DialogContent>
     </Dialog>
   )

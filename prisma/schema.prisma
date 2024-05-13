@@ -20,7 +20,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  client        Client?    @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  client        Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId      String?
 }
 
@@ -99,7 +99,7 @@ model Document {
   createdAt             DateTime  @default(now())             // gennext: skip.zod
   updatedAt             DateTime  @updatedAt @default(now())  // gennext: skip.zod show.column
 
-  client                Client   @relation(fields: [clientId], references: [id], onDelete: NoAction) // gennext: skip.list
+  client                Client   @relation(fields: [clientId], references: [id], onDelete: Cascade) // gennext: skip.list
   clientId              String
 
   sections              Section[]                             // gennext: skip.list
@@ -114,7 +114,7 @@ model Section {
   createdAt             DateTime  @default(now())             // gennext: skip.zod
   updatedAt             DateTime  @updatedAt @default(now())  // gennext: skip.zod
 
-  document              Document @relation(fields: [documentId], references: [id], onDelete: NoAction) // gennext: skip.list
+  document              Document @relation(fields: [documentId], references: [id], onDelete: Cascade) // gennext: skip.list
   documentId            String                                
 
   text                  String  @db.Text                      // gennext: show.column
@@ -128,7 +128,7 @@ model Conversation {
   updatedAt   DateTime @updatedAt
   phone       String
   messages    Message[]
-  client      Client  @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  client      Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId    String
   operacion   String?
   tipo        String?
@@ -182,7 +182,7 @@ model Function {
 }
 
 model ClientFunction {
-  client   Client @relation(fields: [clientId], references: [id])
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId String
 
   function  Function @relation(fields: [functionId], references: [id])

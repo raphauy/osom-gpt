@@ -2,7 +2,7 @@ import { OpenAIApi, Configuration } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 
 const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY_FOR_EMBEDDINGS,
 });
 
 const openai = new OpenAIApi(config);
@@ -12,7 +12,7 @@ export const runtime = "edge";
 
 export async function POST(req: Request): Promise<Response> {
   // Check if the OPENAI_API_KEY is set, if not return 400
-  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "") {
+  if (!process.env.OPENAI_API_KEY_FOR_EMBEDDINGS || process.env.OPENAI_API_KEY_FOR_EMBEDDINGS === "") {
     return new Response(
       "Missing OPENAI_API_KEY – make sure to add it to your .env file.",
       {
@@ -24,7 +24,7 @@ export async function POST(req: Request): Promise<Response> {
   let { prompt } = await req.json();
 
   const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4-turbo",
     messages: [
       {
         role: "system",
