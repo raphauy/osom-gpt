@@ -25,6 +25,7 @@ export type DataClient = {
     completionTokensPrice?: number | null
     promptCostTokenPrice: number
     completionCostTokenPrice: number
+    modelName: string
   }
     
 
@@ -51,7 +52,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice: promptCostTokenPrice,
-        completionCostTokenPrice: completionCostTokenPrice
+        completionCostTokenPrice: completionCostTokenPrice,
+        modelName: model?.name || ''
     }
     return data
 }
@@ -83,7 +85,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
-        completionCostTokenPrice
+        completionCostTokenPrice,
+        modelName: model?.name || ''
     }
     return data
 }
@@ -112,7 +115,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
-        completionCostTokenPrice
+        completionCostTokenPrice,
+        modelName: model?.name || ''
     }
     return data
 }
@@ -140,7 +144,8 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
-        completionCostTokenPrice
+        completionCostTokenPrice,
+        modelName: model?.name || ''
     }
     return data
 }
@@ -175,7 +180,8 @@ export async function getDataClients() {
                 promptTokensPrice: client.promptTokensPrice,
                 completionTokensPrice: client.completionTokensPrice,
                 promptCostTokenPrice,
-                completionCostTokenPrice
+                completionCostTokenPrice,
+                modelName: model?.name || ''
             };
         })
     );
