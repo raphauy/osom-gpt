@@ -7,8 +7,8 @@ pnpm-lock.yaml
 /sql/delete_tables.sh
 borrar*.json
 borrar*.txt
-products.csv
-migrations.bak
+/prisma/products.csv
+/prisma/migrations.bak
 
 /prisma/seed-models.ts
 /prisma/seed-tokens-price.ts
