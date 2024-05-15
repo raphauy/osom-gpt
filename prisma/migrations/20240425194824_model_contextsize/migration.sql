@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Model" ADD COLUMN     "contextSize" INTEGER NOT NULL DEFAULT 2048;

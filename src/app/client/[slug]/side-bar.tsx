@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Scan, Tag, Ticket, User, Warehouse } from "lucide-react";
+import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, LucideBriefcase, MessageCircle, Receipt, Scan, ShoppingBag, Tag, Ticket, User, Users, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -106,6 +106,13 @@ export default function SideBar({ slug, showRegistro, showCarServices }: Props) 
 
         {divider()}
 
+        <Link href={`/client/${slug}/clientes`} className={cn(commonClasses, path.endsWith("clientes") && selectedClasses)}>
+          <div className="pb-1">
+            <LucideBriefcase size={23} /> 
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Clientes</p>
+        </Link>
+
         <Link href={`/client/${slug}/productos`} className={cn(commonClasses, path.endsWith("productos") && selectedClasses)}>
           <div className="pb-1">
             <Scan size={23} /> 
@@ -118,6 +125,20 @@ export default function SideBar({ slug, showRegistro, showCarServices }: Props) 
             <Tag size={23} /> 
           </div>
           <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Categorias</p>
+        </Link>
+
+        <Link href={`/client/${slug}/ventas`} className={cn(commonClasses, path.endsWith("ventas") && selectedClasses)}>
+          <div className="pb-1">
+            <ShoppingBag size={23} />  
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Ventas</p>
+        </Link>
+
+        <Link href={`/client/${slug}/vendedores`} className={cn(commonClasses, path.endsWith("vendedores") && selectedClasses)}>
+          <div className="pb-1">
+          <Users size={23} />  
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Vendedores</p>
         </Link>
 
       </section>

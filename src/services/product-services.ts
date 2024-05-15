@@ -1,7 +1,7 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
 import { CategoryDAO, CategoryFormValues, createCategory, getCategoryDAO, getCategoryDAOByName } from "./category-services"
-import { getClientBySlug } from "./clientService"
+import { getClient, getClientBySlug } from "./clientService"
 
 export type ProductDAO = {
 	id: string
@@ -13,6 +13,7 @@ export type ProductDAO = {
 	precioUSD: number
 	category: CategoryDAO
 	categoryId: string
+  categoryName: string
   clientId: string
 }
 
@@ -24,7 +25,7 @@ export const productSchema = z.object({
 	pedidoEnOrigen: z.number({required_error: "pedidoEnOrigen is required."}),
 	precioUSD: z.number({required_error: "precioUSD is required."}),
 	categoryName: z.string().min(1, "categoryId is required."),
-  clientSlug: z.string().min(1, "clientSlug is required."),
+  clientId: z.string().min(1, "clientSlug is required."),
 })
 
 export type ProductFormValues = z.infer<typeof productSchema>
@@ -48,15 +49,14 @@ export async function getProductDAO(id: string) {
   return found as ProductDAO
 }
     
-export async function createProduct(data: ProductFormValues) {
+export async function createOrUpdateProduct(data: ProductFormValues) {
   const categoryName= data.categoryName
-  const client= await getClientBySlug(data.clientSlug)
+  const client= await getClient(data.clientId)
   if (!client) {
     throw new Error("client not found")
   }
-  let category = await getCategoryDAOByName(categoryName)
+  let category = await getCategoryDAOByName(categoryName, client.id)
   if (!category) {
-    // create category
     const categoryForm: CategoryFormValues = {
       name: categoryName, 
       clientId: client.id
@@ -74,21 +74,20 @@ export async function createProduct(data: ProductFormValues) {
     categoryId: category.id,
     clientId: client.id
   }
-  const created = await prisma.product.create({
-    data: dataWithCategory
+
+  const created = await prisma.product.upsert({
+    where: {
+      clientId_externalId: {
+        clientId: client.id,
+        externalId: data.externalId
+      }
+    },
+    create: dataWithCategory,
+    update: dataWithCategory,
   })
-  return created
+  return created  
 }
 
-export async function updateProduct(id: string, data: ProductFormValues) {
-  const updated = await prisma.product.update({
-    where: {
-      id
-    },
-    data
-  })
-  return updated
-}
 
 export async function deleteProduct(id: string) {
   const deleted = await prisma.product.delete({
@@ -97,6 +96,21 @@ export async function deleteProduct(id: string) {
     },
   })
   return deleted
+}
+
+export async function deleteAllProductsByClient(clientId: string) {
+  try {
+    await prisma.product.deleteMany({
+      where: {
+        clientId
+      },
+    })
+    return true
+  
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }
 
 
@@ -110,16 +124,22 @@ export async function getFullProductsDAO(slug: string) {
       clientId: client.id
     },
     orderBy: {
-      name: 'asc'
+      externalId: 'asc'
     },
     include: {
 			category: true,
 		}
   })
-  return found as ProductDAO[]
+  const res: ProductDAO[] = found.map((product) => {
+    return {
+      ...product,
+      categoryName: product.category.name,
+    }
+  })
+  return res
 }
   
-export async function getFullProductDAO(id: string) {
+export async function getFullProductDAO(id: string): Promise<ProductDAO> {
   const found = await prisma.product.findUnique({
     where: {
       id
@@ -128,6 +148,34 @@ export async function getFullProductDAO(id: string) {
 			category: true,
 		}
   })
-  return found as ProductDAO
+  if (!found) {
+    throw new Error("product not found")
+  }
+  const res: ProductDAO = {
+    ...found,
+    categoryName: found.category.name,
+  }
+  return res
 }
     
+export async function getFullProductDAOByExternalId(externalId: string, clientId: string) {
+  const found = await prisma.product.findUnique({
+    where: {
+      clientId_externalId: {
+        clientId,
+        externalId
+      }
+    },
+    include: {
+			category: true,
+		}
+  })
+  if (!found) {
+    throw new Error("product not found")
+  }
+  const res: ProductDAO = {
+    ...found,
+    categoryName: found.category.name,
+  }
+  return res
+}

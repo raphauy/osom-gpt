@@ -297,6 +297,9 @@ model ComClient {
   clientId        String
 
   sells           Sell[]                            // gennext: skip.list
+  vendors         Vendor[]                          // gennext: skip.list
+  
+  @@unique([clientId, code])
 }
 
 model Sell {
@@ -331,12 +334,17 @@ model Product {
   clientId        String
 
   sells           Sell[]                            // gennext: skip.list
+
+  @@unique([clientId, externalId])
 }
 
 model Vendor {
   id              String    @id @default(cuid())
   name            String                            // gennext: show.column
-  sells           Sell[]                            // gennext: skip.list
+  sells           Sell[]                            // gennext: skip.
+  
+  comClient       ComClient @relation(fields: [comClientId], references: [id], onDelete: Cascade)
+  comClientId     String
 }
 
 model Category {

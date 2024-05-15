@@ -1,8 +1,8 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
-import { ComClientDAO } from "./comclient-services"
-import { ProductDAO } from "./product-services"
-import { VendorDAO } from "./vendor-services"
+import { ComClientDAO, ComClientFormValues, createComClient, getFullComClientDAOByCode } from "./comclient-services"
+import { ProductDAO, getFullProductDAOByExternalId } from "./product-services"
+import { VendorDAO, createOrUpdateVendor, getFullVendorDAOByNameAndComclientId } from "./vendor-services"
 
 export type SellDAO = {
 	id: string
@@ -18,12 +18,17 @@ export type SellDAO = {
 }
 
 export const sellSchema = z.object({
+  clientId: z.string().min(1, "clientId is required."),
+  comClientCode: z.string().min(1, "comClientCode is required."),
+	currency: z.string().min(1, "currency is required."),
+	comClientName: z.string().min(1, "comClientName is required."),
+	vendorName: z.string().min(1, "vendorName is required."),
 	externalId: z.string().min(1, "externalId is required."),
 	quantity: z.number({required_error: "quantity is required."}),
-	currency: z.string().min(1, "currency is required."),
-	comClientId: z.string().min(1, "comClientId is required."),
-	productId: z.string().min(1, "productId is required."),
-	vendorId: z.string().min(1, "vendorId is required."),
+  departamento: z.string().optional(),
+  localidad: z.string().optional(),
+  direccion: z.string().optional(),
+  telefono: z.string().optional(),
 })
 
 export type SellFormValues = z.infer<typeof sellSchema>
@@ -47,22 +52,48 @@ export async function getSellDAO(id: string) {
   return found as SellDAO
 }
     
-export async function createSell(data: SellFormValues) {
-  // TODO: implement createSell
-  const created = await prisma.sell.create({
-    data
-  })
-  return created
-}
+export async function createOrUpdateSell(data: SellFormValues) {
+  // get comClient by code, if not found, create it
+  let comClientId
+  const comClient= await getFullComClientDAOByCode(data.comClientCode, data.clientId)
+  if (!comClient) {
+    const newComClientForm: ComClientFormValues = {
+      clientId: data.clientId,
+      code: data.comClientCode,
+      name: data.comClientName,
+      departamento: data.departamento,
+      localidad: data.localidad,
+      direccion: data.direccion,
+      telefono: data.telefono,
+    }
+    const comClient= await createComClient(newComClientForm)
+    comClientId = comClient.id
+  } else {
+    comClientId = comClient.id
+  }
 
-export async function updateSell(id: string, data: SellFormValues) {
-  const updated = await prisma.sell.update({
-    where: {
-      id
-    },
-    data
+  // get product by externalId, if not found throw error
+  const product = await getFullProductDAOByExternalId(data.externalId, data.clientId)
+  if (!product) {
+    throw new Error("product not found")
+  }
+
+  const vendor = await createOrUpdateVendor({name: data.vendorName, comClientId})
+
+  const sell= await prisma.sell.create({
+    data: {
+      externalId: product.externalId,
+      quantity: data.quantity,
+      currency: data.currency,
+      comClientId,
+      productId: product.id,
+      vendorId: vendor.id,
+    }
   })
-  return updated
+
+  console.log(sell)
+
+  return sell
 }
 
 export async function deleteSell(id: string) {
@@ -75,8 +106,15 @@ export async function deleteSell(id: string) {
 }
 
 
-export async function getFullSellsDAO() {
+export async function getFullSellsDAO(slug: string) {
   const found = await prisma.sell.findMany({
+    where: {
+      comClient: {
+        client: {
+          slug
+        }
+      }
+    },
     orderBy: {
       id: 'asc'
     },

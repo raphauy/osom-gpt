@@ -9,72 +9,54 @@ import { X } from "lucide-react"
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
   
 interface DataTableToolbarProps<TData> {
-  table: TanstackTable<TData>;
+  table: TanstackTable<TData>
+  categories: string[]
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, categories }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
-    <div className="flex gap-1 dark:text-white items-center">
-        
-          <Input className="max-w-xs" placeholder="externalId filter..."
-              value={(table.getColumn("externalId")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("externalId")?.setFilterValue(event.target.value)}                
-          />
-          
+    <div className="flex items-center gap-1 dark:text-white">
+
+      {table.getColumn("categoryName") && (
+        <DataTableFacetedFilter
+          column={table.getColumn("categoryName")}
+          title="Categoría"
+          options={categories}
+        />
+      )}
+
+      <Input className="max-w-xs" placeholder="filtrar por Id (ranking)..."
+          value={(table.getColumn("externalId")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("externalId")?.setFilterValue(event.target.value)}                
+      />
       
-          <Input className="max-w-xs" placeholder="code filter..."
-              value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("code")?.setFilterValue(event.target.value)}                
-          />
-          
+  
+      <Input className="max-w-xs" placeholder="filtrar por código..."
+          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("code")?.setFilterValue(event.target.value)}                
+      />
       
-          <Input className="max-w-xs" placeholder="name filter..."
-              value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="stock filter..."
-              value={(table.getColumn("stock")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("stock")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="pedidoEnOrigen filter..."
-              value={(table.getColumn("pedidoEnOrigen")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("pedidoEnOrigen")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="precioUSD filter..."
-              value={(table.getColumn("precioUSD")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("precioUSD")?.setFilterValue(event.target.value)}                
-          />
-          
-        {/* {table.getColumn("role") && roles && (
-          <DataTableFacetedFilter
-            column={table.getColumn("role")}
-            title="Rol"
-            options={roles}
-          />
-        )} */}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <X className="w-4 h-4 ml-2" />
-          </Button>
-        )}
-        <div className="flex-1 ">
-          <DataTableViewOptions table={table}/>
-        </div>
+  
+      <Input className="max-w-xs" placeholder="filtrar por nombre..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
+      />
+  
+    {isFiltered && (
+      <Button
+        variant="ghost"
+        onClick={() => table.resetColumnFilters()}
+        className="h-8 px-2 lg:px-3"
+      >
+        Reset
+        <X className="w-4 h-4 ml-2" />
+      </Button>
+    )}
     </div>
   )
 }
@@ -84,6 +66,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   columnsOff?: string[]
   subject: string
+  categories: string[]
 }
 
 export function DataTable<TData, TValue>({
@@ -91,6 +74,7 @@ export function DataTable<TData, TValue>({
   data,
   columnsOff,
   subject,
+  categories,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -130,7 +114,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4 dark:text-white">
-      <DataTableToolbar table={table}/>
+      <DataTableToolbar table={table} categories={categories}/>
       <div className="border rounded-md">
         <Table>
           <TableHeader>

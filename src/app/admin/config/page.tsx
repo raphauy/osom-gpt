@@ -10,6 +10,7 @@ import TokensPrice from "./tokens-price"
 import CopyHook from "./copy-hook"
 import { getClientBySlug, getFunctionsOfClient } from "@/services/clientService"
 import DocumentsHook from "./documents-hook"
+import ComercialHook from "./comercial-hook"
 
 type Props = {
     searchParams: {
@@ -61,6 +62,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                     { haveCarServiceFunction && 
                         <CopyHook name="Car Service Entry" path={`${BASE_PATH}/api/${client.id}/car-service`} clientId={client.id} />
                     }
+                    <ComercialHook basePath={BASE_PATH} />
                 </TabsContent>
                 <TabsContent value="general">
                     <ConfigsPage />

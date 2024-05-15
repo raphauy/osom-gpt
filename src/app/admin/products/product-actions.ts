@@ -1,22 +1,17 @@
 "use server"
   
 import { revalidatePath } from "next/cache"
-import { ProductDAO, ProductFormValues, createProduct, updateProduct, getFullProductDAO, deleteProduct } from "@/services/product-services"
+import { ProductDAO, ProductFormValues, getFullProductDAO, deleteProduct, deleteAllProductsByClient, createOrUpdateProduct } from "@/services/product-services"
 
 
 export async function getProductDAOAction(id: string): Promise<ProductDAO | null> {
     return getFullProductDAO(id)
 }
 
-export async function createOrUpdateProductAction(id: string | null, data: ProductFormValues): Promise<ProductDAO | null> {       
-    let updated= null
-    if (id) {
-        updated= await updateProduct(id, data)
-    } else {
-        updated= await createProduct(data)
-    }     
+export async function createOrUpdateProductAction(data: ProductFormValues): Promise<ProductDAO | null> {       
+    const updated= await createOrUpdateProduct(data)
 
-    revalidatePath("/admin/products")
+    revalidatePath("/client/[slug]/productos", "page")
 
     return updated as ProductDAO
 }
@@ -24,8 +19,17 @@ export async function createOrUpdateProductAction(id: string | null, data: Produ
 export async function deleteProductAction(id: string): Promise<ProductDAO | null> {    
     const deleted= await deleteProduct(id)
 
-    revalidatePath("/admin/products")
+    revalidatePath("/client/[slug]/productos", "page")
 
     return deleted as ProductDAO
 }
+
+export async function deleteAllProductsByClientAction(clientId: string): Promise<boolean> {
+    const ok= await deleteAllProductsByClient(clientId)
+
+    revalidatePath("/client/[slug]/productos", "page")
+
+    return ok
+}
+
 

@@ -9,72 +9,63 @@ import { X } from "lucide-react"
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
   
 interface DataTableToolbarProps<TData> {
-  table: TanstackTable<TData>;
+  table: TanstackTable<TData>
+  departmentos: string[]
+  localidades: string[]
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, departmentos, localidades }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
-    <div className="flex gap-1 dark:text-white items-center">
-        
-          <Input className="max-w-xs" placeholder="code filter..."
-              value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("code")?.setFilterValue(event.target.value)}                
-          />
+    <div className="flex items-center gap-1 dark:text-white">
+      {table.getColumn("departamento") &&  (
+        <DataTableFacetedFilter
+          column={table.getColumn("departamento")}
+          title="Departamento"
+          options={departmentos}
+        />
+      )}
+
+      {table.getColumn("localidad") &&  (
+        <DataTableFacetedFilter
+          column={table.getColumn("localidad")}
+          title="Localidad"
+          options={localidades}
+        />
+      )}
+
+      <Input className="max-w-xs" placeholder="filtro por código"
+          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("code")?.setFilterValue(event.target.value)}                
+      />
           
       
-          <Input className="max-w-xs" placeholder="name filter..."
-              value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
-          />
-          
+      <Input className="max-w-xs" placeholder="filtro por nombre"
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
+      />
       
-          <Input className="max-w-xs" placeholder="departamento filter..."
-              value={(table.getColumn("departamento")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("departamento")?.setFilterValue(event.target.value)}                
-          />
-          
+  
+      <Input className="max-w-xs" placeholder="filtro por dirección"
+          value={(table.getColumn("direccion")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("direccion")?.setFilterValue(event.target.value)}                
+      />
       
-          <Input className="max-w-xs" placeholder="localidad filter..."
-              value={(table.getColumn("localidad")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("localidad")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="direccion filter..."
-              value={(table.getColumn("direccion")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("direccion")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="telefono filter..."
-              value={(table.getColumn("telefono")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("telefono")?.setFilterValue(event.target.value)}                
-          />
-          
-        {/* {table.getColumn("role") && roles && (
-          <DataTableFacetedFilter
-            column={table.getColumn("role")}
-            title="Rol"
-            options={roles}
-          />
-        )} */}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <X className="w-4 h-4 ml-2" />
-          </Button>
-        )}
-        <div className="flex-1 ">
-          <DataTableViewOptions table={table}/>
-        </div>
+  
+      {isFiltered && (
+        <Button
+          variant="ghost"
+          onClick={() => table.resetColumnFilters()}
+          className="h-8 px-2 lg:px-3"
+        >
+          Reset
+          <X className="w-4 h-4 ml-2" />
+        </Button>
+      )}
     </div>
   )
 }
@@ -84,6 +75,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   columnsOff?: string[]
   subject: string
+  departmentos: string[]
+  localidades: string[]
 }
 
 export function DataTable<TData, TValue>({
@@ -91,6 +84,8 @@ export function DataTable<TData, TValue>({
   data,
   columnsOff,
   subject,
+  departmentos,
+  localidades,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -130,7 +125,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4 dark:text-white">
-      <DataTableToolbar table={table}/>
+      <DataTableToolbar table={table} departmentos={departmentos} localidades={localidades}/>
       <div className="border rounded-md">
         <Table>
           <TableHeader>

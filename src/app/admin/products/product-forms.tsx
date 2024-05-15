@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "@/components/ui/use-toast"
 import { useEffect, useState } from "react"
-import { deleteProductAction, createOrUpdateProductAction, getProductDAOAction } from "./product-actions"
+import { deleteProductAction, createOrUpdateProductAction, getProductDAOAction, deleteAllProductsByClientAction } from "./product-actions"
 import { productSchema, ProductFormValues } from '@/services/product-services'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Loader } from "lucide-react"
 
 type Props= {
-  id?: string
+  id: string
   closeDialog: () => void
 }
 
@@ -27,8 +27,8 @@ export function ProductForm({ id, closeDialog }: Props) {
   const onSubmit = async (data: ProductFormValues) => {
     setLoading(true)
     try {
-      await createOrUpdateProductAction(id ? id : null, data)
-      toast({ title: id ? "Product updated" : "Product created" })
+      await createOrUpdateProductAction(data)
+      toast({ title: id ? "Actualizar producto" : "Crear producto" })
       closeDialog()
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" })
@@ -38,18 +38,18 @@ export function ProductForm({ id, closeDialog }: Props) {
   }
 
   useEffect(() => {
-    if (id) {
-      getProductDAOAction(id).then((data) => {
-        if (data) {
-          form.reset(data)
-        }
-        Object.keys(form.getValues()).forEach((key: any) => {
-          if (form.getValues(key) === null) {
-            form.setValue(key, "")
-          }
-        })
-      })
-    }
+    getProductDAOAction(id).then((data) => {
+      if (data) {
+        form.setValue("clientId", data.clientId)
+        form.setValue("externalId", data.externalId)
+        form.setValue("code", data.code)
+        form.setValue("name", data.name)
+        form.setValue("stock", data.stock)
+        form.setValue("pedidoEnOrigen", data.pedidoEnOrigen)
+        form.setValue("precioUSD", data.precioUSD)
+        form.setValue("categoryName", data.categoryName)
+      }
+    })
   }, [form, id])
 
   return (
@@ -147,25 +147,10 @@ export function ProductForm({ id, closeDialog }: Props) {
           />
           
       
-          <FormField
-            control={form.control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>CategoryId</FormLabel>
-                <FormControl>
-                  <Input placeholder="Product's categoryId" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-
         <div className="flex justify-end">
             <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
             <Button type="submit" className="w-32 ml-2">
-              {loading ? <Loader className="h-4 w-4 animate-spin" /> : <p>Save</p>}
+              {loading ? <Loader className="w-4 h-4 animate-spin" /> : <p>Save</p>}
             </Button>
           </div>
         </form>
@@ -196,11 +181,44 @@ export function DeleteProductForm({ id, closeDialog }: Props) {
   return (
     <div>
       <Button onClick={() => closeDialog && closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
-      <Button onClick={handleDelete} variant="destructive" className="w-32 ml-2 gap-1">
-        { loading && <Loader className="h-4 w-4 animate-spin" /> }
+      <Button onClick={handleDelete} variant="destructive" className="w-32 gap-1 ml-2">
+        { loading && <Loader className="w-4 h-4 animate-spin" /> }
         Delete  
       </Button>
     </div>
   )
 }
 
+type DeleteAllProps= {
+  clientId: string
+  closeDialog: () => void
+}
+
+export function DeleteAllProductsForm({ clientId, closeDialog }: DeleteAllProps) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleDelete() {
+    setLoading(true)
+    deleteAllProductsByClientAction(clientId)
+    .then(() => {
+      toast({title: "Productos borrados" })
+    })
+    .catch((error) => {
+      toast({title: "Error", description: error.message, variant: "destructive"})
+    })
+    .finally(() => {
+      setLoading(false)
+      closeDialog && closeDialog()
+    })
+  }
+  
+  return (
+    <div>
+      <Button onClick={() => closeDialog && closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
+      <Button onClick={handleDelete} variant="destructive" className="gap-1 ml-2">
+        { loading && <Loader className="w-4 h-4 animate-spin" /> }
+        Borrar todos los productos  
+      </Button>
+    </div>
+  )
+}

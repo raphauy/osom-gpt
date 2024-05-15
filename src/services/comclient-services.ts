@@ -71,8 +71,13 @@ export async function deleteComClient(id: string) {
 }
 
 
-export async function getFullComClientsDAO() {
+export async function getFullComClientsDAO(slug: string) {
   const found = await prisma.comClient.findMany({
+    where: {
+      client: {
+        slug
+      }
+    },
     orderBy: {
       id: 'asc'
     },
@@ -95,3 +100,17 @@ export async function getFullComClientDAO(id: string) {
   return found as ComClientDAO
 }
     
+export async function getFullComClientDAOByCode(code: string, clientId: string) {
+  const found = await prisma.comClient.findUnique({
+    where: {
+      clientId_code: {
+        code,
+        clientId
+      }
+    },
+    include: {
+			client: true,
+		}
+  })
+  return found as ComClientDAO
+}

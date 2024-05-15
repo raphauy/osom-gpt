@@ -6,7 +6,7 @@ import useCopyToClipboard from "@/lib/useCopyToClipboard"
 import { cn } from "@/lib/utils"
 import { Copy } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface Props {
     name: string
@@ -21,6 +21,11 @@ export default function CopyHook({ name, path, clientId }: Props) {
 
     const searchParams= useSearchParams()
     const visible= searchParams.get("clientId") === clientId || clientId === "all"
+
+    useEffect(() => {
+        setHook(path)
+    }, [path])
+    
 
     function copyHookToClipboard(){   
         copy(hook)    

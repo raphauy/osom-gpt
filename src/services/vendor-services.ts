@@ -4,9 +4,11 @@ import { prisma } from "@/lib/db"
 export type VendorDAO = {
 	id: string
 	name: string
+  comClientId: string
 }
 
 export const vendorSchema = z.object({
+  comClientId: z.string().min(1, "comClientId is required."),
 	name: z.string().min(1, "name is required."),
 })
 
@@ -31,23 +33,26 @@ export async function getVendorDAO(id: string) {
   return found as VendorDAO
 }
     
-export async function createVendor(data: VendorFormValues) {
-  // TODO: implement createVendor
-  const created = await prisma.vendor.create({
-    data
+export async function createOrUpdateVendor(data: VendorFormValues) {
+  let vendor= await prisma.vendor.findFirst({
+    where: {
+      comClientId: data.comClientId,
+      name: data.name,
+    },
   })
-  return created
+
+  if (!vendor) {
+    vendor = await prisma.vendor.create({
+      data: {
+        comClientId: data.comClientId,
+        name: data.name,
+      },
+    })
+  }
+
+  return vendor
 }
 
-export async function updateVendor(id: string, data: VendorFormValues) {
-  const updated = await prisma.vendor.update({
-    where: {
-      id
-    },
-    data
-  })
-  return updated
-}
 
 export async function deleteVendor(id: string) {
   const deleted = await prisma.vendor.delete({
@@ -59,13 +64,18 @@ export async function deleteVendor(id: string) {
 }
 
 
-export async function getFullVendorsDAO() {
+export async function getFullVendorsDAO(slug: string) {
   const found = await prisma.vendor.findMany({
+    where: {
+      comClient: {
+        client: {
+          slug
+        }
+      }
+    },
     orderBy: {
       id: 'asc'
     },
-    include: {
-		}
   })
   return found as VendorDAO[]
 }
@@ -75,9 +85,16 @@ export async function getFullVendorDAO(id: string) {
     where: {
       id
     },
-    include: {
-		}
   })
   return found as VendorDAO
 }
-    
+
+export async function getFullVendorDAOByNameAndComclientId(name: string, comClientId: string) {
+  const found = await prisma.vendor.findFirst({
+    where: {
+      name,
+      comClientId
+    },
+  })
+  return found as VendorDAO
+}

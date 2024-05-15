@@ -5,11 +5,11 @@ import { ArrowLeftRight, ChevronsLeft, ChevronsRight, Loader, Pencil, PlusCircle
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast";
-import { ProductForm, DeleteProductForm } from "./product-forms"
+import { ProductForm, DeleteProductForm, DeleteAllProductsForm } from "./product-forms"
 import { getProductDAOAction } from "./product-actions"
 
 type Props= {
-  id?: string
+  id: string
 }
 
 const addTrigger= <Button><PlusCircle size={22} className="mr-2"/>Create Product</Button>
@@ -65,5 +65,26 @@ interface CollectionProps{
 
 
 
+type DeleteAllProps= {
+  clientId: string
+}
 
-  
+export function DeleteAllProductsDialog({ clientId }: DeleteAllProps) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="destructive"><Trash2 className="w-5 h-5 mr-2"/>Borrar todos los productos</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Borrar todos los productos</DialogTitle>
+          <DialogDescription className="py-8">Estas seguro que quiere borrar todos los productos para este cliente?</DialogDescription>
+        </DialogHeader>
+        <DeleteAllProductsForm closeDialog={() => setOpen(false)} clientId={clientId} />
+      </DialogContent>
+    </Dialog>
+  )
+}
+

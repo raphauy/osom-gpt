@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { format } from "date-fns"
 import { DeleteProductDialog, ProductDialog } from "./product-dialogs"
+import { formatCurrency } from "@/lib/utils"
 
 
 export const columns: ColumnDef<ProductDAO>[] = [
@@ -13,14 +14,22 @@ export const columns: ColumnDef<ProductDAO>[] = [
   {
     accessorKey: "externalId",
     header: ({ column }) => {
-        return (
-          <Button variant="ghost" className="pl-0 dark:text-white"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            ExternalId
-            <ArrowUpDown className="w-4 h-4 ml-1" />
-          </Button>
-    )},
+      return (
+        <Button variant="ghost" className="pl-0 dark:text-white min-w-[170px]"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Producto (Ranking)
+          <ArrowUpDown className="w-4 h-4 ml-1" />
+        </Button>
+  )},
+  cell: ({ row }) => {
+    const data= row.original
+    return (
+      <div className="w-16">
+        <p className="font-bold text-right">{data.externalId}</p>
+      </div>
+    )
   },
+},
 
   {
     accessorKey: "code",
@@ -28,7 +37,7 @@ export const columns: ColumnDef<ProductDAO>[] = [
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Code
+            Código
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
@@ -40,7 +49,7 @@ export const columns: ColumnDef<ProductDAO>[] = [
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Name
+            Nombre
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
@@ -56,6 +65,12 @@ export const columns: ColumnDef<ProductDAO>[] = [
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    cell: ({ row }) => {
+      const data= row.original
+      return (
+        <p className="mr-10 text-right">{data.stock}</p>
+      )
+    },
   },
 
   {
@@ -64,10 +79,16 @@ export const columns: ColumnDef<ProductDAO>[] = [
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            PedidoEnOrigen
+            Origen
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    cell: ({ row }) => {
+      const data= row.original
+      return (
+        <p className="mr-10 text-right">{data.pedidoEnOrigen}</p>
+      )
+    },
   },
 
   {
@@ -76,32 +97,39 @@ export const columns: ColumnDef<ProductDAO>[] = [
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            PrecioUSD
+            Precio
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    cell: ({ row }) => {
+      const data= row.original
+      return (
+        <p className="mr-5 text-right">{formatCurrency(data.precioUSD)}</p>
+      )
+    },
   },
-  // {
-  //   accessorKey: "role",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button variant="ghost" className="pl-0 dark:text-white"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-  //         Rol
-  //         <ArrowUpDown className="w-4 h-4 ml-1" />
-  //       </Button>
-  //     )
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id))
-  //   },
-  // },
+
+  {
+    accessorKey: "categoryName",
+    header: ({ column }) => {
+        return (
+          <Button variant="ghost" className="pl-0 dark:text-white"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Categoría
+            <ArrowUpDown className="w-4 h-4 ml-1" />
+          </Button>
+    )},
+      filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+},
+
   {
     id: "actions",
     cell: ({ row }) => {
       const data= row.original
 
-      const deleteDescription= `Do you want to delete Product ${data.id}?`
+      const deleteDescription= `Quieres eliminar el producto ${data.name}?`
  
       return (
         <div className="flex items-center justify-end gap-2">

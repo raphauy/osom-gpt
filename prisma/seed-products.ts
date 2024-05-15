@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { createReadStream } from 'fs';
 import { parse } from 'csv-parse';
-import { ProductFormValues, createProduct } from "@/services/product-services";
+import { createOrUpdateProduct } from "@/services/product-services";
 
 // model Product {
 //   id              String    @id @default(cuid())
@@ -68,10 +68,19 @@ export async function seedProdcuts(prisma: PrismaClient, csvPath: string) {
         pedidoEnOrigen: parseInt(record[5]),  // Pedido en Origen
         precioUSD: parseFloat(record[6].replace(',', '.')),  // Precio venta Publico USD
         categoryName: record[3],  // Familia
-        clientSlug: "trimant"
-      };
+      }
       console.log(dataProduct);
-      await createProduct(dataProduct);
+      //await createOrUpdateProduct(dataProduct);
+      const postUrl= "http://localhost:3000/api/cltc1dkoj01m1c7mpv5h3y00y/products/update"
+      const response = await fetch(postUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer t9EyqpztGjWNQnfOE8XRINAZe41pnuHJ'
+        },
+        body: JSON.stringify(dataProduct)
+      })
+      console.log(response)
     } catch (error) {
       console.log("Error processing record", record, error);
     }    

@@ -34,9 +34,10 @@ export async function getCategoryDAO(id: string) {
   return found as CategoryDAO
 }
 
-export async function getCategoryDAOByName(name: string) {
+export async function getCategoryDAOByName(name: string, clientId: string) {
   const found = await prisma.category.findFirst({
     where: {
+      clientId,
       name
     },
   })
