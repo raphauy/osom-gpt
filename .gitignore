@@ -12,6 +12,7 @@ borrar*.txt
 
 /prisma/seed-models.ts
 /prisma/seed-tokens-price.ts
+/prisma/seed-products.ts
 
 /prisma/seed-models.ts
 /prisma/seed-tokens-price.ts
