@@ -452,6 +452,9 @@ switch (name) {
   case "reservarSummit":
     res= true
     break
+  case "reservarServicio":
+    res= true
+    break
   default:
     break
 }
