@@ -226,11 +226,15 @@ export async function getNarvaezEntry(clientId: string, phone: string){
   console.log("clientId: ", clientId)
   console.log("phone: ", phone)
   
+  // take only results with less tan 10 minutes of creation
   const found = await prisma.narvaez.findFirst({
     where: {
+      updatedAt: {
+        gt: new Date(Date.now() - 10 * 60 * 1000)
+      },
       conversation: {
         phone
-      }
+      },
     },
     orderBy: {
       updatedAt: 'desc'

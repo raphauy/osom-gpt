@@ -42,6 +42,14 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    cell: ({ row }) => {
+      const data= row.original
+      return (
+        <div>
+          <p className="font-bold">{data.clasificacion}</p>
+        </div>
+      )
+    },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
@@ -56,14 +64,13 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
       const data= row.original
 
       return (
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 min-w-[100px]">
           <p>Id.Trackeo:</p>
           <p>{data.idTrackeo}</p>
           <p>Id.Propiedad:</p>
           <p>{data.idPropiedad}</p>
           <p>URL:</p>
           <div>
-
             {
               data.urlPropiedad &&
               <Link href={data.urlPropiedad} target="_blank">
@@ -71,6 +78,7 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
               </Link>
             }
            </div>
+           <p className="col-span-2 mt-10">{formatDistanceToNow(data.createdAt, {locale: es})}</p>
         </div>
       )
     },
@@ -89,8 +97,8 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
     cell: ({ row }) => {
       const data= row.original
       return (
-        <div>
-          <p>{data.resumenPedido}</p>
+        <div className="max-w-[500px]">
+          <p className="break-words">{data.resumenPedido}</p>
           {data.consulta && <p className="mt-5">Consulta: {data.consulta}</p>}
           <p className="mt-5">Consulta adicional: {data.consultaAdicional}</p>
           <p className="mt-5">Horario de contacto: {data.horarioContacto}</p>
@@ -108,9 +116,6 @@ export const columns: ColumnDef<NarvaezDAO>[] = [
  
       return (
         <div className="flex items-center justify-end gap-2">
-          <p className="">
-            {formatDistanceToNow(data.createdAt, {locale: es})}
-          </p>
           <DeleteNarvaezDialog description={deleteDescription} id={data.id} />
         </div>
       )

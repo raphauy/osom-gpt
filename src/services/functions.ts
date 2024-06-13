@@ -441,23 +441,23 @@ export async function processFunctionCall(clientId: string, name: string, args: 
 }
 
 export function getAgentes(name: string): boolean {
-let res= false
-switch (name) {
-  case "notifyHuman":
-    res= true
-    break
-  case "registrarPedido":
-    res= true
-    break
-  case "reservarSummit":
-    res= true
-    break
-  case "reservarServicio":
-    res= true
-    break
-  default:
-    break
-}
-return res
+  let res= false
+  switch (name) {
+    case "notifyHuman":
+      res= true
+      break
+    case "registrarPedido":
+      res= true
+      break
+    case "reservarSummit":
+      res= true
+      break
+    case "reservarServicio":
+      res= true
+      break
+    default:
+      break
+  }
+  return res
 }
 
