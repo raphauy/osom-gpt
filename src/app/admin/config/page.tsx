@@ -28,6 +28,7 @@ export default async function ConfigPage({ searchParams }: Props) {
     const summitClient= await getClientBySlug("summit")
     const functionsOfClient= await getFunctionsOfClient(clientId)
     const haveCarServiceFunction= functionsOfClient.find((f) => f.name === "reservarServicio") !== undefined
+    const haveRegistrarPedidoFunction= functionsOfClient.find((f) => f.name === "registrarPedido") !== undefined
 
     const BASE_PATH= process.env.NEXTAUTH_URL || "NOT-CONFIGURED"
 
@@ -60,6 +61,9 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <CopyHook name="Summit Entry" path={`${BASE_PATH}/api/${summitClient?.id}/summit`} clientId={summitClient?.id || ""} />
                     { haveCarServiceFunction && 
                         <CopyHook name="Car Service Entry" path={`${BASE_PATH}/api/${client.id}/car-service`} clientId={client.id} />
+                    }
+                    { haveRegistrarPedidoFunction && 
+                        <CopyHook name="Obtener Registros (Narvaez)" path={`${BASE_PATH}/api/${client.id}/registros`} clientId={client.id} />
                     }
                 </TabsContent>
                 <TabsContent value="general">
