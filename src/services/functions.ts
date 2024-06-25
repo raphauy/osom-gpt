@@ -306,55 +306,6 @@ export async function reservarServicio(clientId: string, conversationId: string,
 
 
 
-// export async function runFunction(name: string, args: any, clientId: string){
-//   console.log("raw args.texto: ", args.texto)
-  
-//   switch (name) {
-//     case "getSection":
-//       return getSection(args.docId, args.secuence)
-//     case "getDocument":
-//       return getDocument(args.docId)
-//     case "notifyHuman":
-//       return notifyHuman(clientId)
-//     case "getDateOfNow":
-//       return getDateOfNow()
-//     case "registrarPedido":
-//       return registrarPedido(clientId, 
-//         args.conversationId, 
-//         args.clasificacion, 
-//         decodeAndCorrectText(args.consulta),
-//         decodeAndCorrectText(args.nombre),
-//         args.email, 
-//         decodeAndCorrectText(args.horarioContacto),
-//         args.idTrackeo, 
-//         args.urlPropiedad, 
-//         decodeAndCorrectText(args.consultaAdicional),
-//         decodeAndCorrectText(args.resumenConversacion),
-//       )
-//     case "reservarSummit":
-//       return reservarSummit(clientId, 
-//         args.conversationId, 
-//         decodeAndCorrectText(args.nombreReserva),
-//         decodeAndCorrectText(args.nombreCumpleanero),
-//         parseInt(args.cantidadInvitados),
-//         decodeAndCorrectText(args.fechaReserva),
-//         args.email,
-//         decodeAndCorrectText(args.resumenConversacion),
-//       )
-//     case "echoRegister":
-//       return echoRegister(clientId, 
-//         args.conversationId, 
-//         decodeAndCorrectText(args.texto)
-//       )
-//     case "completarFrase":
-//       return completarFrase(clientId, 
-//         args.conversationId, 
-//         decodeAndCorrectText(args.texto)
-//       )
-//     default:
-//       return null
-//   }
-// }
 
 
 export async function processFunctionCall(clientId: string, name: string, args: any) {
