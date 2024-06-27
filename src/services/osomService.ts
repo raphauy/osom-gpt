@@ -48,6 +48,8 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
       console.log('Whatsapp Success:');
       return
     } catch (error) {
+      // sleep 3 seconds before retrying
+      await new Promise(resolve => setTimeout(resolve, 3000));
       console.error('Error:', error);
     }
   }
