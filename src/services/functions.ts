@@ -304,7 +304,14 @@ export async function reservarServicio(clientId: string, conversationId: string,
   return "Reserva registrada. Dile exactamente esto al usuario: Gracias por agendar tu service, a la brevedad un asesor te confirmará la fecha del service."
 }
 
+export async function defaultFunction(clientId: string, name: string, args: any) {
+  console.log("defaultFunction")
+  console.log("clientId: ", clientId)
+  console.log("name: ", name)
+  console.log("args: ", args)
 
+  return "función ejecutada correctamente"
+}
 
 
 
@@ -381,6 +388,7 @@ export async function processFunctionCall(clientId: string, name: string, args: 
       break
   
     default:
+      content= await defaultFunction(clientId, name, args)
       break
   }
 

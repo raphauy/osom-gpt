@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Bot, Briefcase, ChevronRightSquare, FunctionSquare, LayoutDashboard, MessageCircle, Receipt, ScreenShare, Settings, User, Warehouse } from "lucide-react";
+import { Bot, Briefcase, ChevronRightSquare, Database, FunctionSquare, LayoutDashboard, MessageCircle, Receipt, ScreenShare, Settings, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,14 +36,6 @@ export default function SideBar() {
     {
       href: "divider", icon: User
     },
-    // {
-    //   href: `/admin/chat`,
-    //   icon: MessageCircle,
-    //   text: "Simulador"
-    // },
-    // {
-    //   href: "divider", icon: User
-    // },
     {
       href: `/admin/billing`,
       icon: Receipt,
@@ -61,6 +53,14 @@ export default function SideBar() {
       href: `/admin/models`,
       icon: Bot, 
       text: "Modelos"
+    },
+    {
+      href: "divider", icon: User
+    },  
+    {
+      href: `/admin/repositories`,
+      icon: Database, 
+      text: "Repositorios"
     },
     {
       href: "divider", icon: User
@@ -84,7 +84,7 @@ export default function SideBar() {
         {data.map(({ href, icon: Icon, text }, index) => {
           if (href === "divider") return divider(index)
           
-          const selected= path.endsWith(href)
+          const selected= path.includes(href)
           const classes= cn(commonClasses, selected && selectedClasses)
           return (
             <Link href={href} key={href} className={classes}>
@@ -93,10 +93,6 @@ export default function SideBar() {
             </Link>
           )
         })}
-        {/* <Link href="/admin/narvaez" className={cn(commonClasses, path.endsWith("narvaez") && selectedClasses)}>
-          <Warehouse size={23} />
-          <p className={cn("hidden md:block md:w-36")}>Narvaez</p>
-        </Link> */}
 
       </section>
       <section className="mb-4">

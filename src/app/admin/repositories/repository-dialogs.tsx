@@ -2,34 +2,28 @@
 
 import { useEffect, useState } from "react";
 import { ArrowLeftRight, ChevronsLeft, ChevronsRight, Loader, Pencil, PlusCircle, Trash2 } from "lucide-react";
-import { toast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { FunctionForm, DeleteFunctionForm } from "./function-forms"
-import { getFunctionDAOAction } from "./function-actions"
+import { toast } from "@/components/ui/use-toast";
+import { RepositoryForm, DeleteRepositoryForm } from "./repository-forms"
+import { getRepositoryDAOAction } from "./repository-actions"
 
-type Props= {
-  id?: string
-  isAdmin?: boolean
-}
-
-const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Agregar</Button>
-const updateTrigger= <Pencil size={30} className="pr-2 hover:cursor-pointer"/>
-
-export function FunctionDialog({ id, isAdmin }: Props) {
+export function RepositoryDialog() {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {id ? updateTrigger : addTrigger }
+        <Button variant="outline" className="whitespace-nowrap">
+          <PlusCircle size={22} className="mr-2"/>
+          Crear Repositorio
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-7xl">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>{id ? 'Actualizar' : 'Crear'} Función
-          </DialogTitle>
+          <DialogTitle>Crear Repositorio</DialogTitle>
         </DialogHeader>
-        <FunctionForm closeDialog={() => setOpen(false)} id={id} isAdmin={isAdmin} />
+        <RepositoryForm closeDialog={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   )
@@ -38,22 +32,28 @@ export function FunctionDialog({ id, isAdmin }: Props) {
 type DeleteProps= {
   id: string
   description: string
+  withText: boolean
 }
 
-export function DeleteFunctionDialog({ id, description }: DeleteProps) {
+export function DeleteRepositoryDialog({ id, description, withText }: DeleteProps) {
   const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Trash2 className="hover:cursor-pointer"/>
+      {
+        withText ? 
+        <Button variant="destructive">Eliminar Repositorio</Button>         
+        :
+        <Trash2 size={30} className="hover:cursor-pointer" />
+      }
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Function</DialogTitle>
+          <DialogTitle>Delete Repository</DialogTitle>
           <DialogDescription className="py-8">{description}</DialogDescription>
         </DialogHeader>
-        <DeleteFunctionForm closeDialog={() => setOpen(false)} id={id} />
+        <DeleteRepositoryForm closeDialog={() => setOpen(false)} id={id} redirect={withText} />
       </DialogContent>
     </Dialog>
   )

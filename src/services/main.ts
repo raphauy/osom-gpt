@@ -1,23 +1,33 @@
-import { prisma } from "@/lib/db"
-import { getFunctionsDefinitions } from "./function-services"
-import openaiTokenCounter from 'openai-gpt-token-counter'
+import { Parameters, Property, generateFunctionDefinition } from "./repository-services"
 
 async function main() {
 
-    const text = "Hola, buenos días!"
-    const model = "gpt-4"
+    console.log("main")
 
-    let tokenCount = openaiTokenCounter.text(text, model)
-    console.log(`Token count: ${tokenCount}`)
-
-    const messages = [
-        { role: "system", content: "Usted es un asistente virtual muy entusiasta" },
-        { role: "user", content: "Hola, buenos días!" },
-        { role: "assistant", content: "¡Buenos días! ¿En qué puedo asistirte hoy con mi entusiasmo y energía? 😄" },
-    ]
-
-    tokenCount = openaiTokenCounter.chat(messages, model)
-    console.log(`Message token count: ${tokenCount}`)
+    const name= "registrarPhone"
+    const description= "Cuando el usuario solicita registrar un teléfono, se debe utilizar esta función para registrar el teléfono."
+    const property1: Property= {
+      name: "conversationId",
+      type: "string",
+      description: "ConversationId proporcionado en el prompt",
+    }
+    const property2: Property= {
+      name: "phone",
+      type: "string",
+      description: "Se debe preguntar al usuario el phone",
+    }
+    const property3: Property= {
+        name: "nombre",
+        type: "string",
+        description: "Opcionialmente, se puede preguntar al usuario el nombre",
+    }
+    const parameters: Parameters= {
+        type: "object",
+        properties: [property1, property2, property3],
+        required: ["conversationId", "phone"],
+    }
+    const functionDefinition= generateFunctionDefinition(name, description, parameters)
+    console.log("functionDefinition: ", functionDefinition)
 
 }
   

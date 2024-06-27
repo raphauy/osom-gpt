@@ -100,8 +100,7 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(result);
 
       let baseArgs = {
-        // model: "gpt-4-1106-preview",
-        model: "gpt-4-turbo",
+        model: model.name,
         stream: true,
       };
     
