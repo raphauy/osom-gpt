@@ -97,7 +97,7 @@ Instrucciones:
     uiLabel: name,
     functionName,
     functionDescription,
-    finalMessage: "Datos registrados correctamente. Un asesor te contactará contingo a la brevedad",
+    finalMessage: "Datos registrados correctamente. Un asesor te contactará contigo a la brevedad",
     color
   }
 

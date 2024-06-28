@@ -312,36 +312,42 @@ export async function defaultFunction(clientId: string, name: string, args: any)
   console.log("name: ", name)
   console.log("args: ", args)
 
-  const repo= await getRepositoryDAOByFunctionName(name)
-  if (!repo)
-    return "Hubo un error al procesar esta solicitud"
-
-  // delete conversationId from args
-  const { conversationId, ...data } = args
-
-  const conversation= await getConversation(conversationId)
-  if (!conversation)
-    return "conversationId es obligatorio"
-
-  const phone= conversation.phone
-
-  const repoData: repoDataFormValues= {
-    clientId,
-    phone,
-    functionName: repo.functionName,
-    repoName: repo.name,
-    repositoryId: repo.id,
-    data,
-    conversationId
+  try {
+    const repo= await getRepositoryDAOByFunctionName(name)
+    if (!repo)
+      return "Hubo un error al procesar esta solicitud"
+  
+    // delete conversationId from args
+    const { conversationId, ...data } = args
+  
+    const conversation= await getConversation(conversationId)
+    if (!conversation)
+      return "conversationId es obligatorio"
+  
+    const phone= conversation.phone
+  
+    const repoData: repoDataFormValues= {
+      clientId,
+      phone,
+      functionName: repo.functionName,
+      repoName: repo.name,
+      repositoryId: repo.id,
+      data,
+      conversationId
+    }
+  
+    const created= await createRepoData(repoData)
+    if (!created)
+      return "Hubo un error al procesar esta solicitud"
+  
+    revalidatePath(`/client/[slug]/repo-data`, "page")
+  
+    return repo.finalMessage    
+  } catch (error) {
+    console.log(error)
+    return "Hubo un error al procesar esta solicitud"        
   }
 
-  const created= await createRepoData(repoData)
-  if (!created)
-    return "Hubo un error al procesar esta solicitud"
-
-  revalidatePath(`/client/[slug]/repo-data`, "page")
-
-  return repo.finalMessage
 }
 
 

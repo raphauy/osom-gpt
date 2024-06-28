@@ -102,7 +102,7 @@ export default async function RepositoryPage({ params }: Props) {
                       {
                         repository.function.clients.length > 0 ?
                         repository.function.clients.map((functionClient) => (
-                          <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2">
+                          <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2 border">
                             <AccordionItem value={functionClient.client.name} className="border-0">
                               <AccordionTrigger>{functionClient.client.name}</AccordionTrigger>
                               <AccordionContent>
