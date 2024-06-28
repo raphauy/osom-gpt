@@ -100,6 +100,7 @@ export default async function RepositoryPage({ params }: Props) {
 
                     <div className="mt-6 border bg-slate-100 rounded-md p-2 dark:bg-black space-y-1">
                       {
+                        repository.function.clients.length > 0 ?
                         repository.function.clients.map((functionClient) => (
                           <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2">
                             <AccordionItem value={functionClient.client.name} className="border-0">
@@ -109,8 +110,11 @@ export default async function RepositoryPage({ params }: Props) {
                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
-                            
                         ))
+                        :
+                        <div className="flex items-center justify-center w-full h-full">
+                          <p className="text-center">No hay clientes que utilizan esta función</p>
+                        </div>
                       }
                     </div>
 
