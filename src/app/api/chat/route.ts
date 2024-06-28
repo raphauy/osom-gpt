@@ -11,6 +11,7 @@ import openaiTokenCounter from 'openai-gpt-token-counter';
 import { NextResponse } from "next/server";
 import { processFunctionCall } from "@/services/functions";
 
+export const maxDuration = 299
 
 export async function POST(req: Request) {
 
