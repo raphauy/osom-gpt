@@ -7,6 +7,8 @@ import { ArrowUpDown } from "lucide-react"
 import { DeleteRepoDataDialog } from "./repodata-dialogs"
 import CodeBlock from "@/components/code-block"
 import ConversationButton from "@/app/admin/carservices/conversation-button"
+import { format, formatDistanceToNow } from "date-fns"
+import { es } from "date-fns/locale"
 
 
 export const columns: ColumnDef<RepoDataDAO>[] = [
@@ -72,6 +74,23 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
       return jsonStr.toLowerCase().includes(value.toLowerCase())
     },
   },
+
+  {
+    accessorKey: "UpdatedAt",
+    header: ({ column }) => {
+        return (
+          <Button variant="ghost" className="pl-0 dark:text-white"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Fecha
+            <ArrowUpDown className="w-4 h-4 ml-1" />
+          </Button>
+    )},
+		cell: ({ row }) => {
+      const data= row.original
+      return (<p>{format(data.updatedAt, "yyyy-MM-dd HH:mm", { locale: es})}</p>)
+    }
+  },
+
   {
     id: "actions",
     cell: ({ row }) => {
