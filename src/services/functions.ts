@@ -319,10 +319,13 @@ export async function defaultFunction(clientId: string, name: string, args: any)
   
     // delete conversationId from args
     const { conversationId, ...data } = args
-  
+
+    if (!conversationId)
+      return "conversationId es obligatorio"
+
     const conversation= await getConversation(conversationId)
     if (!conversation)
-      return "conversationId es obligatorio"
+      return `No se encontró la conversación con id ${conversationId}`
   
     const phone= conversation.phone
   
