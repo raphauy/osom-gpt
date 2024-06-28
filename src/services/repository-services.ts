@@ -163,7 +163,11 @@ export async function getFullRepositoryDAO(id: string) {
           }          
         }
       },
-      fields: true
+      fields: {
+        orderBy: {
+          order: "asc"
+        }
+      }
 		}
   })
   return found as RepositoryDAO
