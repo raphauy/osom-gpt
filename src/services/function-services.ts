@@ -4,10 +4,11 @@ import { ChatCompletionCreateParams } from "openai/resources/index.mjs"
 import { Client } from "@prisma/client"
 import { RepositoryDAO } from "./repository-services"
 
-type FunctionClientDAO= {
+export type FunctionClientDAO= {
   functionId: string
   clientId: string
   client: ClientDAO
+  webHookUrl: string | null
 }
 type ClientDAO= {
   id: string

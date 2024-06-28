@@ -185,6 +185,8 @@ model Function {
 }
 
 model ClientFunction {
+  webHookUrl     String?      @db.Text            // gennext: show.column
+
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId String
 

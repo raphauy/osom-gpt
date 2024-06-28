@@ -109,7 +109,7 @@ export default function SideBar({ slug, showRegistro, showCarServices, showRepoD
           <div className="pb-1">
             <Database size={23} />
           </div>
-          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Repositorio</p>                  
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Trámites</p>                  
         </Link>
 
         {divider()}

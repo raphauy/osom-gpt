@@ -7,6 +7,7 @@
     "build": "next build",
     "turbo": "next dev --turbo",
     "start": "next start -p 8063",
+    "postinstall": "prisma generate",
     "lint": "next lint",
     "importar": "tsx src/services/properties-script.ts",
     "xlsx": "tsx src/services/properties-xlsx-script.ts",

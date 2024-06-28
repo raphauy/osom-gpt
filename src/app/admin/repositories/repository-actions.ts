@@ -1,6 +1,6 @@
 "use server"
   
-import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setName, setNotifyExecution, setUILabel } from "@/services/repository-services"
+import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
 import { revalidatePath } from "next/cache"
 
 
@@ -94,3 +94,12 @@ export async function setFunctionActiveAction(id: string, functionActive: boolea
     return true
 }
 
+export async function setWebHookUrlAction(clientId: string, functionId: string, webHookUrl: string): Promise<boolean> {
+    const updated= await setWebHookUrl(clientId, functionId, webHookUrl)
+
+    if (!updated) return false
+
+    revalidatePath(`/admin/repositories`)
+
+    return true
+}

@@ -16,10 +16,13 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Info
+            Nombre
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
 
   {
@@ -34,27 +37,14 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
     )},
     cell: ({ row }) => {
       const data= row.original
-      const jsonReplacedNo= JSON.stringify(data.data, null, 2).replace("false", "NO")
-      const jsonReplacedYes= jsonReplacedNo.replace("true", "SI")
+      // replace all false with NO and all true with SI
+      const jsonReplaced = JSON.stringify(data.data, null, 2)
+      .replace(/false/g, "NO")
+      .replace(/true/g, "SI");
 
-      return <CodeBlock code={jsonReplacedYes} showLineNumbers={false} />
+      return <CodeBlock code={jsonReplaced} showLineNumbers={false} />
     },
   },
-  // {
-  //   accessorKey: "role",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button variant="ghost" className="pl-0 dark:text-white"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-  //         Rol
-  //         <ArrowUpDown className="w-4 h-4 ml-1" />
-  //       </Button>
-  //     )
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id))
-  //   },
-  // },
   {
     id: "actions",
     cell: ({ row }) => {

@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
-import { FunctionDAO, createFunction, deleteFunction, nameIsAvailable } from "./function-services"
+import { FunctionClientDAO, FunctionDAO, createFunction, deleteFunction, nameIsAvailable } from "./function-services"
 import { FieldDAO } from "./field-services"
 import { colorPalette } from "@/lib/utils"
 
@@ -156,8 +156,11 @@ export async function getFullRepositoryDAO(id: string) {
           clients: {
             include: {
               client: true
+            },
+            orderBy: {
+              clientId: "asc"
             }
-          }
+          }          
         }
       },
       fields: true
@@ -377,4 +380,19 @@ export function generateFunctionDefinition(name: string, description: string, pa
 
   return jsonString;
 }
-    
+
+export async function setWebHookUrl(clientId: string, functionId: string, webHookUrl: string) {
+  const updated= await prisma.clientFunction.update({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId
+      }
+    },
+    data: {
+      webHookUrl
+    }
+  })
+
+  return updated
+}

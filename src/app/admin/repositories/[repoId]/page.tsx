@@ -4,11 +4,13 @@ import { IconBadge } from "@/components/icon-badge"
 import { TitleForm } from "@/components/title-form"
 import { Separator } from "@/components/ui/separator"
 import { getFullRepositoryDAO } from "@/services/repository-services"
-import { Briefcase, Database, Sparkles, Tag } from "lucide-react"
+import { ArrowRight, Briefcase, Database, Sparkles, Tag } from "lucide-react"
 import { setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
 import { DeleteRepositoryDialog } from "../repository-dialogs"
 import FieldsBox from "./fields-box"
 import SwitchBox from "./switch-box"
+import FunctionClientBox from "./function-client-box"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 type Props = {
   params: {
@@ -96,12 +98,18 @@ export default async function RepositoryPage({ params }: Props) {
                       </h2>
                     </div>
 
-                    <div className="mt-6 border bg-slate-100 rounded-md p-2 dark:bg-black">
+                    <div className="mt-6 border bg-slate-100 rounded-md p-2 dark:bg-black space-y-1">
                       {
-                        repository.function.clients.map((client) => (
-                          <div key={client.clientId} className="flex items-center justify-between gap-2 mb-1 mr-5">
-                              <p className="whitespace-nowrap">{client.client.name}</p>
-                          </div>
+                        repository.function.clients.map((functionClient) => (
+                          <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2">
+                            <AccordionItem value={functionClient.client.name} className="border-0">
+                              <AccordionTrigger>{functionClient.client.name}</AccordionTrigger>
+                              <AccordionContent>
+                                <FunctionClientBox functionClient={functionClient} repoId={repository.id} />
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                            
                         ))
                       }
                     </div>
