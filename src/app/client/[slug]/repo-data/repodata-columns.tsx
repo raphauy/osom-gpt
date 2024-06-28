@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { DeleteRepoDataDialog } from "./repodata-dialogs"
 import CodeBlock from "@/components/code-block"
+import ConversationButton from "@/app/admin/carservices/conversation-button"
 
 
 export const columns: ColumnDef<RepoDataDAO>[] = [
@@ -22,6 +23,26 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
     )},
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
+    },
+  },
+
+  {
+    accessorKey: "phone",
+    header: ({ column }) => {
+        return (
+          <Button variant="ghost" className="pl-0 dark:text-white"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Teléfono
+            <ArrowUpDown className="w-4 h-4 ml-1" />
+          </Button>
+    )},
+    cell: ({ row }) => {
+      const data= row.original
+      return (
+        <div>
+            <ConversationButton name={data.phone} conversationId={data.conversationId} /> 
+        </div>
+      )
     },
   },
 
@@ -43,6 +64,12 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
       .replace(/true/g, "SI");
 
       return <CodeBlock code={jsonReplaced} showLineNumbers={false} />
+    },
+    filterFn: (row, id, value) => {
+      const jsonStr = JSON.stringify(row.original.data, null, 2)
+      .replace(/false/g, "NO")
+      .replace(/true/g, "SI");
+      return jsonStr.toLowerCase().includes(value.toLowerCase())
     },
   },
   {

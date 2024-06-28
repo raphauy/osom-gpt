@@ -6,20 +6,24 @@ import { getClient, getClientBySlug } from "./clientService"
 export type RepoDataDAO = {
 	id: string
 	repoName: string
+  phone: string
 	functionName: string
 	data: JsonValue
 	repositoryId: string
 	clientId: string
+  conversationId: string
 	createdAt: Date
 	updatedAt: Date
 }
 
 export const repoDataSchema = z.object({
 	repoName: z.string().min(1, "repoName is required."),
+  phone: z.string().min(1, "phone is required."),
 	functionName: z.string().min(1, "functionName is required."),
 	data: z.any(),
 	repositoryId: z.string().min(1, "repositoryId is required."),
 	clientId: z.string().min(1, "clientId is required."),
+  conversationId: z.string().min(1, "conversationId is required."),
 })
 
 export type repoDataFormValues = z.infer<typeof repoDataSchema>
@@ -46,10 +50,12 @@ export async function getRepoDataDAO(id: string) {
 export async function createRepoData(data: repoDataFormValues) {
   const repoData = {
     repoName: data.repoName,
+    phone: data.phone,
     functionName: data.functionName,
     repositoryId: data.repositoryId,
     clientId: data.clientId,
-    data: data.data ?? {}
+    conversationId: data.conversationId,
+    data: data.data ?? {}  
   };
 
   const created = await prisma.repoData.create({

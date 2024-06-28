@@ -319,12 +319,20 @@ export async function defaultFunction(clientId: string, name: string, args: any)
   // delete conversationId from args
   const { conversationId, ...data } = args
 
+  const conversation= await getConversation(conversationId)
+  if (!conversation)
+    return "conversationId es obligatorio"
+
+  const phone= conversation.phone
+
   const repoData: repoDataFormValues= {
     clientId,
+    phone,
     functionName: repo.functionName,
     repoName: repo.name,
     repositoryId: repo.id,
-    data
+    data,
+    conversationId
   }
 
   const created= await createRepoData(repoData)

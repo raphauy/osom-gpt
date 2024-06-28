@@ -30,6 +30,11 @@ export function DataTableToolbar<TData>({ table, repoNames, repoLabel }: DataTab
           options={repoNames}
         />
       )}
+
+      <Input className="max-w-xs" placeholder="filtrar teléfono..."
+          value={(table.getColumn("phone")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("phone")?.setFilterValue(event.target.value)}                
+      />
       
       <Input className="max-w-xs" placeholder="filtrar datos..."
           value={(table.getColumn("data")?.getFilterValue() as string) ?? ""}

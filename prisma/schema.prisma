@@ -140,6 +140,7 @@ model Conversation {
   narvaez     Narvaez?
   summit      Summit?
   carService  CarService?
+  repoData    RepoData[]
 }
 
 model Message {
@@ -333,6 +334,7 @@ model Field {
 model RepoData {
   id                  String       @id @default(cuid())
   repoName            String                              // gennext: show.column
+  phone               String                              // gennext: show.column
   functionName        String                              // gennext: show.column
 
   data                Json                                // gennext: show.column
@@ -342,6 +344,9 @@ model RepoData {
 
   client              Client @relation(fields: [clientId], references: [id], onDelete: NoAction)
   clientId            String
+
+  conversation        Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId      String
 
   createdAt           DateTime     @default(now())       // gennext: skip.zod
   updatedAt           DateTime     @updatedAt            // gennext: skip.zod
