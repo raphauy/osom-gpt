@@ -12,7 +12,7 @@ export async function getRepoDataDAOAction(id: string): Promise<RepoDataDAO | nu
 export async function deleteRepoDataAction(id: string): Promise<RepoDataDAO | null> {    
     const deleted= await deleteRepoData(id)
 
-    revalidatePath("/client/[slug]/repo-data")
+    revalidatePath("/client/[slug]/repo-data", "page")
 
     return deleted as RepoDataDAO
 }
