@@ -65,13 +65,14 @@ export const columns: ColumnDef<FunctionDAO>[] = [
       const deleteDescription= `Seguro que quieres eliminar la función ${data.name}?
       Tiene ${data.clients?.length} clientes asociados`
  
-      if (data.repositories?.length > 0) {
+      if (data.repositories?.length && data.repositories?.length > 0) {
         return (
-          <Link href={`/admin/repositories/${data.repositories[0].id}`} prefetch={false}>
-            <Button variant="ghost">
-              <Database className="w-5 h-5 text-gray-500" />
-            </Button>
-          </Link>
+          <Database className="w-5 h-5 text-gray-500" />
+          // <Link href={`/admin/repositories/${data.repositories[0].id}`} prefetch={false}>
+          //   <Button variant="ghost">
+          //     <Database className="w-5 h-5 text-gray-500" />
+          //   </Button>
+          // </Link>
         )
       }
       return (
