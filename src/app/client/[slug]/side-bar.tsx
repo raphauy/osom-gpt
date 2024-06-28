@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BookOpen, Bot, Car, ChevronRightSquare, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
+import { BookOpen, Bot, Car, ChevronRightSquare, Database, LayoutDashboard, MessageCircle, Receipt, Ticket, User, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,8 +9,9 @@ interface Props {
   slug: string
   showRegistro?: boolean
   showCarServices?: boolean
+  showRepoData?: boolean
 }
-export default function SideBar({ slug, showRegistro, showCarServices }: Props) {
+export default function SideBar({ slug, showRegistro, showCarServices, showRepoData }: Props) {
 
   const data= [
     {
@@ -99,9 +100,16 @@ export default function SideBar({ slug, showRegistro, showCarServices }: Props) 
 
         <Link href={`/client/${slug}/car-service`} className={cn(commonClasses, path.endsWith("car-service") && selectedClasses, !showCarServices && "hidden")}>
           <div className="pb-1">
-          <Car size={23} />
+            <Car size={23} />
           </div>
           <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Servicios</p>                  
+        </Link>
+
+        <Link href={`/client/${slug}/repo-data`} className={cn(commonClasses, path.endsWith("repo-data") && selectedClasses, !showRepoData && "hidden")}>
+          <div className="pb-1">
+            <Database size={23} />
+          </div>
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Repositorio</p>                  
         </Link>
 
         {divider()}

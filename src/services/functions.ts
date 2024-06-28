@@ -8,6 +8,8 @@ import { SummitFormValues, createSummit } from "./summit-services";
 import { getConversation, messageArrived } from "./conversationService";
 import { CarServiceFormValues, createCarService } from "./carservice-services";
 import { revalidatePath } from "next/cache";
+import { getRepositoryDAOByFunctionName } from "./repository-services";
+import { createRepoData, repoDataFormValues } from "./repodata-services";
 
 export type CompletionInitResponse = {
   assistantResponse: string | null
@@ -310,7 +312,28 @@ export async function defaultFunction(clientId: string, name: string, args: any)
   console.log("name: ", name)
   console.log("args: ", args)
 
-  return "función ejecutada correctamente"
+  const repo= await getRepositoryDAOByFunctionName(name)
+  if (!repo)
+    return "Hubo un error al procesar esta solicitud"
+
+  // delete conversationId from args
+  const { conversationId, ...data } = args
+
+  const repoData: repoDataFormValues= {
+    clientId,
+    functionName: repo.functionName,
+    repoName: repo.name,
+    repositoryId: repo.id,
+    data
+  }
+
+  const created= await createRepoData(repoData)
+  if (!created)
+    return "Hubo un error al procesar esta solicitud"
+
+  revalidatePath(`/client/[slug]/repo-data`, "page")
+
+  return repo.finalMessage
 }
 
 

@@ -7,11 +7,17 @@ SyntaxHighlighter.registerLanguage('json', json);
 
 type CodeBlockProps = {
   code: string;
+  showLineNumbers: boolean;
 };
 
-const CodeBlock: React.FC<CodeBlockProps> = ({ code }) => {
+const CodeBlock: React.FC<CodeBlockProps> = ({ code, showLineNumbers }) => {
   return (
-    <SyntaxHighlighter language="json" style={vs} showLineNumbers={true}>
+    <SyntaxHighlighter 
+      language="json" 
+      style={vs} 
+      showLineNumbers={showLineNumbers}
+      wrapLongLines={true}
+    >
       {code}
     </SyntaxHighlighter>
   );

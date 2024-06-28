@@ -8,7 +8,7 @@ export default async function RepositoryPage() {
   const repositories= await getFullRepositorysDAO()
 
   return (
-    <div>
+    <div className="w-full ml-4">
 
       <RepositoriesTabs repositories={repositories} />
 

@@ -2,7 +2,17 @@ import * as z from "zod"
 import { prisma } from "@/lib/db"
 import { ChatCompletionCreateParams } from "openai/resources/index.mjs"
 import { Client } from "@prisma/client"
+import { RepositoryDAO } from "./repository-services"
 
+type FunctionClientDAO= {
+  functionId: string
+  clientId: string
+  client: ClientDAO
+}
+type ClientDAO= {
+  id: string
+  name: string
+}
 export type FunctionDAO = {
 	id: string
 	name: string
@@ -10,6 +20,8 @@ export type FunctionDAO = {
 	definition: string | null
 	createdAt: Date
 	updatedAt: Date
+  clients: FunctionClientDAO[]
+  repositories?: RepositoryDAO[]
 }
 
 export const functionSchema = z.object({
@@ -26,6 +38,10 @@ export async function getFunctionsDAO() {
     orderBy: {
       id: 'asc'
     },
+    include: {
+      clients: true,
+      repositories: true
+    }
   })
   return found as FunctionDAO[]
 }
@@ -105,4 +121,36 @@ export async function getClientsOfFunctionByName(name: string): Promise<Client[]
   })
 
   return found.map((f) => f.client)
+}
+
+export async function getClientsWithSomeFunctionWithRepository(): Promise<Client[]> {
+  const clients = await prisma.client.findMany({
+    where: {
+      functions: {
+        some: {
+          function: {
+            repositories: {
+              some: {},
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return clients;
+}
+
+
+export async function nameIsAvailable(name: string) {
+  const found = await prisma.function.findMany({
+    where: {
+      name
+    },
+    include: {
+      clients: true
+    }
+  })
+
+  return found.length === 0
 }

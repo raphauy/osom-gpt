@@ -1,11 +1,7 @@
-import { getDataClientBySlug } from "@/app/admin/clients/(crud)/actions"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getClientBySlug, getCountData } from "@/services/clientService"
-import { getUsersOfClient } from "@/services/userService"
-import { BookOpen, HomeIcon, MessageCircle, User } from "lucide-react"
+import { Bot } from "lucide-react"
 import Link from "next/link"
-import { getDataConversations, getTotalMessages } from "./chats/actions"
 import ClientData from "./client-data"
 
 interface Props{
@@ -22,5 +18,18 @@ export default async function ClientPage({ params: { slug } }: Props) {
 
   const countData= await getCountData(client?.id)
  
-  return (<ClientData countData={countData} />)
+  return (
+    <div className="flex flex-col items-center gap-10">
+      <ClientData countData={countData} />
+
+      <Link href={`/client/${slug}/simulator`}>
+          <Button variant="outline">
+              <Bot size={22} className="mr-2 mb-1.5" />
+              <p>Simulador</p>
+          </Button>
+      </Link>
+
+
+    </div>
+  )
 }

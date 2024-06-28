@@ -21,17 +21,25 @@ export function TitleForm({ id, label, initialValue, update }: Props) {
   const [title, setTitle] = useState(initialValue)
 
   async function onSubmit() {
-    setLoading(true)
     toggleEdit()
-    const ok= await update(id, title)
+    if (title === initialValue) return
     
-    if (ok) {
-      toast({title: `${label} editado` })
-    } else {      
-      toast({title: "Error al editar el título", variant: "destructive"})
+    setLoading(true)
+    try {
+      const ok= await update(id, title)
+    
+      if (ok) {
+        toast({title: `${label} editado` })
+      } else {
+        setTitle(initialValue)
+        toast({title: "Error al editar el título", variant: "destructive"})
+      }
+    } catch (error: any) {
+      setTitle(initialValue)
+      toast({title: "Error al editar", description: error.message, variant: "destructive"})
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   function handleEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -40,7 +48,6 @@ export function TitleForm({ id, label, initialValue, update }: Props) {
       onSubmit()
     }
   }
-
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 dark:bg-black">

@@ -2,7 +2,6 @@ import { ClientFormValues } from "@/app/admin/clients/(crud)/clientForm";
 import { prisma } from "@/lib/db";
 import { FunctionDAO } from "./function-services";
 
-
 export default async function getClients() {
 
   const found = await prisma.client.findMany({

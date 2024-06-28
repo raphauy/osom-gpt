@@ -80,6 +80,8 @@ model Client {
   // Todo: make this field not optional
   model                 Model?    @relation(fields: [modelId], references: [id], onDelete: NoAction)
   modelId               String?
+
+  repoData              RepoData[]                         // gennext: skip.list
 }
 
 model Document {
@@ -186,7 +188,7 @@ model ClientFunction {
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId String
 
-  function  Function @relation(fields: [functionId], references: [id])
+  function  Function @relation(fields: [functionId], references: [id], onDelete: Cascade)
   functionId String
   
   @@id([clientId, functionId])
@@ -285,7 +287,7 @@ model Repository {
   id                  String       @id @default(cuid())
   name                String                             // gennext: show.column
   uiLabel             String                             // gennext: show.column
-  svgContent          String?                            // Campo para almacenar el contenido SVG
+  color               String       @default("rgb(68, 190, 154)")
   
   functionName        String       @unique               // gennext: show.column
   functionDescription String                             // gennext: show.column
@@ -299,8 +301,10 @@ model Repository {
 
   fields              Field[]                            // gennext: skip.list
 
-  function  Function @relation(fields: [functionId], references: [id], onDelete: Cascade)
+  function  Function @relation(fields: [functionId], references: [id])
   functionId String
+
+  repoData            RepoData[]                         // gennext: skip.list
 }
 
 enum FieldType {
@@ -319,6 +323,23 @@ model Field {
 
   repository          Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   repositoryId        String
+
+  createdAt           DateTime     @default(now())       // gennext: skip.zod
+  updatedAt           DateTime     @updatedAt            // gennext: skip.zod
+}
+
+model RepoData {
+  id                  String       @id @default(cuid())
+  repoName            String                              // gennext: show.column
+  functionName        String                              // gennext: show.column
+
+  data                Json                                // gennext: show.column
+
+  repository          Repository @relation(fields: [repositoryId], references: [id], onDelete: NoAction)
+  repositoryId        String
+
+  client              Client @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  clientId            String
 
   createdAt           DateTime     @default(now())       // gennext: skip.zod
   updatedAt           DateTime     @updatedAt            // gennext: skip.zod

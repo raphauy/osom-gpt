@@ -25,6 +25,10 @@ export function DescriptionForm({ id, label, initialValue, update }: Props) {
   const [description, setDescription] = useState(initialValue)
 
   async function onSubmit() {
+    if (description === initialValue) {
+      toggleEdit()
+      return
+    }
     setLoading(true)
     update(id, description)
     .then(() => {

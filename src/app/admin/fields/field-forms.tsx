@@ -28,7 +28,7 @@ export function FieldForm({ id, repoId, closeDialog }: Props) {
       name: "",
       type: "string",
       description: "",
-      required: false,
+      required: true,
       repositoryId: repoId,
     },
     mode: "onChange",

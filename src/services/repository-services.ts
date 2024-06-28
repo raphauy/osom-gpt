@@ -1,13 +1,14 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
-import { FunctionDAO, createFunction } from "./function-services"
+import { FunctionDAO, createFunction, deleteFunction, nameIsAvailable } from "./function-services"
 import { FieldDAO } from "./field-services"
+import { colorPalette } from "@/lib/utils"
 
 export type RepositoryDAO = {
 	id: string
 	name: string
   uiLabel: string
-  svgContent: string | undefined
+  color: string
 	functionName: string
 	functionDescription: string
   functionActive: boolean
@@ -44,12 +45,37 @@ export async function getRepositoryDAO(id: string) {
   })
   return found as RepositoryDAO
 }
+
+export async function getRepositoryDAOByFunctionName(functionName: string) {
+  const found = await prisma.repository.findUnique({
+    where: {
+      functionName
+    },
+    include: {
+      function: {
+        include: {
+          clients: true
+        }
+      }
+    }
+  })
+
+  return found
+}
     
 export async function createRepository(name: string) {
 
   // functionName: clean the spaces and lowercase only the first letter
-  const functionName= name.replace(/ /g, '').toLowerCase().slice(0, 1) + name.replace(/ /g, '').slice(1)
-  const functionDescription= `Editar aquí`
+  let functionName= name.replace(/ /g, '').toLowerCase().slice(0, 1) + name.replace(/ /g, '').slice(1)
+  const isAvailable= await nameIsAvailable(functionName)
+  if (!isAvailable) functionName= `${functionName}1`
+
+  const functionDescription= `Esta función se debe utilizar ...
+Instrucciones:
+- Debes ir preguntando por la información necesaria para llenar cada campo en su orden de aparición
+- Cada pregunta debe esperar su respuesta antes de hacer la siguiente pregunta.
+- Cuando obtengas toda la información debes invocar la función.`
+
   const parameters: Parameters= {
     type: "object",
     properties: [],
@@ -64,6 +90,7 @@ export async function createRepository(name: string) {
   })
   if (!repoFunction) throw new Error("Error creating repository function")
 
+  const color= colorPalette[Math.floor(Math.random() * colorPalette.length)]
   const data= {
     functionId: repoFunction.id,
     name,
@@ -71,6 +98,7 @@ export async function createRepository(name: string) {
     functionName,
     functionDescription,
     finalMessage: "Datos registrados correctamente. Un asesor te contactará contingo a la brevedad",
+    color
   }
 
   const created = await prisma.repository.create({
@@ -79,22 +107,23 @@ export async function createRepository(name: string) {
   return created
 }
 
-export async function updateRepository(id: string, data: RepositoryFormValues) {
-  const updated = await prisma.repository.update({
-    where: {
-      id
-    },
-    data
-  })
-  return updated
-}
-
+// delete the repository and the function associated with it
 export async function deleteRepository(id: string) {
-  const deleted = await prisma.repository.delete({
+  const repo= await getFullRepositoryDAO(id)
+  if (!repo) throw new Error("Repository not found")
+
+  const deleted= await prisma.repository.delete({
     where: {
       id
-    },
+    },    
   })
+  if (!deleted) throw new Error("Error al eliminar el repositorio")
+  
+  const functionId= repo.functionId
+  if (functionId) {
+    await deleteFunction(functionId)
+  }
+
   return deleted
 }
 
@@ -102,9 +131,15 @@ export async function deleteRepository(id: string) {
 export async function getFullRepositorysDAO() {
   const found = await prisma.repository.findMany({
     orderBy: {
-      id: 'asc'
+      createdAt: 'desc'
     },
     include: {
+      function: {
+        include: {
+          clients: true
+        }
+      },
+      fields: true
 		}
   })
   return found as RepositoryDAO[]
@@ -116,7 +151,15 @@ export async function getFullRepositoryDAO(id: string) {
       id
     },
     include: {
-      function: true,
+      function: {
+        include: {          
+          clients: {
+            include: {
+              client: true
+            }
+          }
+        }
+      },
       fields: true
 		}
   })
@@ -151,9 +194,14 @@ export async function setUILabel(id: string, uiLabel: string) {
 }
 
 export async function setFunctionName(id: string, functionName: string) {
-  // TODO: check if functionName is already taken
   const repo= await getFullRepositoryDAO(id)
   if (!repo) throw new Error("Repository not found")
+
+  const isAvailable= await nameIsAvailable(functionName)
+  if (!isAvailable) 
+    if (repo.functionName !== functionName)
+      throw new Error(`Ya existe una función con el nombre ${functionName}`)
+
 
   const updated = await prisma.repository.update({
     where: {
@@ -287,16 +335,27 @@ export type Parameters= {
     // parameters will come later
  */
 export function generateFunctionDefinition(name: string, description: string, parameters: Parameters): string {
+  const properties= parameters.properties
+  const required= parameters.required
+  // there is one property which needs to be inserted in all the functions and is required
+  const conversationIdProperty: Property= {
+    name: "conversationId",
+    type: "string",
+    description: "conversationId proporcionado en el prompt",
+  }
+  properties.push(conversationIdProperty)
+  required.push("conversationId")
+
   const jsonParameters = {
     type: "object",
-    properties: parameters.properties.reduce((acc: { [key: string]: { type: string; description: string } }, property) => {
+    properties: properties.reduce((acc: { [key: string]: { type: string; description: string } }, property) => {
       acc[property.name] = {
         type: property.type,
         description: property.description,
       };
       return acc;
     }, {}),
-    required: parameters.required,
+    required: required,
   };
 
   const functionDefinition = {
