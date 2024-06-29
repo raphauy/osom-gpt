@@ -33,6 +33,8 @@ export default async function RepositoryPage({ params }: Props) {
   const complementaryClients= await getComplementaryClients(clientsIds)
   const selectors: SelectorData[]= complementaryClients.map((client) => ({ id: client.id, name: client.name }))
   
+  const BASE_PATH= process.env.NEXTAUTH_URL!
+
   return (
     <>
         <div className="p-6 bg-white dark:bg-black mt-4 border rounded-lg w-full ml-4">
@@ -119,7 +121,7 @@ export default async function RepositoryPage({ params }: Props) {
                                 <RemoveClientButton functionId={repository.functionId} clientId={functionClient.clientId} repoId={repository.id} />
                               </div>                              
                               <AccordionContent>
-                                <FunctionClientBox functionClient={functionClient} repoId={repository.id} />
+                                <FunctionClientBox functionClient={functionClient} repoId={repository.id} basePath={BASE_PATH} />
                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>

@@ -116,4 +116,26 @@ export async function getFullRepoDataDAO(id: string) {
   })
   return found as RepoDataDAO
 }
-    
+
+export async function getRepoDataDAOByPhone(repositoryId: string, phone: string) {
+  const found = await prisma.repoData.findFirst({
+    where: {
+      repositoryId,
+      phone
+    },
+    select: {
+      id: true,
+      phone: true,
+      repoName: true,
+      functionName: true,
+      createdAt: true,
+      data: true,
+      client: {
+        select: {
+          name: true,
+        }
+      }
+    }
+  })
+  return found
+}

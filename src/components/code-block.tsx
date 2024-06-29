@@ -12,7 +12,7 @@ type CodeBlockProps = {
 
 const CodeBlock: React.FC<CodeBlockProps> = ({ code, showLineNumbers }) => {
   return (
-    <SyntaxHighlighter 
+    <SyntaxHighlighter       
       language="json" 
       style={vs} 
       showLineNumbers={showLineNumbers}

@@ -59,12 +59,3 @@ export function DeleteRepositoryDialog({ id, description, withText }: DeleteProp
   )
 }
 
-interface CollectionProps{
-  id: string
-  title: string
-}
-
-
-
-
-  

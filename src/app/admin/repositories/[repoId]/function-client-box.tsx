@@ -1,22 +1,22 @@
 "use client"
 
-import { FunctionClientDAO } from "@/services/function-services"
-import Link from "next/link"
-import { setWebHookUrlAction } from "../repository-actions"
-import { HookForm } from "./hook-form"
-import useCopyToClipboard from "@/lib/useCopyToClipboard"
-import { useState } from "react"
-import { toast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
+import useCopyToClipboard from "@/lib/useCopyToClipboard"
+import { FunctionClientDAO } from "@/services/function-services"
 import { Copy } from "lucide-react"
+import { setWebHookUrlAction } from "../repository-actions"
+import { CurlTestDialog } from "./curl-test"
+import { HookForm } from "./hook-form"
 
 type Props= {
     repoId: string
     functionClient: FunctionClientDAO
+    basePath: string
 }
-export default function FunctionClientBox({ repoId, functionClient }: Props) {
+export default function FunctionClientBox({ repoId, functionClient, basePath }: Props) {
   const [value, copy] = useCopyToClipboard()
-  const [endpoint, setEndpoint] = useState(`/api/${functionClient.client.id}/repo-data/${repoId}`)
+  const endpoint= `${basePath}/api/${functionClient.client.id}/repo-data/${repoId}`
   
   function copyHookToClipboard(){   
     copy(endpoint)    
@@ -29,7 +29,11 @@ export default function FunctionClientBox({ repoId, functionClient }: Props) {
         <p className="font-bold">Data API: </p>
         <div className="flex items-center justify-between">
           <p className="truncate lg:max-w-[200px] xl:max-w-xs">{endpoint}</p>
-          <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyHookToClipboard} /></Button>            
+          <div className="flex items-center gap-2">
+            <CurlTestDialog endpoint={endpoint} />
+            <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyHookToClipboard} /></Button>            
+          </div>
+          
         </div>
       </div>
       <div>
