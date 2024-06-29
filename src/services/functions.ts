@@ -343,7 +343,7 @@ export async function defaultFunction(clientId: string, name: string, args: any)
     if (!created)
       return "Hubo un error al procesar esta solicitud"
   
-    revalidatePath(`/client/[slug]/repo-data`, "page")
+    revalidatePath(`/client/${conversation.client.slug}/repo-data`)
   
     return repo.finalMessage    
   } catch (error) {

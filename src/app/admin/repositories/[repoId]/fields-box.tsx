@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { FieldDAO } from "@/services/field-services"
 import { deleteFieldAction, updateOrderAction } from "../../fields/field-actions"
 import { FieldDialog } from "../../fields/field-dialogs"
+import { Badge } from "@/components/ui/badge"
 
 type Props= {
     initialFields: FieldDAO[]
@@ -63,7 +64,10 @@ export default function FieldsBox({ initialFields, repoId }: Props) {
                             <p className="whitespace-pre-line ml-2">{field.name}</p>
                             { field.required && <Asterisk className="w-5 h-5 text-green-500" /> }
                         </div>
-                        <div className="flex items-center">                            
+                        <div className="flex items-center">
+                            <Badge className="mr-3">
+                                {field.type}
+                            </Badge>
                             <FieldDialog repoId={field.repositoryId} id={field.id} />
                             {/* <DeleteCotizationNoteDialog id={note.id} description={`seguro que quieres eliminar la nota ${note.text}?`} /> */}
                             {
