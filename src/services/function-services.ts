@@ -210,3 +210,16 @@ export async function removeFunctionFromClient(clientId: string, functionId: str
 
   return true  
 }
+
+export async function getFunctionClientDAO(functionId: string, clientId: string) {
+  const found = await prisma.clientFunction.findUnique({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId
+      }
+    }
+  })
+
+  return found  
+}

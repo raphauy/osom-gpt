@@ -59,8 +59,16 @@ export async function createRepoData(data: repoDataFormValues) {
   };
 
   const created = await prisma.repoData.create({
-    data: repoData
-  });
+    data: repoData,
+    include: {
+      client: {
+        select: {
+          name: true,
+        }
+      }
+      
+    }
+  })
   return created;
 }
 

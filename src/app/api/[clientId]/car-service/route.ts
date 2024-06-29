@@ -59,24 +59,6 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 }
 
 
-// model CarService {
-//     id                  String       @id @default(cuid())
-//     nombreReserva       String      @default("")           // gennext: show.column
-//     telefonoContacto    String      @default("")           // gennext: show.column
-//     fechaReserva        String      @default("")           // gennext: show.column
-//     localReserva        String      @default("")           // gennext: show.column
-//     marcaAuto           String      @default("")           // gennext: show.column
-//     modeloAuto          String      @default("")           // gennext: show.column
-//     matriculaAuto       String      @default("")           // gennext: show.column
-//     kilometraje         String      @default("")           // gennext: show.column
-  
-//     createdAt           DateTime     @default(now())         // gennext: skip.zod
-//     updatedAt           DateTime     @updatedAt              // gennext: skip.zod show.column
-  
-//     conversation        Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-//     conversationId     String @unique
-  
-//   }
 type CarServiceEntryResponse = {
     data:{
         phone: string,

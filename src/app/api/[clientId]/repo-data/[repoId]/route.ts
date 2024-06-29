@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { NextResponse } from "next/server";
 
-type RepoDataEntryResponse = {
+export type RepoDataEntryResponse = {
     id: string,
     phone: string,
     repoName: string,

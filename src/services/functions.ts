@@ -10,6 +10,8 @@ import { CarServiceFormValues, createCarService } from "./carservice-services";
 import { revalidatePath } from "next/cache";
 import { getRepositoryDAOByFunctionName } from "./repository-services";
 import { createRepoData, repoDataFormValues } from "./repodata-services";
+import { FunctionClientDAO, getFunctionClientDAO } from "./function-services";
+import { sendWebhookNotification } from "./webhook-notifications-service";
 
 export type CompletionInitResponse = {
   assistantResponse: string | null
@@ -317,7 +319,6 @@ export async function defaultFunction(clientId: string, name: string, args: any)
     if (!repo)
       return "Hubo un error al procesar esta solicitud"
   
-    // delete conversationId from args
     const { conversationId, ...data } = args
 
     if (!conversationId)
@@ -344,6 +345,11 @@ export async function defaultFunction(clientId: string, name: string, args: any)
       return "Hubo un error al procesar esta solicitud"
   
     revalidatePath(`/client/${conversation.client.slug}/repo-data`)
+
+    const functionClient= await getFunctionClientDAO(repo.functionId, conversation.client.id)
+    if (functionClient && functionClient.webHookUrl) {
+      await sendWebhookNotification(functionClient.webHookUrl, created)
+    }
   
     return repo.finalMessage    
   } catch (error) {
