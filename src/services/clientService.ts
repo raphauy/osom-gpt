@@ -365,3 +365,14 @@ export async function setFunctions(clientId: string, functionIs: string[]) {
 
   return true
 }
+
+export async function getComplementaryClients(clientsIds: string[]) {
+  const clients = await prisma.client.findMany({
+    where: {
+      id: {
+        notIn: clientsIds
+      }
+    },
+  })
+  return clients
+}

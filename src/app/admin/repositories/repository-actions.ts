@@ -1,7 +1,9 @@
 "use server"
   
+import { addFunctionToClient, getFunctionDAO, removeFunctionFromClient } from "@/services/function-services"
 import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
 
 export async function getRepositoryDAOAction(id: string): Promise<RepositoryDAO | null> {
@@ -100,6 +102,32 @@ export async function setWebHookUrlAction(clientId: string, functionId: string, 
     if (!updated) return false
 
     revalidatePath(`/admin/repositories`)
+
+    return true
+}
+
+export async function addFunctionToClientAction(clientId: string, functionId: string, repoId: string): Promise<boolean> {
+    const ok= await addFunctionToClient(clientId, functionId)
+
+    if (!ok) return false
+
+    const repoFunction= await getFunctionDAO(functionId)
+    if (!repoFunction) throw new Error("Función no encontrada")
+
+    revalidatePath(`/admin/repositories/${repoId}`)
+
+    return true
+}
+
+export async function removeFunctionFromClientAction(clientId: string, functionId: string, repoId: string): Promise<boolean> {
+    const ok= await removeFunctionFromClient(clientId, functionId)
+
+    if (!ok) return false
+
+    const repoFunction= await getFunctionDAO(functionId)
+    if (!repoFunction) throw new Error("Función no encontrada")
+
+    revalidatePath(`/admin/repositories/${repoId}`)
 
     return true
 }

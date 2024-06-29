@@ -4,13 +4,17 @@ import { IconBadge } from "@/components/icon-badge"
 import { TitleForm } from "@/components/title-form"
 import { Separator } from "@/components/ui/separator"
 import { getFullRepositoryDAO } from "@/services/repository-services"
-import { ArrowRight, Briefcase, Database, Sparkles, Tag } from "lucide-react"
+import { ArrowRight, Briefcase, Database, Sparkles, Tag, X } from "lucide-react"
 import { setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
 import { DeleteRepositoryDialog } from "../repository-dialogs"
 import FieldsBox from "./fields-box"
 import SwitchBox from "./switch-box"
 import FunctionClientBox from "./function-client-box"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { ClientSelector, SelectorData } from "./client-selector"
+import getClients, { getComplementaryClients } from "@/services/clientService"
+import { Button } from "@/components/ui/button"
+import RemoveClientButton from "./remove-client-button"
 
 type Props = {
   params: {
@@ -25,6 +29,10 @@ export default async function RepositoryPage({ params }: Props) {
 
   if (!repository) return <div>Repositorio no encontrado</div>
 
+  const clientsIds= repository.function.clients.map((client) => client.clientId)
+  const complementaryClients= await getComplementaryClients(clientsIds)
+  const selectors: SelectorData[]= complementaryClients.map((client) => ({ id: client.id, name: client.name }))
+  
   return (
     <>
         <div className="p-6 bg-white dark:bg-black mt-4 border rounded-lg w-full ml-4">
@@ -104,7 +112,12 @@ export default async function RepositoryPage({ params }: Props) {
                         repository.function.clients.map((functionClient) => (
                           <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2 border">
                             <AccordionItem value={functionClient.client.name} className="border-0">
-                              <AccordionTrigger>{functionClient.client.name}</AccordionTrigger>
+                              <div className="flex items-center">
+                                <div className="flex-grow">
+                                  <AccordionTrigger className="w-full">{functionClient.client.name}</AccordionTrigger>
+                                </div>                                
+                                <RemoveClientButton functionId={repository.functionId} clientId={functionClient.clientId} repoId={repository.id} />
+                              </div>                              
                               <AccordionContent>
                                 <FunctionClientBox functionClient={functionClient} repoId={repository.id} />
                               </AccordionContent>
@@ -113,9 +126,13 @@ export default async function RepositoryPage({ params }: Props) {
                         ))
                         :
                         <div className="flex items-center justify-center w-full h-full">
-                          <p className="text-center">No hay clientes que utilizan esta función</p>
+                          <p className="text-center">No hay clientes que utilizan este repositorio</p>
                         </div>
                       }
+                    </div>
+
+                    <div className="mt-5">
+                      <ClientSelector selectors={selectors} functionId={repository.functionId} repoId={repository.id} />
                     </div>
 
                 </div>

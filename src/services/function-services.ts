@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db"
 import { ChatCompletionCreateParams } from "openai/resources/index.mjs"
 import { Client } from "@prisma/client"
 import { RepositoryDAO } from "./repository-services"
+import { getClient } from "./clientService"
 
 export type FunctionClientDAO= {
   functionId: string
@@ -154,4 +155,58 @@ export async function nameIsAvailable(name: string) {
   })
 
   return found.length === 0
+}
+
+export async function addFunctionToClient(clientId: string, functionId: string): Promise<boolean> {
+  const client= await getClient(clientId)
+  if (!client) throw new Error("Client not found")
+
+  const clientFunction= await prisma.clientFunction.findUnique({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId
+      }
+    }
+  })
+  if (clientFunction) throw new Error("La función ya está asociada a este cliente")
+
+  const updated= await prisma.clientFunction.create({
+    data: {
+      clientId,
+      functionId
+    }
+  })
+
+  if (!updated) throw new Error("Error al asociar la función al cliente")
+
+  return true
+}
+
+export async function removeFunctionFromClient(clientId: string, functionId: string): Promise<boolean> {
+  const client= await getClient(clientId)
+  if (!client) throw new Error("Client not found")
+
+  const clientFunction= await prisma.clientFunction.findUnique({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId
+      }
+    }
+  })
+  if (!clientFunction) throw new Error("La función no está asociada a este cliente")
+
+  const deleted= await prisma.clientFunction.delete({
+    where: {
+      clientId_functionId: {
+        clientId,
+        functionId
+      }
+    }
+  })
+
+  if (!deleted) throw new Error("Error al eliminar la función del cliente")
+
+  return true  
 }
