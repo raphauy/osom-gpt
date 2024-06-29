@@ -35,7 +35,7 @@ export async function sendWebhookNotification(webhookUrl: string, repoData: Repo
         console.log(`Request took ${elapsedTime} milliseconds`)
 
         if (response.status !== 200) {
-            console.error('Failed to send webhook notification:', response.status, response.statusText)
+            console.error(`Failed to send webhook notification to ${webhookUrl} `, response.status, response.statusText)
         }
     } catch (error) {
         if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
