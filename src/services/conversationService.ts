@@ -11,6 +11,8 @@ import { groqCompletionInit } from "./groq-function-call-services";
 import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
 import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
+import { getRepoDataDAOByPhone } from "./repodata-services";
+import { getRepositoryDAO } from "./repository-services";
 
 
 export default async function getConversations() {
@@ -218,7 +220,8 @@ export async function processMessage(id: string, modelName?: string) {
               createdAt: 'asc',
             },
           },
-          client: true
+          client: true,
+          repoData: true
         }
       }
     }
@@ -230,6 +233,18 @@ export async function processMessage(id: string, modelName?: string) {
   // check llmOff to continue
   if (conversation.llmOff) {
     console.log(`LLMOff for conversation with phone ${conversation.phone}`)
+    const lastRepoData= conversation.repoData[conversation.repoData.length - 1]
+    if (lastRepoData) {
+      const repository= await getRepositoryDAO(lastRepoData.repositoryId)
+      const finalMessage= repository.finalMessage
+      if (finalMessage) {
+        console.log("sending finalMessage to phone" + conversation.phone)
+        await sendWapMessage(conversation.phone, finalMessage, false, conversation.clientId)
+      }
+
+    } else {
+      console.log("no repoData found in conversation")      
+    }
     return null
   }
 
@@ -300,7 +315,7 @@ export async function processMessage(id: string, modelName?: string) {
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
 
     console.log("notificarAgente: " + notificarAgente)    
-    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+    await sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   }
 
 }
