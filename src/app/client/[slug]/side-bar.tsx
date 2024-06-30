@@ -10,8 +10,9 @@ interface Props {
   showRegistro?: boolean
   showCarServices?: boolean
   showRepoData?: boolean
+  repoLabel: string
 }
-export default function SideBar({ slug, showRegistro, showCarServices, showRepoData }: Props) {
+export default function SideBar({ slug, showRegistro, showCarServices, showRepoData, repoLabel }: Props) {
 
   const data= [
     {
@@ -109,7 +110,7 @@ export default function SideBar({ slug, showRegistro, showCarServices, showRepoD
           <div className="pb-1">
             <Database size={23} />
           </div>
-          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>Trámites</p>                  
+          <p className={cn("hidden", !isChatPage && "md:block md:w-36")}>{repoLabel}</p>                  
         </Link>
 
         {divider()}

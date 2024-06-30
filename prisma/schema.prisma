@@ -82,6 +82,7 @@ model Client {
   modelId               String?
 
   repoData              RepoData[]                         // gennext: skip.list
+  repoLabel             String   @default("Repositorio")   // gennext: show.column
 }
 
 model Document {

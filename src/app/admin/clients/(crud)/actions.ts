@@ -26,6 +26,7 @@ export type DataClient = {
     promptCostTokenPrice: number
     completionCostTokenPrice: number
     modelName: string
+    repoLabel: string
   }
     
 
@@ -53,7 +54,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice: promptCostTokenPrice,
         completionCostTokenPrice: completionCostTokenPrice,
-        modelName: model?.name || ''
+        modelName: model?.name || '',
+        repoLabel: client.repoLabel
     }
     return data
 }
@@ -86,7 +88,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
-        modelName: model?.name || ''
+        modelName: model?.name || '',
+        repoLabel: client.repoLabel
     }
     return data
 }
@@ -116,7 +119,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
-        modelName: model?.name || ''
+        modelName: model?.name || '',
+        repoLabel: client.repoLabel
     }
     return data
 }
@@ -145,7 +149,8 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
-        modelName: model?.name || ''
+        modelName: model?.name || '',
+        repoLabel: client.repoLabel
     }
     return data
 }
@@ -181,7 +186,8 @@ export async function getDataClients() {
                 completionTokensPrice: client.completionTokensPrice,
                 promptCostTokenPrice,
                 completionCostTokenPrice,
-                modelName: model?.name || ''
+                modelName: model?.name || '',
+                repoLabel: client.repoLabel
             };
         })
     );
