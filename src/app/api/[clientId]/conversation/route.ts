@@ -1,6 +1,7 @@
 import { MessageDelayResponse, onMessageReceived, processDelayedMessage } from "@/services/messageDelayService";
 import { NextResponse } from "next/server";
 
+export const maxDuration = 299
 
 export async function POST(request: Request, { params }: { params: { clientId: string } }) {
 
