@@ -94,7 +94,7 @@ export default function SideBar() {
           if (href === "/admin/repositories" && user?.email !== "rapha.uy@rapha.uy") return null
 
           return (
-            <Link href={href} key={href} className={classes}>
+            <Link href={href} key={href} className={classes} prefetch={false}>
               <Icon size={23} />
               <p className={cn("hidden md:block md:w-36")}>{text}</p>                  
             </Link>
@@ -105,7 +105,7 @@ export default function SideBar() {
       <section className="mb-4">
         {divider()}
         
-        <Link href={`/admin/config?clientId=${firstClientId}`} className={cn(commonClasses, path.endsWith("/admin/config") && selectedClasses)}>
+        <Link href={`/admin/config?clientId=${firstClientId}`} className={cn(commonClasses, path.endsWith("/admin/config") && selectedClasses)} prefetch={false}>
           <Settings />
           <p className={cn("hidden md:block md:w-36")}>Configuración</p>                  
         </Link>
