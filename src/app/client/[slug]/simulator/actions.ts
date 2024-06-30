@@ -70,6 +70,7 @@ export async function getDataClientWithModel(slug: string, modelName?: string): 
       promptCostTokenPrice,
       completionCostTokenPrice,
       modelName: model && model.name ? model.name : '',
+      repoLabel: client.repoLabel,
   }
   return data
 }
