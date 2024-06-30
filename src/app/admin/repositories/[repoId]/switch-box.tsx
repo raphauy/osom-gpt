@@ -20,7 +20,7 @@ export default function SwitchBox({ repoId, checked, description, info, switchUp
                 <TooltipTrigger>
                     <Info className="w-4 h-4 text-gray-500" />
                 </TooltipTrigger>
-                <TooltipContent className="max-w-md p-4">
+                <TooltipContent className="max-w-md p-4 whitespace-pre-line">
                     {info}
                 </TooltipContent>
             </Tooltip>

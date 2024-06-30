@@ -137,6 +137,8 @@ model Conversation {
   zona        String?
   presupuesto String?
 
+  llmOff      Boolean?  @default(false)
+
   narvaez     Narvaez?
   summit      Summit?
   carService  CarService?
@@ -296,6 +298,7 @@ model Repository {
   functionDescription String                             // gennext: show.column
   functionActive      Boolean      @default(false)       // gennext: show.column
   notifyExecution     Boolean      @default(false)       // gennext: show.column
+  conversationLLMOff  Boolean      @default(false)       // gennext: show.column
 
   finalMessage        String?                            // gennext: show.column
 

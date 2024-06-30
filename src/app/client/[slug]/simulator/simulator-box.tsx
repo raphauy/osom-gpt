@@ -11,7 +11,7 @@ import { getFormat } from "@/lib/utils";
 import { ModelDAO } from "@/services/model-services";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { Bot, Car, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
+import { Bot, Car, CircleDollarSign, Loader, Podcast, RefreshCcw, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +19,9 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
+import { setLLMOffAction } from "./actions";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/components/ui/use-toast";
 
 export default function SimulatorBox() {
   const params= useParams()
@@ -34,7 +37,7 @@ export default function SimulatorBox() {
   const [completionTokensPrice, setCompletionTokensPrice] = useState(0)
   const [promptCostTokenValue, setPromptCostTokenValue] = useState(0)
   const [completionCostTokenValue, setCompletionCostTokenValue] = useState(0)
-  const [conversationId, setConversationId] = useState("")
+  const [conversationId, setConversationId] = useState("")  
   const [customInfo, setCustomInfo] = useState<CustomInfo | null>(null)
   const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(false)
@@ -152,21 +155,40 @@ export default function SimulatorBox() {
   if (!model) return <div>No se ha seleccionado un modelo</div>
 
 
-  const disabled = isLoading || input.length === 0;
+  const disabled = isLoading || input.length === 0 || customInfo?.conversationLLMOff
 
+  function handleLLMOn() {
+    setLoading(true)
+    setLLMOffAction(conversationId, false)
+    .then(() => {
+      toast({ title: "LLM habilitado" })
+    })
+    .catch((err) => {
+      toast({ title: "Error al habilitar LLM", description: err.message, variant: "destructive" })
+    })
+    .finally(() => {
+      onFinishActions()
+      setLoading(false)
+    })
+  }
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
       {
         isAdmin ?
         <div className="flex items-center justify-between w-full my-5">        
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Podcast className="text-green-500" />
-            </TooltipTrigger>
-            <TooltipContent className="text-sm text-gray-500">
-              Este modelo y proveedor ambos tienen capacidades de streaming de datos.
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Podcast className="text-green-500" />
+              </TooltipTrigger>
+              <TooltipContent className="text-sm text-gray-500">
+                Este modelo y proveedor ambos tienen capacidades de streaming de datos.
+              </TooltipContent>
+            </Tooltip>
+            {
+              customInfo?.conversationLLMOff && <Badge>LLM Off</Badge>
+            }
+          </div>
           <div className="flex items-center gap-2">
             <DeleteConversationDialog id={conversationId} description={`Seguro que desea eliminar la conversación de ${userEmail}?`} redirectUri={`/client/${slug}/simulator?r=${new Date().getMilliseconds()}`} />
           </div>
@@ -275,6 +297,14 @@ export default function SimulatorBox() {
 
       {error && <p className="mt-10 text-base text-center text-red-500">{JSON.parse(error.message).error}</p>}
 
+      {
+        customInfo?.conversationLLMOff &&
+        <Button onClick={handleLLMOn} className="gap-2 mt-10">
+          { loading ? <Loader className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
+          <p>Habilitar LLM</p>
+        </Button>
+      }
+
       <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 max-w-[350px] sm:max-w-[400px] md:max-w-[550px] lg:max-w-screen-md bg-gradient-to-b from-transparent via-gray-100 to-gray-100 sm:px-0">
         <form
           ref={formRef}
@@ -287,7 +317,7 @@ export default function SimulatorBox() {
             required
             rows={1}
             autoFocus
-            placeholder="Escribe aquí"
+            placeholder={customInfo?.conversationLLMOff ? "LLMOff" : "Escribe aquí"}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -302,7 +332,7 @@ export default function SimulatorBox() {
           <button
             className={clsx(
               "absolute inset-y-0 right-4 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all",
-              disabled
+              disabled || customInfo?.conversationLLMOff
                 ? "cursor-not-allowed bg-white"
                 : "bg-green-500 hover:bg-green-600",
             )}
@@ -320,7 +350,7 @@ export default function SimulatorBox() {
             )}
           </button>
         </form>
-        
+
         <div className="grid w-full grid-cols-3">
           <div>
           {customInfo?.summitId &&

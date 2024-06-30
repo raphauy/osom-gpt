@@ -5,7 +5,7 @@ import { TitleForm } from "@/components/title-form"
 import { Separator } from "@/components/ui/separator"
 import { getFullRepositoryDAO } from "@/services/repository-services"
 import { ArrowRight, Briefcase, Database, Sparkles, Tag, X } from "lucide-react"
-import { setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
+import { setConversationLLMOffAction, setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
 import { DeleteRepositoryDialog } from "../repository-dialogs"
 import FieldsBox from "./fields-box"
 import SwitchBox from "./switch-box"
@@ -81,10 +81,10 @@ export default async function RepositoryPage({ params }: Props) {
                     />
                     <SwitchBox
                       repoId={repository.id}
-                      checked={repository.notifyExecution} 
-                      switchUpdate={setNotifyExecutionAction}
-                      description="Notificar a Osom cuando se ejecute la función"
-                      info= {`Se notificará a Osom vía API de whatsapp cuando se ejecute la función, en el mensaje de respuesta al usuario. Se adjunta al body 'function=${repository.functionName}'`}
+                      checked={repository.conversationLLMOff} 
+                      switchUpdate={setConversationLLMOffAction}
+                      description="Deshabilitar LLM al ejecutar esta función"
+                      info= {`Si esta casilla está marcada, cuando se ejecute esta función, se deshabilitará el LLM para la conversaión en cuestión.  \n\nOsomGPT dejará de responer al usuario aunque se registrarán mensajes entrantes.`}
                     />
                 </div>
                 <div className="min-w-96">

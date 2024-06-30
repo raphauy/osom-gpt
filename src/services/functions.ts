@@ -5,10 +5,10 @@ import { NarvaezFormValues, createOrUpdateNarvaez } from "./narvaez-services";
 import { sendWapMessage } from "./osomService";
 import { getSectionOfDocument } from "./section-services";
 import { SummitFormValues, createSummit } from "./summit-services";
-import { getConversation, messageArrived } from "./conversationService";
+import { getConversation, messageArrived, setLLMOff } from "./conversationService";
 import { CarServiceFormValues, createCarService } from "./carservice-services";
 import { revalidatePath } from "next/cache";
-import { getRepositoryDAOByFunctionName } from "./repository-services";
+import { getRepositoryDAOByFunctionName, setConversationLLMOff } from "./repository-services";
 import { createRepoData, repoDataFormValues } from "./repodata-services";
 import { FunctionClientDAO, getFunctionClientDAO } from "./function-services";
 import { sendWebhookNotification } from "./webhook-notifications-service";
@@ -349,6 +349,10 @@ export async function defaultFunction(clientId: string, name: string, args: any)
     const functionClient= await getFunctionClientDAO(repo.functionId, conversation.client.id)
     if (functionClient && functionClient.webHookUrl) {
       await sendWebhookNotification(functionClient.webHookUrl, created)
+    }
+    if (repo.conversationLLMOff) {
+      console.log(`setting conversationLLMOff to true for phone ${conversation.phone}`)
+      await setLLMOff(conversation.id, true)
     }
   
     return repo.finalMessage    

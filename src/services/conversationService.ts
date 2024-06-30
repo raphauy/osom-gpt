@@ -2,16 +2,15 @@ import { prisma } from "@/lib/db";
 
 import { BillingData, CompleteData } from "@/app/admin/billing/actions";
 import { removeSectionTexts } from "@/lib/utils";
+import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
+import { completionInit } from "./function-call-services";
 import { getFunctionsDefinitions } from "./function-services";
+import { googleCompletionInit } from "./google-function-call-services";
+import { groqCompletionInit } from "./groq-function-call-services";
+import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
 import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
-import { googleCompletionInit } from "./google-function-call-services";
-import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
-import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
-import { completionInit } from "./function-call-services";
-import { groqCompletionInit } from "./groq-function-call-services";
-import { getClient } from "./clientService";
 
 
 export default async function getConversations() {
@@ -130,6 +129,33 @@ export async function getConversation(id: string) {
   return found
 }
 
+export async function getConverationLLMOff(conversationId: string): Promise<boolean> {
+  const conversation= await prisma.conversation.findUnique({
+    where: {
+      id: conversationId
+    },
+    select: {
+      llmOff: true
+    }
+  })
+  if (!conversation) return false
+
+  return conversation.llmOff || false
+}
+
+export async function setLLMOff(conversationId: string, llmOff: boolean) {
+  const updated= await prisma.conversation.update({
+    where: {
+      id: conversationId
+    },
+    data: {
+      llmOff
+    }
+  })
+
+  return updated
+}
+
 export async function getLastConversation(slug: string) {
     
     const found = await prisma.conversation.findFirst({
@@ -201,6 +227,12 @@ export async function processMessage(id: string, modelName?: string) {
 
   const conversation= message.conversation
 
+  // check llmOff to continue
+  if (conversation.llmOff) {
+    console.log(`LLMOff for conversation with phone ${conversation.phone}`)
+    return null
+  }
+
   const client= conversation.client
 
   //const messages= getGPTMessages(conversation.messages as ChatCompletionMessageParam[])
@@ -271,15 +303,6 @@ export async function processMessage(id: string, modelName?: string) {
     sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   }
 
-  // if (assistantResponse) {
-  //   console.log("notificarAgente: " + notificarAgente)
-    
-  //   sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
-  // } else {
-  //   console.log("assistantResponse is null")
-  // }   
-  
-  
 }
 
 type ChatCompletionUserOrSystem= ChatCompletionUserMessageParam | ChatCompletionSystemMessageParam
