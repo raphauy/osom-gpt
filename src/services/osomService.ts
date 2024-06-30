@@ -44,14 +44,15 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
         }),
-      });
+        timeout: 10000, // 10 segundos
+      })
       console.log('Whatsapp Success:');
       return
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
       // sleep 3 seconds before retrying
       console.log("Osom API failed, sleeping 3 seconds")      
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 3000))
     }
   }
 }
