@@ -39,7 +39,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 
         if (delayResponse.wasCreated ) {
             if (delayResponse.message) {
-                processDelayedMessage(delayResponse.message.id, phone)
+                await processDelayedMessage(delayResponse.message.id, phone)
                 
             } else {
                 console.log("delayResponse.message wasCreated but is null")
