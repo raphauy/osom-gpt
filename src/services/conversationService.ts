@@ -13,6 +13,7 @@ import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
 import { getRepoDataDAOByPhone } from "./repodata-services";
 import { getRepositoryDAO } from "./repository-services";
+import { getValue } from "./config-services";
 
 
 export default async function getConversations() {
@@ -233,19 +234,12 @@ export async function processMessage(id: string, modelName?: string) {
   // check llmOff to continue
   if (conversation.llmOff) {
     console.log(`LLMOff for conversation with phone ${conversation.phone}`)
-    const lastRepoData= conversation.repoData[conversation.repoData.length - 1]
-    if (lastRepoData) {
-      const repository= await getRepositoryDAO(lastRepoData.repositoryId)
-      const finalMessage= repository.finalMessage
-      if (finalMessage) {
-        console.log("sending finalMessage to phone" + conversation.phone)
-        await sendWapMessage(conversation.phone, finalMessage, false, conversation.clientId)
-      }
-
-    } else {
-      console.log("no repoData found in conversation")      
-    }
-    return null
+    console.log("sending finalMessage to phone" + conversation.phone)
+    const LLM_OFF_MESSAGE= await getValue("LLM_OFF_MESSAGE")
+    const message= LLM_OFF_MESSAGE || "Chat desactivado"
+    await messageArrived(conversation.phone, message, conversation.clientId, "assistant", "", 0, 0)
+    await sendWapMessage(conversation.phone, message, false, conversation.clientId)
+return null
   }
 
   const client= conversation.client
