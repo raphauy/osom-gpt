@@ -131,6 +131,9 @@ export async function getRepoDataDAOByPhone(repositoryId: string, phone: string)
       repositoryId,
       phone
     },
+    orderBy: {
+      createdAt: "desc"
+    },
     select: {
       id: true,
       phone: true,
