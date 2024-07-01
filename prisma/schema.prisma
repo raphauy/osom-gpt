@@ -343,8 +343,8 @@ model RepoData {
 
   data                Json                                // gennext: show.column
 
-  repository          Repository @relation(fields: [repositoryId], references: [id], onDelete: NoAction)
-  repositoryId        String
+  repository          Repository? @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+  repositoryId        String?
 
   client              Client @relation(fields: [clientId], references: [id], onDelete: NoAction)
   clientId            String
