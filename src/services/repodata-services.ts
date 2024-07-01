@@ -9,7 +9,7 @@ export type RepoDataDAO = {
   phone: string
 	functionName: string
 	data: JsonValue
-	repositoryId: string
+	repositoryId: string | null
 	clientId: string
   conversationId: string
 	createdAt: Date

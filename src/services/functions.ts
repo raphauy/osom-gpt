@@ -341,7 +341,7 @@ export async function defaultFunction(clientId: string, name: string, args: any)
     }
   
     const created= await createRepoData(repoData)
-    if (!created)
+    if (!created || !created.repositoryId)
       return "Hubo un error al procesar esta solicitud"
   
     revalidatePath(`/client/${conversation.client.slug}/repo-data`)
