@@ -4,6 +4,7 @@ import { getRepoDataDAOByPhone } from "@/services/repodata-services";
 import { getSummitEntry } from "@/services/summit-services";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { es } from "date-fns/locale";
 import { NextResponse } from "next/server";
 
@@ -59,13 +60,16 @@ export async function POST(request: Request, { params }: Props) {
             return NextResponse.json({ data: "Repo Data Entry not found" }, { status: 200 })
         }
 
+        const timeZone = "America/Montevideo"
+        const date = format(toZonedTime(repoDataEntry.createdAt, timeZone), "yyyy-MM-dd HH:mm", { locale: es })
+
         const data: RepoDataEntryResponse= {
             id: repoDataEntry.id,
             phone,
             repoName: repoDataEntry.repoName,
             functionName: repoDataEntry.functionName,
             clientName: repoDataEntry.client.name,
-            date: format(repoDataEntry.createdAt, "yyyy-MM-dd HH:mm", { locale: es }),
+            date,
             data: repoDataEntry.data,
         }
 
