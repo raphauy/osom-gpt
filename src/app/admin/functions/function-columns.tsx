@@ -67,12 +67,12 @@ export const columns: ColumnDef<FunctionDAO>[] = [
  
       if (data.repositories?.length && data.repositories?.length > 0) {
         return (
-          <Database className="w-5 h-5 text-gray-500" />
-          // <Link href={`/admin/repositories/${data.repositories[0].id}`} prefetch={false}>
-          //   <Button variant="ghost">
-          //     <Database className="w-5 h-5 text-gray-500" />
-          //   </Button>
-          // </Link>
+          // <Database className="w-5 h-5 text-gray-500" />
+          <Link href={`/admin/repositories/${data.repositories[0].id}`} prefetch={false}>
+            <Button variant="ghost">
+              <Database className="w-5 h-5 text-gray-500" />
+            </Button>
+          </Link>
         )
       }
       return (

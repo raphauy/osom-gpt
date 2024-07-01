@@ -91,8 +91,6 @@ export default function SideBar() {
           const selected= path.includes(href)
           const classes= cn(commonClasses, selected && selectedClasses)
 
-          if (href === "/admin/repositories" && user?.email !== "rapha.uy@rapha.uy") return null
-
           return (
             <Link href={href} key={href} className={classes} prefetch={false}>
               <Icon size={23} />
