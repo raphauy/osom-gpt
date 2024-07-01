@@ -235,10 +235,16 @@ export async function processMessage(id: string, modelName?: string) {
   if (conversation.llmOff) {
     console.log(`LLMOff for conversation with phone ${conversation.phone}`)
     console.log("sending finalMessage to phone" + conversation.phone)
-    const LLM_OFF_MESSAGE= await getValue("LLM_OFF_MESSAGE")
-    const message= LLM_OFF_MESSAGE || "Chat desactivado"
-    await messageArrived(conversation.phone, message, conversation.clientId, "assistant", "", 0, 0)
-    await sendWapMessage(conversation.phone, message, false, conversation.clientId)
+    if (conversation.repoData[0].repositoryId) {
+      const repo= await getRepositoryDAO(conversation.repoData[0].repositoryId)
+      const message= repo.llmOffMessage
+      if (message) {
+        await messageArrived(conversation.phone, message, conversation.clientId, "assistant", "", 0, 0)
+        await sendWapMessage(conversation.phone, message, false, conversation.clientId)  
+      } else {
+        console.log("Repo do not have llmOffMessage, not sending response to the user")        
+      }  
+    }
 return null
   }
 

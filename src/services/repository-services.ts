@@ -15,6 +15,7 @@ export type RepositoryDAO = {
   notifyExecution: boolean
   conversationLLMOff: boolean
 	finalMessage: string | undefined
+  llmOffMessage: string | undefined
 	createdAt: Date
 	updatedAt: Date
   functionId: string
@@ -250,6 +251,19 @@ export async function setFinalMessage(id: string, finalMessage: string) {
     },
     data: {
       finalMessage
+    }
+  })
+
+  return updated
+}
+
+export async function setLLMOffMessage(id: string, llmOffMessage: string) {
+  const updated = await prisma.repository.update({
+    where: {
+      id
+    },
+    data: {
+      llmOffMessage
     }
   })
 

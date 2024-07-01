@@ -5,7 +5,7 @@ import { TitleForm } from "@/components/title-form"
 import { Separator } from "@/components/ui/separator"
 import { getFullRepositoryDAO } from "@/services/repository-services"
 import { ArrowRight, Briefcase, Database, Sparkles, Tag, X } from "lucide-react"
-import { setConversationLLMOffAction, setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
+import { setConversationLLMOffAction, setFinalMessageAction, setFunctionDescriptionAction, setFunctionNameAction, setLLMOffMessageAction, setNameAction, setNotifyExecutionAction } from "../repository-actions"
 import { DeleteRepositoryDialog } from "../repository-dialogs"
 import FieldsBox from "./fields-box"
 import SwitchBox from "./switch-box"
@@ -86,6 +86,15 @@ export default async function RepositoryPage({ params }: Props) {
                       description="Deshabilitar LLM al ejecutar esta función"
                       info= {`Si esta casilla está marcada, cuando se ejecute esta función, se deshabilitará el LLM para la conversaión en cuestión.  \n\nOsomGPT dejará de responer al usuario aunque se registrarán mensajes entrantes.`}
                     />
+                    {
+                      repository.conversationLLMOff &&
+                      <DescriptionForm
+                      label="Mensaje LLM Off"
+                      initialValue={repository.llmOffMessage || ""}
+                      id={repository.id}
+                      update={setLLMOffMessageAction}
+                    />
+                    }
                 </div>
                 <div className="min-w-96">
                     <div className="flex items-center gap-x-2">

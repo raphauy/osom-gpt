@@ -1,7 +1,7 @@
 "use server"
   
 import { addFunctionToClient, getFunctionDAO, removeFunctionFromClient } from "@/services/function-services"
-import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setConversationLLMOff, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
+import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setConversationLLMOff, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setLLMOffMessage, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -68,6 +68,16 @@ export async function setFunctionDescriptionAction(id: string, functionDescripti
 
 export async function setFinalMessageAction(id: string, finalMessage: string): Promise<boolean> {
     const updated= await setFinalMessage(id, finalMessage)
+
+    if (!updated) return false
+
+    revalidatePath(`/admin/repositories/${updated.id}`)
+
+    return true
+}
+
+export async function setLLMOffMessageAction(id: string, llmOffMessage: string): Promise<boolean> {
+    const updated= await setLLMOffMessage(id, llmOffMessage)
 
     if (!updated) return false
 
