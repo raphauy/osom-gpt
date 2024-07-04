@@ -1,7 +1,8 @@
-import { type ClassValue, clsx } from "clsx"
-import { format } from "date-fns"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { format as formatTZ, toZonedTime } from "date-fns-tz";
+import { es } from "date-fns/locale";
 import he from 'he';
+import { twMerge } from "tailwind-merge";
  
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -38,12 +39,21 @@ export function removeSectionTexts(inputText: string): string {
   
 
 export function getFormat(date: Date): string {
-  // if date is today return only the time
-  const today= new Date()
-  if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
-      return format(date, "HH:mm")
+  const timeZone = "America/Montevideo";
+  
+  // Convert the date to the desired time zone
+  const zonedDate = toZonedTime(date, timeZone);
+  
+  const today = toZonedTime(new Date(), timeZone);
+
+  if (
+    zonedDate.getDate() === today.getDate() &&
+    zonedDate.getMonth() === today.getMonth() &&
+    zonedDate.getFullYear() === today.getFullYear()
+  ) {
+    return formatTZ(zonedDate, "HH:mm", { timeZone, locale: es });
   } else {
-      return format(date, "yyyy/MM/dd")
+    return formatTZ(zonedDate, "yyyy/MM/dd", { timeZone, locale: es });
   }
 }
 
@@ -134,3 +144,16 @@ export function decodeAndCorrectText(str: string): string {
 
   return decodedStr;
 }
+
+export const colorPalette = [
+  'rgb(53, 145, 118)',
+  'rgb(48, 130, 106)',
+  'rgb(58, 160, 130)',
+  'rgb(43, 115, 94)',
+  'rgb(63, 175, 142)',
+  'rgb(38, 100, 82)',
+  'rgb(68, 190, 154)',
+  'rgb(33, 85, 70)',
+  'rgb(73, 205, 166)',
+  'rgb(23, 55, 46)',
+];

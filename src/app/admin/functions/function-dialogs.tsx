@@ -13,7 +13,7 @@ type Props= {
   isAdmin?: boolean
 }
 
-const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Create Function</Button>
+const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Agregar</Button>
 const updateTrigger= <Pencil size={30} className="pr-2 hover:cursor-pointer"/>
 
 export function FunctionDialog({ id, isAdmin }: Props) {
@@ -26,7 +26,7 @@ export function FunctionDialog({ id, isAdmin }: Props) {
       </DialogTrigger>
       <DialogContent className="max-w-7xl">
         <DialogHeader>
-          <DialogTitle>{id ? 'Update' : 'Create'} Function
+          <DialogTitle>{id ? 'Actualizar' : 'Crear'} Función
           </DialogTitle>
         </DialogHeader>
         <FunctionForm closeDialog={() => setOpen(false)} id={id} isAdmin={isAdmin} />

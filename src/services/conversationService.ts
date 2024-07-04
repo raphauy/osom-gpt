@@ -2,16 +2,18 @@ import { prisma } from "@/lib/db";
 
 import { BillingData, CompleteData } from "@/app/admin/billing/actions";
 import { removeSectionTexts } from "@/lib/utils";
+import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
+import { completionInit } from "./function-call-services";
 import { getFunctionsDefinitions } from "./function-services";
+import { googleCompletionInit } from "./google-function-call-services";
+import { groqCompletionInit } from "./groq-function-call-services";
+import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
 import { sendWapMessage } from "./osomService";
 import { getContext, setSectionsToMessage } from "./section-services";
-import { googleCompletionInit } from "./google-function-call-services";
-import { ChatCompletion } from "groq-sdk/resources/chat/completions.mjs";
-import { getFullModelDAO, getFullModelDAOByName } from "./model-services";
-import { completionInit } from "./function-call-services";
-import { groqCompletionInit } from "./groq-function-call-services";
-import { getClient } from "./clientService";
+import { getRepoDataDAOByPhone } from "./repodata-services";
+import { getRepositoryDAO } from "./repository-services";
+import { getValue } from "./config-services";
 
 
 export default async function getConversations() {
@@ -130,6 +132,33 @@ export async function getConversation(id: string) {
   return found
 }
 
+export async function getConverationLLMOff(conversationId: string): Promise<boolean> {
+  const conversation= await prisma.conversation.findUnique({
+    where: {
+      id: conversationId
+    },
+    select: {
+      llmOff: true
+    }
+  })
+  if (!conversation) return false
+
+  return conversation.llmOff || false
+}
+
+export async function setLLMOff(conversationId: string, llmOff: boolean) {
+  const updated= await prisma.conversation.update({
+    where: {
+      id: conversationId
+    },
+    data: {
+      llmOff
+    }
+  })
+
+  return updated
+}
+
 export async function getLastConversation(slug: string) {
     
     const found = await prisma.conversation.findFirst({
@@ -192,7 +221,8 @@ export async function processMessage(id: string, modelName?: string) {
               createdAt: 'asc',
             },
           },
-          client: true
+          client: true,
+          repoData: true
         }
       }
     }
@@ -200,6 +230,23 @@ export async function processMessage(id: string, modelName?: string) {
   if (!message) throw new Error("Message not found")
 
   const conversation= message.conversation
+
+  // check llmOff to continue
+  if (conversation.llmOff) {
+    console.log(`LLMOff for conversation with phone ${conversation.phone}`)
+    console.log("sending finalMessage to phone" + conversation.phone)
+    if (conversation.repoData[0].repositoryId) {
+      const repo= await getRepositoryDAO(conversation.repoData[0].repositoryId)
+      const message= repo.llmOffMessage
+      if (message) {
+        await messageArrived(conversation.phone, message, conversation.clientId, "assistant", "", 0, 0)
+        await sendWapMessage(conversation.phone, message, false, conversation.clientId)  
+      } else {
+        console.log("Repo do not have llmOffMessage, not sending response to the user")        
+      }  
+    }
+return null
+  }
 
   const client= conversation.client
 
@@ -268,18 +315,9 @@ export async function processMessage(id: string, modelName?: string) {
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
 
     console.log("notificarAgente: " + notificarAgente)    
-    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+    await sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   }
 
-  // if (assistantResponse) {
-  //   console.log("notificarAgente: " + notificarAgente)
-    
-  //   sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
-  // } else {
-  //   console.log("assistantResponse is null")
-  // }   
-  
-  
 }
 
 type ChatCompletionUserOrSystem= ChatCompletionUserMessageParam | ChatCompletionSystemMessageParam

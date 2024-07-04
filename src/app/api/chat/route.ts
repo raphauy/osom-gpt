@@ -11,6 +11,7 @@ import openaiTokenCounter from 'openai-gpt-token-counter';
 import { NextResponse } from "next/server";
 import { processFunctionCall } from "@/services/functions";
 
+export const maxDuration = 299
 
 export async function POST(req: Request) {
 
@@ -100,8 +101,7 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(result);
 
       let baseArgs = {
-        // model: "gpt-4-1106-preview",
-        model: "gpt-4-turbo",
+        model: model.name,
         stream: true,
       };
     

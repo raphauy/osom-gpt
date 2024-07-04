@@ -24,6 +24,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   url: z.string().optional(),
   modelId: z.string(),
+  repoLabel: z.string().optional(),
 })
 
 export type ClientFormValues = z.infer<typeof formSchema>
@@ -34,6 +35,7 @@ const defaultValues: Partial<ClientFormValues> = {
   name: "",
   description: "",
   url: "",
+  repoLabel: "Repositorio",
 }
 
 interface Props{
@@ -90,6 +92,7 @@ export function ClientForm({ id, create, update, closeDialog }: Props) {
         form.setValue("description", data.descripcion)
         data.modelId && form.setValue("modelId", data.modelId)
         data.url && form.setValue("url", data.url)
+        data.repoLabel && form.setValue("repoLabel", data.repoLabel)
       })
     }  
   }, [form, id])
@@ -167,6 +170,21 @@ export function ClientForm({ id, create, update, closeDialog }: Props) {
                     )))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="repoLabel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Etiqueta para UI repositorio:</FormLabel>
+                <FormControl>
+                  <Input placeholder="ej: Repositorio" {...field} />
+                </FormControl>
+                <FormDescription>Esta etiqueta se usa para el menú de acceso al repositorio</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

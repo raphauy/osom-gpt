@@ -1,8 +1,8 @@
 import { ModelSelector, SelectorData } from "@/components/header/model-selector";
-import { getFullModelDAOByName, getFullModelsDAO } from "@/services/model-services";
-import SimulatorBox from "./simulator-box";
 import { getClientBySlug } from "@/services/clientService";
+import { getFullModelDAOByName, getFullModelsDAO } from "@/services/model-services";
 import { redirect } from "next/navigation";
+import SimulatorBox from "./simulator-box";
 import SimulatorNoStreamingBox from "./simulator-no-stremaing-box";
 
 type Props = {

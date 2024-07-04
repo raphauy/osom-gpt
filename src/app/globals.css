@@ -74,3 +74,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+.logoContainer {
+  width: 240px;
+  height: auto; /* Mantener la proporción de la imagen */
+  display: flex;
+  align-items: center;
+}

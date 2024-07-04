@@ -44,7 +44,8 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
         }),
-      });
+        timeout: 10000, // 10 segundos
+      })
       console.log('Whatsapp Success:');
       return
     } catch (error) {

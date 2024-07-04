@@ -3,8 +3,9 @@
 import { DataClient } from "@/app/admin/clients/(crud)/actions"
 import { getCurrentUser } from "@/lib/auth"
 import { getClientBySlug } from "@/services/clientService"
-import { getMessagesCountOfActiveConversation, messageArrived, processMessage } from "@/services/conversationService"
+import { getMessagesCountOfActiveConversation, messageArrived, processMessage, setLLMOff } from "@/services/conversationService"
 import { getFullModelDAOByName } from "@/services/model-services"
+import { revalidatePath } from "next/cache"
 
 export async function insertMessageAction(text: string, clientId: string, modelName: string) {
 
@@ -69,6 +70,17 @@ export async function getDataClientWithModel(slug: string, modelName?: string): 
       promptCostTokenPrice,
       completionCostTokenPrice,
       modelName: model && model.name ? model.name : '',
+      repoLabel: client.repoLabel,
   }
   return data
+}
+
+export async function setLLMOffAction(conversationId: string, llmOff: boolean) {
+  const updated= await setLLMOff(conversationId, llmOff)
+
+  if (!updated) return false
+
+  revalidatePath(`/client/[slug]/simulator`, "page")
+
+  return true
 }

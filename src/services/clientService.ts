@@ -2,7 +2,6 @@ import { ClientFormValues } from "@/app/admin/clients/(crud)/clientForm";
 import { prisma } from "@/lib/db";
 import { FunctionDAO } from "./function-services";
 
-
 export default async function getClients() {
 
   const found = await prisma.client.findMany({
@@ -365,4 +364,15 @@ export async function setFunctions(clientId: string, functionIs: string[]) {
   })))
 
   return true
+}
+
+export async function getComplementaryClients(clientsIds: string[]) {
+  const clients = await prisma.client.findMany({
+    where: {
+      id: {
+        notIn: clientsIds
+      }
+    },
+  })
+  return clients
 }
