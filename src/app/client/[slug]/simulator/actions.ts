@@ -81,6 +81,7 @@ export async function setLLMOffAction(conversationId: string, llmOff: boolean) {
   if (!updated) return false
 
   revalidatePath(`/client/[slug]/simulator`, "page")
+  revalidatePath(`/client/[slug]/chats`, "page")
 
   return true
 }

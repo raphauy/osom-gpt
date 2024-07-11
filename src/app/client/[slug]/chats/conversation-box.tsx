@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { removeSectionTexts } from "@/lib/utils"
 import clsx from "clsx"
-import { Bot, Car, CircleDollarSign, Terminal, Ticket, User } from "lucide-react"
+import { Bot, Car, CircleDollarSign, Cog, Loader, Terminal, Ticket, Unplug, User } from "lucide-react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -15,6 +15,8 @@ import GPTData from "./gpt-data"
 import { useEffect, useState } from "react"
 import { CustomInfo, getCustomInfoAction } from "@/app/admin/chat/actions"
 import { useParams } from "next/navigation"
+import { setLLMOffAction } from "../simulator/actions"
+import { toast } from "@/components/ui/use-toast"
 
 interface Props {
   conversation: DataConversation
@@ -38,6 +40,7 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
   const messages= showSystem && isAdmin ? conversation.messages : conversation.messages.filter(message => message.role !== "system")
 
   const [customInfo, setCustomInfo] = useState<CustomInfo | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     getCustomInfoAction(conversation.id)
@@ -51,6 +54,20 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
     })
   }, [conversation.id])
   
+  function handleLLMOn() {
+    setLoading(true)
+    setLLMOffAction(conversation.id, false)
+    .then(() => {
+      conversation.llmOff= false
+      toast({ title: "LLM habilitado" })
+    })
+    .catch((err) => {
+      toast({ title: "Error al habilitar LLM", description: err.message, variant: "destructive" })
+    })
+    .finally(() => {
+      setLoading(false)
+    })
+  }
 
   return (
       <main className="flex flex-col items-center justify-between w-full p-3 border-l">
@@ -65,6 +82,12 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
               <Link href={`/client/${slug}/car-service?name=${customInfo.carServiceName}`}>
                 <Button variant="ghost" className="h-7"><Car /></Button>
               </Link>
+            }
+            {
+              conversation.llmOff &&
+              <Button variant="outline" className="px-2" onClick={handleLLMOn}>
+                {loading ? <Loader className="w-4 h-4 animate-spin" /> : <Unplug />}
+              </Button>
             }
           </div>
           <div>

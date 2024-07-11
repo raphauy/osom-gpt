@@ -32,6 +32,7 @@ export type DataConversation = {
     tipo?: string
     zona?: string
     presupuesto?: string
+    llmOff: boolean | null
 }
       
 
@@ -75,7 +76,8 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
         operacion: conversation.operacion || undefined,
         tipo: conversation.tipo || undefined,
         zona: conversation.zona || undefined,
-        presupuesto: conversation.presupuesto || undefined        
+        presupuesto: conversation.presupuesto || undefined,
+        llmOff: conversation.llmOff
     }
     return data
 }

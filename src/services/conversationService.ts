@@ -159,6 +159,36 @@ export async function setLLMOff(conversationId: string, llmOff: boolean) {
   return updated
 }
 
+export async function setLLMOnByRepoAndPhone(repoId: string, phone: string) {
+  const conversation= await prisma.conversation.findFirst({
+    where: {
+      repoData: {
+        some: {
+          repositoryId: repoId
+        }
+      },
+      phone,
+      llmOff: true
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  if (!conversation) return null
+
+  const updated= await prisma.conversation.update({
+    where: {
+      id: conversation.id
+    },
+    data: {
+      llmOff: false
+    }
+  })
+
+  return updated
+}
+
 export async function getLastConversation(slug: string) {
     
     const found = await prisma.conversation.findFirst({
