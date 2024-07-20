@@ -114,7 +114,7 @@ export async function deleteModel(id: string) {
 export async function getFullModelsDAO() {
   const found = await prisma.model.findMany({
     orderBy: {
-      id: 'asc'
+      createdAt: 'desc'
     },
     include: {
 			provider: true,

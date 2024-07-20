@@ -84,7 +84,7 @@ export function ModelSelector({ selectors }: Props) {
           <Command filter={customFilter} >
             <div className='flex items-center w-full gap-1 p-2 border border-gray-300 rounded-md shadow'>
                 <Search className="w-4 h-4 mx-1 opacity-50 shrink-0" />
-                <input placeholder="Buscar cliente..." onInput={handleInputChange} value={searchValue} className="w-full bg-transparent focus:outline-none"/>
+                <input placeholder="Buscar modelo..." onInput={handleInputChange} value={searchValue} className="w-full bg-transparent focus:outline-none"/>
             </div>
             
             <CommandEmpty>modelo no encontrado</CommandEmpty>
@@ -114,7 +114,7 @@ export function ModelSelector({ selectors }: Props) {
               {filteredValues.length - 10 > 0 &&
                 <div className="flex items-center mt-5 font-bold">
                   <ChevronsRight className="w-5 h-5 ml-1 mr-2"/>
-                  <p className="text-sm">Hay {filteredValues.length - 10} clientes más</p>
+                  <p className="text-sm">Hay {filteredValues.length - 10} modelos más</p>
                 </div>
               }
 
