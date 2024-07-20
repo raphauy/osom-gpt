@@ -1,7 +1,7 @@
 "use server"
 
 import { getServiceNameByConversationId } from "@/services/carservice-services"
-import { getActiveMessages, getConverationLLMOff, getConversation } from "@/services/conversationService"
+import { getActiveMessages, getConverationLLMOff } from "@/services/conversationService"
 import { getSectionsOfMessage } from "@/services/section-services"
 import { getSummitIdByConversationId } from "@/services/summit-services"
 

@@ -13,14 +13,14 @@ type Props= {
   id?: string
 }
 
-const addTrigger= <Button><PlusCircle size={22} className="mr-2"/>Create Model</Button>
+const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Nuevo Modelo</Button>
 const updateTrigger= <Pencil size={30} className="pr-2 hover:cursor-pointer"/>
 
 export function ModelDialog({ id }: Props) {
   const [open, setOpen] = useState(false);
   const currentUser= useSession().data?.user
 
-  if (currentUser?.email !== "rapha.uy@rapha.uy") return null
+  if (currentUser?.role !== "admin") return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -29,7 +29,7 @@ export function ModelDialog({ id }: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{id ? 'Update' : 'Create'} Model
+          <DialogTitle>{id ? 'Actualizar' : 'Crear'} Modelo
           </DialogTitle>
         </DialogHeader>
         <ModelForm closeDialog={() => setOpen(false)} id={id} />

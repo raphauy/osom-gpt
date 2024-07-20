@@ -76,7 +76,8 @@ export async function getActiveConversation(phone: string, clientId: string) {
     const found = await prisma.conversation.findFirst({
       where: {
         phone,
-        clientId,        
+        clientId,
+        closed: false,
         messages: {
           some: {
             createdAt: {
@@ -545,4 +546,19 @@ export async function getMessagesCountOfActiveConversation(phone: string, client
   })
 
   return messages
+}
+export async function closeConversation(conversationId: string) {
+  const updated= await prisma.conversation.update({
+    where: {
+      id: conversationId
+    },
+    data: {
+      closed: true
+    },
+    include: {
+      client: true
+    }
+  })
+
+  return updated
 }

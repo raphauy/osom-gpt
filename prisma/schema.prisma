@@ -137,6 +137,7 @@ model Conversation {
   tipo        String?
   zona        String?
   presupuesto String?
+  closed      Boolean  @default(false)
 
   llmOff      Boolean?  @default(false)
 
