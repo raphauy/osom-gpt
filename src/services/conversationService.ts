@@ -462,7 +462,30 @@ export async function deleteConversation(id: string) {
 
 export async function getBillingData(from: Date, to: Date, clientId?: string): Promise<CompleteData> {  
 
-  const messages= await prisma.message.findMany({
+  // const messages= await prisma.message.findMany({
+  //   where: {
+  //     createdAt: {
+  //       gte: from,
+  //       lte: to
+  //     },
+  //     conversation: {
+  //       clientId: clientId
+  //     }
+  //   },
+  //   include: {
+  //     conversation: {
+  //       include: {
+  //         client: {
+  //           include: {
+  //             model: true
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // })
+
+  const messages = await prisma.message.findMany({
     where: {
       createdAt: {
         gte: from,
@@ -472,18 +495,38 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
         clientId: clientId
       }
     },
-    include: {
+    select: {
+      promptTokens: true,
+      completionTokens: true,
       conversation: {
-        include: {
+        select: {
           client: {
-            include: {
-              model: true
+            select: {
+              name: true,
+              model: {
+                select: {
+                  name: true,
+                  inputPrice: true,
+                  outputPrice: true
+                }
+              },
+              promptTokensPrice: true,
+              completionTokensPrice: true
             }
           }
         }
       }
     }
-  })
+  });
+  
+  console.log("messages count: ", messages.length)
+  
+
+  // const res: CompleteData= {
+  //   totalCost: 0,
+  //   billingData: []
+  // }
+  // return res
 
   const billingData: BillingData[]= []
 
