@@ -20,6 +20,7 @@ export const roles= [
   "admin",
   "osom",
   "cliente",
+  "user",
 ]
 
 const formSchema = z.object({  
