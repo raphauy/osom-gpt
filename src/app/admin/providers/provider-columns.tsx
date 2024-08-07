@@ -14,7 +14,7 @@ export const columns: ColumnDef<ProviderDAO>[] = [
     accessorKey: "name",
     header: ({ column }) => {
         return (
-          <Button variant="ghost" className="pl-0 dark:text-white"
+          <Button variant="ghost" className="pl-0 font-bold"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             Nombre
             <ArrowUpDown className="w-4 h-4 ml-1" />
@@ -26,7 +26,7 @@ export const columns: ColumnDef<ProviderDAO>[] = [
     accessorKey: "baseUrl",
     header: ({ column }) => {
         return (
-          <Button variant="ghost" className="pl-0 dark:text-white"
+          <Button variant="ghost" className="pl-0 font-bold"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             BaseUrl
             <ArrowUpDown className="w-4 h-4 ml-1" />
@@ -38,7 +38,7 @@ export const columns: ColumnDef<ProviderDAO>[] = [
     accessorKey: "streaming",
     header: ({ column }) => {
         return (
-          <Button variant="ghost" className="pl-0 dark:text-white"
+          <Button variant="ghost" className="pl-0 font-bold"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             Streaming
             <ArrowUpDown className="w-4 h-4 ml-1" />

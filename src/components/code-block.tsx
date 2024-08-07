@@ -1,3 +1,6 @@
+"use client"
+
+import { useTheme } from 'next-themes';
 import React from 'react';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
@@ -11,8 +14,14 @@ type CodeBlockProps = {
 };
 
 const CodeBlock: React.FC<CodeBlockProps> = ({ code, showLineNumbers }) => {
+  const { theme } = useTheme();
+  const color = theme === "dark" ? "white" : "black";
   return (
-    <SyntaxHighlighter       
+    <SyntaxHighlighter
+      customStyle={{
+        backgroundColor: "transparent",
+        color,
+      }}
       language="json" 
       style={vs} 
       showLineNumbers={showLineNumbers}

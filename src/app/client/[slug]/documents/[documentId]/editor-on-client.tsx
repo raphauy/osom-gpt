@@ -126,6 +126,7 @@ export default function NovelOnClient({ document, initialContent, basePath }: Pr
                 // @ts-ignore
                 onDebouncedUpdate={onUpdate}
                 disableLocalStorage
+                className="bg-background"
             />
         </div>
     )

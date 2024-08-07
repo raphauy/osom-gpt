@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
   }, [])
 
   return (
-    <div className="w-full space-y-4 dark:text-white">
+    <div className="w-full space-y-4 bg-background">
       {/* <DataTableToolbar table={table}/> */}
       <div className="border rounded-md">
         <Table>

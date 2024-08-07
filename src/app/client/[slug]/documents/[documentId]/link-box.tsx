@@ -19,7 +19,7 @@ export default function LinkBox({ href }: Props) {
     }
 
     return (
-        <div className="flex items-center gap-4 px-5 mt-1 border rounded-full shadow-lg dark:shadow-white">
+        <div className="flex items-center gap-4 px-5 mt-1 border rounded-full shadow-lg dark:shadow-md dark:shadow-white">
             <Link href={href} target="_blank">
                     <Button variant="link" className="px-1">link público</Button>
             </Link>

@@ -54,9 +54,9 @@ export default function RepositoriesTabs({ repositories }: Props) {
                     />
 
                 </div>
-                <TabsList className="bg-white border h-10">
-                    <TabsTrigger value="grid" className="data-[state=active]:bg-gray-100"><LayoutGrid className="h-5 w-5" /></TabsTrigger>
-                    <TabsTrigger value="list" className="data-[state=active]:bg-gray-100"><List className="h-5 w-5" /></TabsTrigger>
+                <TabsList className="border h-10 bg-background">
+                    <TabsTrigger value="grid" className="data-[state=active]:text-foreground"><LayoutGrid className="h-5 w-5" /></TabsTrigger>
+                    <TabsTrigger value="list" className="data-[state=active]:text-foreground"><List className="h-5 w-5" /></TabsTrigger>
                 </TabsList>
 
                 <RepositoryDialog />

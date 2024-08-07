@@ -21,7 +21,7 @@ export default async function RepoDataPage({ params }: Props) {
   return (
     <div className="w-full">      
 
-      <div className="container bg-white p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white dark:bg-black">
+      <div className="container p-3 py-4 mx-auto border rounded-md text-muted-foreground ">
         <DataTable columns={columns} data={data} subject="RepoData" repoNames={repoNames} repoLabel={client.repoLabel}/>
       </div>
     </div>

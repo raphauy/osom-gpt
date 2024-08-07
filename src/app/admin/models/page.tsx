@@ -14,7 +14,7 @@ export default async function ModelPage() {
         <ModelDialog />
       </div>
 
-      <div className="container bg-white p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white">
+      <div className="mx-auto text-muted-foreground ml-3">
         <DataTable columns={columns} data={data} subject="Model"/>      
       </div>
     </div>

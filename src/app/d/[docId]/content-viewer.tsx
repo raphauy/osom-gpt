@@ -39,7 +39,7 @@ export default function ContentViewer({ content }: Props) {
             <div className="invisible-anchor" style={{ position: 'absolute', top: '0', left: '0', opacity: 0 }}/>
 
             <NovelEditor
-                className="w-full h-full bg-white rounded-t-none rounded-b-md"
+                className="w-full h-full rounded-t-none rounded-b-md"
                 defaultValue={content ? JSON.parse(content) : {}}
                 disableLocalStorage
                 editorProps={editorProps}

@@ -53,7 +53,7 @@ export function SectionForm({ id, closeDialog }: Props) {
   }, [form, id])
 
   return (
-    <div className="p-4 bg-white rounded-md">
+    <div className="p-4 rounded-md">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           

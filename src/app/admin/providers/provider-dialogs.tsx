@@ -13,7 +13,7 @@ type Props= {
   id?: string
 }
 
-const addTrigger= <Button><PlusCircle size={22} className="mr-2"/>Create Provider</Button>
+const addTrigger= <Button variant="outline"><PlusCircle size={22} className="mr-2"/>Create Provider</Button>
 const updateTrigger= <Pencil size={30} className="pr-2 hover:cursor-pointer"/>
 
 export function ProviderDialog({ id }: Props) {

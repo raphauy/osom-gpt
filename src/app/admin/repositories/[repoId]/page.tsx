@@ -37,7 +37,7 @@ export default async function RepositoryPage({ params }: Props) {
 
   return (
     <>
-        <div className="p-6 bg-white dark:bg-black mt-4 border rounded-lg w-full ml-4">
+        <div className="p-6 mt-4 border rounded-lg w-full ml-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="min-w-96">
                     <div className="flex items-center space-x-2">
@@ -121,7 +121,7 @@ export default async function RepositoryPage({ params }: Props) {
                       {
                         repository.function.clients.length > 0 ?
                         repository.function.clients.map((functionClient) => (
-                          <Accordion key={functionClient.clientId} type="single" collapsible className="bg-white rounded-md dark:bg-black px-2 border">
+                          <Accordion key={functionClient.clientId} type="single" collapsible className="rounded-md px-2 border">
                             <AccordionItem value={functionClient.client.name} className="border-0">
                               <div className="flex items-center">
                                 <div className="flex-grow">
@@ -149,7 +149,7 @@ export default async function RepositoryPage({ params }: Props) {
                 </div>
             </div> 
         </div>
-        <div className="p-6 bg-white dark:bg-black mt-4 border rounded-lg w-full">
+        <div className="p-6 mt-4 border rounded-lg w-full">
           <CodeBlock code={repository.function.definition!} showLineNumbers={true} />
         </div>
         <div className="flex justify-center w-full mt-10">
