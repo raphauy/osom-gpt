@@ -3,8 +3,16 @@ import { getDocumentDAO } from "@/services/document-services";
 import { getSectionCountOfDocument } from "@/services/section-services";
 import { NextResponse } from "next/server";
 
+type Props= {
+    params: {
+        clientId: string
+    },
+    // searchParams: {
+    //     documentId: string
+    // }
+}
 
-export async function POST(request: Request, { params }: { params: { clientId: string } }) {
+export async function GET(request: Request, { params }: Props) {
 
     try {
         const authorization = request.headers.get("authorization")
@@ -18,11 +26,11 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 
         const json= await request.json()
         console.log("json: ", json)
+        const documentId= json.documentId
 
-        const id= json.id
-        if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 })
+        if (!documentId) return NextResponse.json({ error: "documentId is required" }, { status: 400 })
 
-        const document= await getDocumentDAO(id)
+        const document= await getDocumentDAO(documentId)
         if (!document) return NextResponse.json({ error: "document not found" }, { status: 400 })
 
         const documentResponse= {
