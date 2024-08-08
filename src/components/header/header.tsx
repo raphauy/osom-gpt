@@ -30,7 +30,7 @@ export default async function Header({ children }: Props) {
                 {session && children}
             </div>
             
-            { env && <Badge className="font-bold">{env}</Badge> }
+            { env && <Badge className="font-bold">{env}!</Badge> }
             <div>
                 <ThemeToggle />
             </div>
