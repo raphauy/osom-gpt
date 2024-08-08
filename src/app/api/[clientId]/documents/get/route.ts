@@ -12,7 +12,7 @@ type Props= {
     // }
 }
 
-export async function GET(request: Request, { params }: Props) {
+export async function POST(request: Request, { params }: Props) {
 
     try {
         const authorization = request.headers.get("authorization")
