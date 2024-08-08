@@ -374,7 +374,7 @@ export default function SimulatorBox() {
               href="https://www.osomdigital.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-black"
+              className="transition-colors hover:text-black dark:hover:text-white"
             >            
               Osom Digital
             </a>
