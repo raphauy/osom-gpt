@@ -23,10 +23,12 @@ export async function GET(request: Request, { params }: Props) {
         // console.log("json: ", json)
         // const id= json.id
 
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = new URL(request.url)
 
         const documentId= searchParams.get("documentId")
-        if (!documentId) return NextResponse.json({ error: "id is required" }, { status: 400 })
+        console.log("documentId: ", documentId)
+        
+        if (!documentId) return NextResponse.json({ error: "documentId is required" }, { status: 400 })
 
         const document= await getDocumentDAO(documentId)
         if (!document) return NextResponse.json({ error: "document not found" }, { status: 400 })
