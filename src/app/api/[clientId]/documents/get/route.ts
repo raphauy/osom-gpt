@@ -1,18 +1,13 @@
-import { getClient } from "@/services/clientService";
 import { getDocumentDAO } from "@/services/document-services";
-import { getSectionCountOfDocument } from "@/services/section-services";
 import { NextResponse } from "next/server";
 
 type Props= {
     params: {
         clientId: string
     },
-    searchParams: {
-        documentId: string
-    }
 }
 
-export async function GET(request: Request, { params, searchParams }: Props) {
+export async function GET(request: Request, { params }: Props) {
 
     try {
         const authorization = request.headers.get("authorization")
@@ -28,7 +23,9 @@ export async function GET(request: Request, { params, searchParams }: Props) {
         // console.log("json: ", json)
         // const id= json.id
 
-        const documentId= searchParams.documentId
+        const { searchParams } = new URL(request.url);
+
+        const documentId= searchParams.get("documentId")
         if (!documentId) return NextResponse.json({ error: "id is required" }, { status: 400 })
 
         const document= await getDocumentDAO(documentId)
