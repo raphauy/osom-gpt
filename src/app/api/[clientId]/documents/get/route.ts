@@ -7,12 +7,12 @@ type Props= {
     params: {
         clientId: string
     },
-    // searchParams: {
-    //     documentId: string
-    // }
+    searchParams: {
+        documentId: string
+    }
 }
 
-export async function POST(request: Request, { params }: Props) {
+export async function GET(request: Request, { params, searchParams }: Props) {
 
     try {
         const authorization = request.headers.get("authorization")
@@ -24,11 +24,12 @@ export async function POST(request: Request, { params }: Props) {
         const clientId = params.clientId
         if (!clientId) return NextResponse.json({ error: "clientId not found" }, { status: 400 })
 
-        const json= await request.json()
-        console.log("json: ", json)
-        const documentId= json.documentId
+        // const json= await request.json()
+        // console.log("json: ", json)
+        // const id= json.id
 
-        if (!documentId) return NextResponse.json({ error: "documentId is required" }, { status: 400 })
+        const documentId= searchParams.documentId
+        if (!documentId) return NextResponse.json({ error: "id is required" }, { status: 400 })
 
         const document= await getDocumentDAO(documentId)
         if (!document) return NextResponse.json({ error: "document not found" }, { status: 400 })
