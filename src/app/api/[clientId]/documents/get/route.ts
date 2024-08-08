@@ -1,8 +1,7 @@
-import { DocumentFormValues, createDocument, deleteDocument, getDocumentDAO, getDocumentsDAOByClient, updateDocument } from "@/services/document-services";
-import { NextResponse } from "next/server";
-import { DocumentResponse } from "../route";
 import { getClient } from "@/services/clientService";
-import { getSectionCountOfDocument, getSectionOfDocument } from "@/services/section-services";
+import { getDocumentDAO } from "@/services/document-services";
+import { getSectionCountOfDocument } from "@/services/section-services";
+import { NextResponse } from "next/server";
 
 
 export async function POST(request: Request, { params }: { params: { clientId: string } }) {
@@ -25,10 +24,6 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 
         const document= await getDocumentDAO(id)
         if (!document) return NextResponse.json({ error: "document not found" }, { status: 400 })
-
-        const sectioinsCount= await getSectionCountOfDocument(id)
-
-        const client= await getClient(clientId)
 
         const documentResponse= {
             id: document.id,
