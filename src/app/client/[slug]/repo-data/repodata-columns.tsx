@@ -9,6 +9,7 @@ import CodeBlock from "@/components/code-block"
 import ConversationButton from "@/app/admin/carservices/conversation-button"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
+import { JsonValue } from "@prisma/client/runtime/library"
 
 
 export const columns: ColumnDef<RepoDataDAO>[] = [
@@ -59,11 +60,19 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
           </Button>
     )},
     cell: ({ row }) => {
-      const data= row.original
-      // replace all false with NO and all true with SI
-      const jsonReplaced = JSON.stringify(data.data, null, 2)
-      .replace(/false/g, "NO")
-      .replace(/true/g, "SI");
+      let data = row.original.data
+
+      // Parsear el string JSON a un objeto
+      if (typeof data === "string") {
+        data = JSON.parse(data)
+      }
+    
+      // Reemplazar booleanos y luego serializar a string con formato
+      const jsonReplaced = JSON.stringify(data, (key, value) => {
+        if (value === true) return "SI"
+        if (value === false) return "NO"
+        return value;
+      }, 2)
 
       return <CodeBlock code={jsonReplaced} showLineNumbers={false} />
     },
