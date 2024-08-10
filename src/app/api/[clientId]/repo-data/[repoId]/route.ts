@@ -15,7 +15,7 @@ export type RepoDataEntryResponse = {
     functionName: string,
     clientName: string,
     date: string,
-    data: JsonValue,
+    data: string,
 }
 
 type Props= {

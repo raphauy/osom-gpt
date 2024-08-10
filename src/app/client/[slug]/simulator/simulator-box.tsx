@@ -308,7 +308,7 @@ export default function SimulatorBox() {
         </Button>
       }
 
-      <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 max-w-[350px] sm:max-w-[400px] md:max-w-[550px] lg:max-w-screen-md sm:px-0">
+      <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 max-w-[350px] sm:max-w-[400px] md:max-w-[550px] lg:max-w-screen-md sm:px-0 bg-background">
         <form
           ref={formRef}
           onSubmit={handleSubmit}
