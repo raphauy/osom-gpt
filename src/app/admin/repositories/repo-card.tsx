@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { RepositoryDAO } from "@/services/repository-services"
 import { formatDistanceToNow } from "date-fns"
@@ -12,15 +13,16 @@ type Props= {
 
 export function RepoCard({ repository }: Props) {
   const color = repository.color
-  const clientesStr= repository.function.clients.length === 0 ? 
+  const clients= repository.function.clients
+  const clientesStr= clients.length === 0 ? 
   "ninguno" : 
-  repository.function.clients.length === 1 ? 
+  clients.length === 1 ? 
   `1 cliente` : 
-  `${repository.function.clients.length} clientes`
+  `${clients.length} clientes`
   
   return (
     <Link href={`/admin/repositories/${repository.id}`} prefetch={false} className="w-full max-w-lg">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-lg h-full">
         <CardHeader
           className={`flex flex-col items-start gap-2 p-4 rounded-t-lg h-[130px]`}
           style={{
@@ -37,9 +39,13 @@ export function RepoCard({ repository }: Props) {
             <CalendarIcon className="w-4 h-4" />
             <span>actualizado {formatDistanceToNow(repository.updatedAt, { locale: es })}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <Briefcase className="w-4 h-4 mb-1" />
-            {clientesStr}
+            {
+              clients.map(client => (
+                <Badge key={client.client.id} className="text-xs whitespace-nowrap">{client.client.name}</Badge>
+              ))
+            }
           </div>
         </CardContent>
       </Card>

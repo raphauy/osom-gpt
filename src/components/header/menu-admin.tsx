@@ -15,6 +15,9 @@ export default function MenuAdmin() {
                     <li className={`flex items-center border-b-osom-color hover:border-b-osom-color hover:border-b-2 h-11 ${path.includes("admin") && "border-b-2"}`}>
                         <Link href="/admin"><Button className="text-lg" variant="ghost">Admin</Button></Link>
                     </li>
+                    <li className={`flex items-center border-b-osom-color hover:border-b-osom-color hover:border-b-2 h-11 ${path.includes("analytics") && "border-b-2"}`}>
+                        <Link href="/analytics"><Button className="text-lg" variant="ghost">Analytics</Button></Link>
+                    </li>
                 </ul>
             </nav>
         </div>

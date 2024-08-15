@@ -74,6 +74,7 @@ model Client {
   prompt                String?   @db.Text
   promptTokensPrice     Float      @default(0)
   completionTokensPrice Float  @default(0)
+  messageArrivedDelay   Int       @default(8)
 
   functions             ClientFunction[]
 

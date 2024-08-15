@@ -157,3 +157,42 @@ export const colorPalette = [
   'rgb(73, 205, 166)',
   'rgb(23, 55, 46)',
 ];
+
+export function formatNumberWithThousandsSeparator(number: number): string { 
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+export function getMonthName(month: string) {
+  
+  if (month.length === 7) month = (Number(month.slice(5, 7))+1).toString()
+  if (month.length === 1) month = "0" + month
+
+  switch (month) {
+    case "01":
+      return "enero"
+    case "02":
+      return "febrero"
+    case "03":
+      return "marzo"
+    case "04":
+      return "abril"
+    case "05":
+      return "mayo"
+    case "06":
+      return "junio"
+    case "07":
+      return "julio"
+    case "08":
+      return "agosto"
+    case "09":
+      return "septiembre"
+    case "10":
+      return "octubre"
+    case "11":
+      return "noviembre"
+    case "12":
+      return "diciembre"
+    default:
+      return "mes"
+  }
+}

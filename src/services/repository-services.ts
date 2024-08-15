@@ -138,7 +138,11 @@ export async function getFullRepositorysDAO() {
     include: {
       function: {
         include: {
-          clients: true
+          clients: {
+            include: {
+              client: true
+            }
+          }
         }
       },
       fields: true

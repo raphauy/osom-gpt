@@ -1,35 +1,33 @@
-import { Parameters, Property, generateFunctionDefinition } from "./repository-services"
+import { getIndicator, getIndicatorByClient, getIndicatorByDay, getIndicatorByMonth } from "./analytics-service"
 
 async function main() {
 
     console.log("main")
 
-    const name= "registrarPhone"
-    const description= "Cuando el usuario solicita registrar un teléfono, se debe utilizar esta función para registrar el teléfono."
-    const property1: Property= {
-      name: "conversationId",
-      type: "string",
-      description: "ConversationId proporcionado en el prompt",
-    }
-    const property2: Property= {
-      name: "phone",
-      type: "string",
-      description: "Se debe preguntar al usuario el phone",
-    }
-    const property3: Property= {
-        name: "nombre",
-        type: "string",
-        description: "Opcionialmente, se puede preguntar al usuario el nombre",
-    }
-    const parameters: Parameters= {
-        type: "object",
-        properties: [property1, property2, property3],
-        required: ["conversationId", "phone"],
-    }
-    const functionDefinition= generateFunctionDefinition(name, description, parameters)
-    console.log("functionDefinition: ", functionDefinition)
+    let indicatorId= "conversations"
+    const clientId= "clt680esu00004us2ng1axmic"
+    const from= new Date("2024-07-01")
+    const to= new Date("2024-07-31")
+    let indicator= await getIndicator(indicatorId, clientId, from, to)
+    console.log("Conversaciones: ", indicator)
+
+    indicatorId= "messages"
+    indicator= await getIndicator(indicatorId, clientId, from, to)
+    console.log("Mensajes: ", indicator)
+
+    //name= "Conversaciones"
+    const list= await getIndicatorByClient(indicatorId, from, to, clientId)
+    console.log("list: ", list)
+    if (list)
+      console.log("count: ", list.data.length)
+
+    const byDay= await getIndicatorByDay(indicatorId, from, to, clientId)
+    console.log("byDay: ", byDay)
+
+    const byMonth= await getIndicatorByMonth(indicatorId, null, null, clientId)
+    console.log("byMonth: ", byMonth)
 
 }
   
-main()
+//main()
   

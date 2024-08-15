@@ -8,8 +8,9 @@ import { PromptForm } from "../prompts/prompt-form"
 import Hook from "./hook"
 import TokensPrice from "./tokens-price"
 import CopyHook from "./copy-hook"
-import { getClientBySlug, getFunctionsOfClient } from "@/services/clientService"
+import { getClientBySlug, getFunctionsOfClient, getMessageArrivedDelay } from "@/services/clientService"
 import DocumentsHook from "./documents-hook"
+import PropsEdit from "./props-edit-box"
 
 type Props = {
     searchParams: {
@@ -32,6 +33,8 @@ export default async function ConfigPage({ searchParams }: Props) {
 
     const BASE_PATH= process.env.NEXTAUTH_URL || "NOT-CONFIGURED"
 
+    const messageArrivedDelay= await getMessageArrivedDelay(clientId)
+
     return (
         <div className="flex flex-col items-center w-full p-5 gap-7">
             <Tabs defaultValue="prompt" className="min-w-[700px] xl:min-w-[1000px]">
@@ -40,7 +43,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <div>
                         <TabsTrigger value="prompt">Prompt</TabsTrigger>
                         <TabsTrigger value="functions">Funciones</TabsTrigger>
-                        <TabsTrigger value="token-price">Tokens $</TabsTrigger>
+                        <TabsTrigger value="props">Props</TabsTrigger>
                         <TabsTrigger value="hooks">Hooks</TabsTrigger>                        
                         <TabsTrigger value="general">General</TabsTrigger>
                     </div>
@@ -51,7 +54,8 @@ export default async function ConfigPage({ searchParams }: Props) {
                 <TabsContent value="functions">
                     <ClientFunctionsBox clientId={client.id} />
                 </TabsContent>
-                <TabsContent value="token-price">
+                <TabsContent value="props" className="space-y-2">
+                    { messageArrivedDelay && <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay} /> }
                     <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} />
                 </TabsContent>
                 <TabsContent value="hooks">

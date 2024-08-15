@@ -376,3 +376,79 @@ export async function getComplementaryClients(clientsIds: string[]) {
   })
   return clients
 }
+
+export async function getClientsMinimal() {
+  const clients = await prisma.client.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  })
+  return clients
+}
+
+export async function getClientName(clientId: string) {
+  const client = await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    select: {
+      name: true
+    }
+  })
+  if (!client) return null
+  
+  return client.name
+}
+
+export async function getMessageArrivedDelay(clientId: string) {
+  const client = await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    select: {
+      messageArrivedDelay: true
+    }
+  })
+  if (!client) return null
+  
+  return client.messageArrivedDelay
+}
+
+export async function setMessageArrivedDelay(clientId: string, messageArrivedDelay: number) {
+  const client = await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      messageArrivedDelay
+    }
+  })
+  return client
+}
+
+export async function getMessageArrivedDelayByMessageId(messageId: string) {
+  const message = await prisma.message.findUnique({
+    where: {
+      id: messageId
+    },
+    select: {
+      conversation: {
+        select: {
+          client: {
+            select: {
+              messageArrivedDelay: true
+            }
+          }
+        }
+      }
+    }
+  })
+  if (!message) 
+    throw new Error("Message not found or conversation not found or messageArrivedDelay not found")
+
+  return message.conversation?.client?.messageArrivedDelay
+}

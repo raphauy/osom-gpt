@@ -20,10 +20,14 @@ export default function RepositoriesTabs({ repositories }: Props) {
     const [filteredRepos, setfilteredRepos] = useState<RepositoryDAO[]>(repositories)
     const [showX, setShowX] = useState(false)
     const [inputValue, setInputValue] = useState("")
+    const [clientInputValue, setClientInputValue] = useState("")
+    const [showClientX, setShowClientX] = useState(false)
     function handleDeleteFilter() {
         setfilteredRepos(repositories)
         setShowX(false)
+        setShowClientX(false)
         setInputValue("")
+        setClientInputValue("")
     }
     function handleFilter(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.value
@@ -32,10 +36,27 @@ export default function RepositoriesTabs({ repositories }: Props) {
             const filtered = repositories.filter(repository => repository.name.toLowerCase().includes(value.toLowerCase()))
             setfilteredRepos(filtered)
             setInputValue(value)
-        } else {
+            setShowClientX(false)
+            setClientInputValue("")
+            } else {
             setShowX(false)
             setfilteredRepos(repositories)
             setInputValue("")
+        }
+    }
+    function handleClientFilter(e: React.ChangeEvent<HTMLInputElement>) {
+        const value = e.target.value
+        if (value.length > 0) {
+            setShowClientX(true)
+            const filtered = repositories.filter(repository => repository.function.clients.some(functionClient => functionClient.client.name.toLowerCase().includes(value.toLowerCase())))
+            setfilteredRepos(filtered)
+            setClientInputValue(value)
+            setShowX(false)
+            setInputValue("")
+        } else {
+            setShowClientX(false)
+            setfilteredRepos(repositories)
+            setClientInputValue("")
         }
     }
     return (
@@ -52,7 +73,18 @@ export default function RepositoriesTabs({ repositories }: Props) {
                         className={cn("absolute right-3 top-2.5 text-gray-400 h-5 w-5 hover:cursor-pointer", showX ? "block" : "hidden")}
                         onClick={handleDeleteFilter} 
                     />
-
+                </div>
+                <div className="relative w-full flex-grow">
+                    <input type="text" placeholder="Buscar por cliente..."
+                        className="border pl-10 py-1 h-full rounded-md w-full" 
+                        onChange={handleClientFilter}
+                        value={clientInputValue}
+                    />
+                    <Search className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
+                    <X 
+                        className={cn("absolute right-3 top-2.5 text-gray-400 h-5 w-5 hover:cursor-pointer", showClientX  ? "block" : "hidden")}
+                        onClick={handleDeleteFilter} 
+                    />
                 </div>
                 <TabsList className="border h-10 bg-background">
                     <TabsTrigger value="grid" className="data-[state=active]:text-foreground"><LayoutGrid className="h-5 w-5" /></TabsTrigger>
