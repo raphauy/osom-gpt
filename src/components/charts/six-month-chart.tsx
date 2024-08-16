@@ -58,6 +58,7 @@ export function SixMonthChart({ indicator, clientName }: Props) {
     }, [searchParams])
 
     const lastLabel= 
+      last === "HOY" ? "hoy" :
       last === "7D" ? "Últimos 7 días" : 
       last === "30D" ? "Últimos 30 días" : 
       from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : 

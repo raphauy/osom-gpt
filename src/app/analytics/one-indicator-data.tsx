@@ -26,12 +26,18 @@ export default async function OneIndicatorDataPage({ indicatorId, from, to, last
   console.log("last: ", last)
   console.log("cId: ", cId)
 
-  if (last === "7D") {
+  const today= new Date()
+
+  if (last === "HOY") {
+    // from must be the beginning of the day and to must be the end of the day
+    from= new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    to= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+  } else if (last === "7D") {
     from= new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 7)
-    to= new Date()
+    to= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
   } else if (last === "30D") {
       from= new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 30)
-      to= new Date()
+      to= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
   } else if (last === "ALL") {
       from= null
       to= null
@@ -44,9 +50,9 @@ export default async function OneIndicatorDataPage({ indicatorId, from, to, last
   return (
     <div className="flex flex-col gap-4 w-full p-6">        
         <LineChartComponent indicator={indicatorByDay} />        
-        <div className={cn("w-full mx-auto max-w-4xl grid gap-4", clientName || last === "7D" ? "xl:grid-cols-1" : "xl:grid-cols-2")}>
+        <div className={cn("w-full mx-auto max-w-4xl grid gap-4", clientName || last === "7D" || last === "HOY" ? "xl:grid-cols-1" : "xl:grid-cols-2")}>
           <RadialChart indicator={indicatorByClient} clientName={clientName} />
-          { last !== "7D" && <SixMonthChart indicator={indicatorByMonth} clientName={clientName} /> }
+          { last !== "7D" && last !== "HOY" && <SixMonthChart indicator={indicatorByMonth} clientName={clientName} /> }
         </div>
         {!clientName && <BarChartHorizontal indicator={indicatorByClient} />}
     </div>

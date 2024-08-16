@@ -62,7 +62,7 @@ export function LineChartComponent({ indicator }: Props) {
     setTo(searchParams.get("to"))
   }, [searchParams])
 
-  const lastLabel= last === "7D" ? "últimos 7 días" : last === "30D" ? "últimos 30 días" : from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : from && to ? from + " al " + to : "toda la base de datos"
+  const lastLabel= last === "HOY" ? "hoy" : last === "7D" ? "últimos 7 días" : last === "30D" ? "últimos 30 días" : from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : from && to ? from + " al " + to : "toda la base de datos"
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
