@@ -49,7 +49,7 @@ export default async function OneIndicatorDataPage({ indicatorId, from, to, last
   
   return (
     <div className="flex flex-col gap-4 w-full p-6">        
-        <LineChartComponent indicator={indicatorByDay} />        
+        { last !== "HOY" && <LineChartComponent indicator={indicatorByDay} /> }
         <div className={cn("w-full mx-auto max-w-4xl grid gap-4", clientName || last === "7D" || last === "HOY" ? "xl:grid-cols-1" : "xl:grid-cols-2")}>
           <RadialChart indicator={indicatorByClient} clientName={clientName} />
           { last !== "7D" && last !== "HOY" && <SixMonthChart indicator={indicatorByMonth} clientName={clientName} /> }
