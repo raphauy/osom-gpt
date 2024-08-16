@@ -53,12 +53,14 @@ export default async function AnalyticsPage({ searchParams }: Props) {
     const messagesResult= await getIndicatorByClient("messages", from, to, cId)
     const leadsResult= await getIndicatorByClient("leads", from, to, cId)
 
-    const indicators= [conversationsResult, messagesResult, leadsResult]
+    const indicators= [leadsResult, conversationsResult, messagesResult]
 
     let clientName
     if (cId) {
         clientName= await getClientName(cId)
     }
+
+    const actualMinute= new Date().getMinutes()
 
     return (
         <div className="flex flex-col items-center flex-grow w-full">
@@ -69,6 +71,7 @@ export default async function AnalyticsPage({ searchParams }: Props) {
 
                 <div className="flex flex-col items-center w-full">
                     <AnalyticsHeader />
+                    <p className="w-full text-right mr-1 max-w-4xl text-sm">Actualizado hace <span className="font-bold">{actualMinute} minutos</span></p>
 
                     <Suspense key={"one"+JSON.stringify(searchParams)} fallback={<ChartSkeleton />}>
                         <OneIndicatorDataPage indicatorId={indicatorId} from={from} to={to} last={last} cId={cId} clientName={clientName} />
