@@ -164,7 +164,7 @@ export function formatNumberWithThousandsSeparator(number: number): string {
 
 export function getMonthName(month: string) {
   
-  if (month.length === 7) month = (Number(month.slice(5, 7))+1).toString()
+  if (month.length === 7) month = (Number(month.slice(5, 7))).toString()
   if (month.length === 1) month = "0" + month
 
   switch (month) {
