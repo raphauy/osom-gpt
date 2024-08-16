@@ -46,8 +46,9 @@ export default async function AnalyticsPage({ searchParams }: Props) {
 
     const conversationsResult= await getIndicatorByClient("conversations", from, to, cId)
     const messagesResult= await getIndicatorByClient("messages", from, to, cId)
+    const leadsResult= await getIndicatorByClient("leads", from, to, cId)
 
-    const indicators= [conversationsResult, messagesResult]
+    const indicators= [conversationsResult, messagesResult, leadsResult]
 
     let clientName
     if (cId) {

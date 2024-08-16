@@ -35,5 +35,22 @@ GROUP BY
     c."clientId", cl."name", DATE(m."createdAt");
 
 REFRESH MATERIALIZED VIEW message_count_by_date_client;
+----------------------------------------------------------------------
 
+-- Leads -------------------------------------------------------------
+DROP MATERIALIZED VIEW IF EXISTS leads_count_by_date_client;
+CREATE MATERIALIZED VIEW leads_count_by_date_client AS
+SELECT
+    r."clientId",
+    cl."name" AS client_name,
+    DATE(r."createdAt") AS event_date,
+    COUNT(r.id) AS event_count
+FROM
+    "RepoData" r
+JOIN
+    "Client" cl ON r."clientId" = cl."id"
+GROUP BY
+    r."clientId", cl."name", DATE(r."createdAt");
+
+REFRESH MATERIALIZED VIEW leads_count_by_date_client;
 ----------------------------------------------------------------------

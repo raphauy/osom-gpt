@@ -25,6 +25,13 @@ const indicatorDefinitions: IndicatorDefinition[] = [
         description: "Cantidad de mensajes",
         tableName: "message_count_by_date_client"
     },
+    {
+        id: "leads",
+        name: "Leads",
+        icon: "Target",
+        description: "Cantidad de Leads",
+        tableName: "leads_count_by_date_client"
+    }
 ]
 
 export async function getIndicator(name: string, clientId: string, from: Date, to: Date) {
