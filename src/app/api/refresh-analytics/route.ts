@@ -1,11 +1,7 @@
 import { refreshMaterializedViews } from '@/services/analytics-service'
 import { NextResponse } from 'next/server'
 
-export const maxDuration = 59
-
-//const RCPhone= process.env.RC_PHONE
-
-const GRACE_PERIOD_IN_MINUTES = 10
+export const maxDuration = 299
 
 export async function GET(req: Request) {
     if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {

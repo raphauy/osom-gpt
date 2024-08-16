@@ -62,6 +62,9 @@ export default function AnalyticsHeader() {
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6 w-full mb-2">
       <div className="flex items-center gap-4">
+        <Link href={`/analytics?last=HOY${restOfTheParams}`}>
+          <Button variant={last === "HOY" ? "outline" : "ghost"} >Hoy</Button>
+        </Link>
         <Link href={`/analytics?last=7D${restOfTheParams}`}>
           <Button variant={last === "7D" ? "outline" : "ghost"} >7D</Button>
         </Link>

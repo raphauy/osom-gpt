@@ -55,9 +55,3 @@ GROUP BY
 REFRESH MATERIALIZED VIEW leads_count_by_date_client;
 ----------------------------------------------------------------------
 
-
--- Refreshs ----------------------------------------------------------
-REFRESH MATERIALIZED VIEW conversation_count_by_date_client;
-REFRESH MATERIALIZED VIEW message_count_by_date_client;
-REFRESH MATERIALIZED VIEW leads_count_by_date_client;
-----------------------------------------------------------------------

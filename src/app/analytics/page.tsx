@@ -21,7 +21,12 @@ export default async function AnalyticsPage({ searchParams }: Props) {
     const last= searchParams.last
     const indicatorId= searchParams.indicatorId
     const cId= searchParams.cId
-    if (last === "7D") {
+    if (last === "HOY") {
+        // from must be the beginning of the day and to must be the end of the day
+        const today= new Date()
+        from= new Date(today.getFullYear(), today.getMonth(), today.getDate())
+        to= new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+    } else if (last === "7D") {
         from= new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 7)
         to= new Date()
     } else if (last === "30D") {
