@@ -55,7 +55,7 @@ export function RadialChart({ indicator, clientName }: Props) {
 
     if (clientName) return null
 
-    const lastLabel= last === "HOY" ? "hoy" : last === "7D" ? "últimos 7 días" : last === "30D" ? "últimos 30 días" : from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : from && to ? from + " al " + to : "toda la base de datos"
+    const lastLabel= last === "HOY" ? "hoy" : last === "7D" ? "últimos 7 días" : last === "30D" ? "últimos 30 días" : from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : from && to ? from + " al " + to : last === "LAST_MONTH" ? "mes pasado" : "toda la base de datos"
 
     const top= 5
     const data= indicator.data.slice(0, top)

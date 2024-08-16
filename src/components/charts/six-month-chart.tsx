@@ -61,6 +61,7 @@ export function SixMonthChart({ indicator, clientName }: Props) {
       last === "HOY" ? "hoy" :
       last === "7D" ? "Últimos 7 días" : 
       last === "30D" ? "Últimos 30 días" : 
+      last === "LAST_MONTH" ? "Mes pasado" :
       from && to && from.slice(0, 7) === to.slice(0, 7) ? getMonthName(from.slice(5, 7)) : 
       from && to ? + from + " al " + to : 
       "Últimos 6 meses"
