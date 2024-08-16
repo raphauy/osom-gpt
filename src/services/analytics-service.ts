@@ -179,3 +179,22 @@ export async function getIndicatorByMonth(name: string, from: Date | null, to: D
 
     return res
 }
+
+
+
+export async function refreshMaterializedViews() {
+
+    const init= new Date().getTime()
+    try {
+        await prisma.$queryRaw`REFRESH MATERIALIZED VIEW conversation_count_by_date_client;`
+        await prisma.$queryRaw`REFRESH MATERIALIZED VIEW message_count_by_date_client;`
+        await prisma.$queryRaw`REFRESH MATERIALIZED VIEW leads_count_by_date_client;`
+
+        const elapsedTime = new Date().getTime() - init
+        console.log(`Analytics refreshed in ${elapsedTime / 1000} seconds`)
+    
+    } catch (error) {
+        console.error('Error refreshing materialized views:', error);
+        throw new Error('Failed to refresh materialized views');
+    }
+}
