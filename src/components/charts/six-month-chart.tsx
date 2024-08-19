@@ -8,7 +8,7 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { IndicatorResult } from "@/services/analytics-service"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getMonthName } from "@/lib/utils"
+import { getMonthName, getMonthNamePlusOne } from "@/lib/utils"
 
 const chartConfig = {
   total: {
@@ -69,7 +69,7 @@ export function SixMonthChart({ indicator, clientName }: Props) {
     const top= 6
     const data= indicator.data.slice(0, top)
 
-    const chartData= data.map((item, index) => ({ label: getMonthName(item.label), total: item.total, fill: `var(--color-client${index % 6 + 1})` }))
+    const chartData= data.map((item, index) => ({ label: getMonthNamePlusOne(item.label), total: item.total, fill: `var(--color-client${index % 6 + 1})` }))
 
     return (
       <Card className="flex flex-col">
