@@ -64,7 +64,7 @@ export async function getDocumentsDAOByClient(clientId: string) {
       clientId
     },
     orderBy: {
-      createdAt: 'asc'
+      createdAt: 'desc'
     },
     include: {
       client: true,
