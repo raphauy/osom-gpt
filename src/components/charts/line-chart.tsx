@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Badge } from "../ui/badge"
 import { getMonthName } from "@/lib/utils"
 import { getClientNameAction } from "@/app/analytics/actions"
+import { toZonedTime } from "date-fns-tz"
 
 const chartConfig = {
   total: {
@@ -115,7 +116,7 @@ export function LineChartComponent({ indicator }: Props) {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
-                const date = new Date(value)
+                const date = toZonedTime(value, "America/Montevideo")
                 return date.toLocaleDateString("es-UY", {
                   month: "short",
                   day: "numeric",
@@ -128,7 +129,8 @@ export function LineChartComponent({ indicator }: Props) {
                   className="w-[150px]"
                   nameKey="views"
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("es-UY", {
+                    const date = toZonedTime(value, "America/Montevideo")
+                    return date.toLocaleDateString("es-UY", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",

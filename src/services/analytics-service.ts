@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import { Prisma } from "@prisma/client"
 import { addDays, format } from "date-fns"
+import { toZonedTime } from "date-fns-tz"
 
 type IndicatorDefinition = {
     id: string
@@ -72,6 +73,11 @@ export async function getIndicatorByClient(indicatorId: string, from: Date | nul
 
     // const whereCondition= from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
     // console.log("whereCondition: ", whereCondition)
+
+    // put from in Montevideo time zone
+    from= from ? toZonedTime(from, "America/Montevideo") : null
+    to= to ? toZonedTime(to, "America/Montevideo") : null
+    
 
     const dateCondition = from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
     const clientCondition = clientId ? Prisma.sql`"clientId" = ${clientId}` : Prisma.sql`true`
