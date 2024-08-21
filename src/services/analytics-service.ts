@@ -125,9 +125,11 @@ export async function getIndicatorByDay(name: string, from: Date | null, to: Dat
     `
     
     const result = await prisma.$queryRaw<{ day: string, sum: bigint }[]>(query)
+    console.log("result: ", result)
 
     const data: DataResult[]= result.map(item => ({
-        label: format(new Date(item.day), 'yyyy-MM-dd'), // Usa date-fns para formatear la fecha
+//        label: format(new Date(item.day), 'yyyy-MM-dd'), // Usa date-fns para formatear la fecha
+        label: new Date(item.day).toISOString().slice(0, 10),
         total: Number(item.sum)
     }))
     const total= data.reduce((acc, item) => acc + item.total, 0)
