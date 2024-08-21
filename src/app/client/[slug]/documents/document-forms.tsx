@@ -11,6 +11,9 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Loader } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { cn } from "@/lib/utils"
+import { Separator } from "@/components/ui/separator"
 
 type Props= {
   id?: string
@@ -21,10 +24,16 @@ type Props= {
 export function DocumentForm({ id, clientId, closeDialog }: Props) {
   const form = useForm<DocumentFormValues>({
     resolver: zodResolver(documentSchema),
-    defaultValues: {},
+    defaultValues: {
+      name: "",
+      automaticDescription: true,
+      description: "",
+    },
     mode: "onChange",
   })
   const [loading, setLoading] = useState(false)
+  // use the watch of the form to get the value of the automaticDescription field
+  const automaticDescription = form.watch("automaticDescription")
 
   const onSubmit = async (data: DocumentFormValues) => {
     setLoading(true)
@@ -44,8 +53,8 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
       getDocumentDAOAction(id).then((data) => {
         if (data) {
           form.setValue("name", data.name)
+          form.setValue("automaticDescription", data.automaticDescription)
           form.setValue("description", data.description)
-          form.setValue("url", data.url)
           form.setValue("clientId", data.clientId)
         }
       })
@@ -72,41 +81,47 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
               </FormItem>
             )}
           />
-      
+
           <FormField
             control={form.control}
-            name="description"
+            name="automaticDescription"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descripción</FormLabel>
-                <FormControl>
-                  <Textarea rows={10} placeholder="ej: En este documento se detallan los paseos del viaje a Portugal, así como los hoteles involucrados" {...field} />
-                </FormControl>
-                <FormDescription>Esta descripción será utilizada para seleccionar información relevante para la IA entre todos los documentos.</FormDescription>
-                <FormDescription>No es información que le llegará al usuario, pero es muy importante para poder filtrar los documentos relevantes.</FormDescription>
+              <FormItem className="pt-10">
+                <FormLabel>Descripción automática</FormLabel>
+                  <div className="flex items-center gap-2 border rounded-md p-2">
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div>
+                      <FormDescription>Si está marcado, la descripción se generará automáticamente una vez el documento tenga información</FormDescription>
+                    </div>
+                  </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {
-            id && 
-              <FormField
+          <FormDescription className={cn(!automaticDescription && "hidden")}>
+            <span className="font-bold">Nota:</span> Esta descripción será utilizada para seleccionar información relevante para la IA entre todos los documentos.  
+          </FormDescription>
+      
+          <div className={cn(automaticDescription && "hidden")}>
+            <FormField
               control={form.control}
-              name="url"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="ej: https://www.osom.com" {...field} />
+                    <Textarea rows={10} placeholder="ej: En este documento se detallan los paseos del viaje a Portugal, así como los hoteles involucrados" {...field} />
                   </FormControl>
-                  <FormDescription>Cuanto más descriptivo el nombre mejor para la IA</FormDescription>
+                  <FormDescription>Esta descripción será utilizada para seleccionar información relevante para la IA entre todos los documentos.</FormDescription>
+                  <FormDescription>No es información que le llegará al usuario, pero es muy importante para poder filtrar los documentos relevantes.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-          }
-
+            />            
+          </div>
+          
         <div className="flex justify-end">
             <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancelar</Button>
             <Button type="submit" className="w-32 ml-2" variant="outline">

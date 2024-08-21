@@ -5,6 +5,7 @@ import { processSections } from "./section-services"
 export type DocumentDAO = {
 	id: string
 	name: string
+  automaticDescription: boolean
 	description: string | undefined
 	jsonContent: string | undefined
 	textContent: string | undefined
@@ -23,10 +24,10 @@ export type DocumentDAO = {
 
 export const documentSchema = z.object({
 	name: z.string({required_error: "name is required."}),
+  automaticDescription: z.boolean(),
 	description: z.string().optional(),
 	jsonContent: z.string().optional(),
 	textContent: z.string().optional(),
-  url: z.string().optional(),
 	fileSize: z.number().optional(),
 	wordsCount: z.number().optional(),
 	clientId: z.string({required_error: "clientId is required."}),
@@ -123,6 +124,20 @@ export async function getDocumentDAO(id: string) {
 
   return res as DocumentDAO
 }
+
+export async function getDocumentName(id: string) {
+  const found = await prisma.document.findUnique({
+    where: {
+      id
+    },
+    select: {
+      name: true
+    }
+  })
+  if (!found) return null
+
+  return found.name
+}
     
 export async function createDocument(data: DocumentFormValues) {
   const created = await prisma.document.create({
@@ -133,8 +148,14 @@ export async function createDocument(data: DocumentFormValues) {
 
   const BASE_PATH= process.env.NEXTAUTH_URL
   const url= `${BASE_PATH}/d/${created.id}`
-  data.url= url
-  const updated= await updateDocument(created.id, data)
+  const updated = await prisma.document.update({
+    where: {
+      id: created.id
+    },
+    data: {
+      url
+    }
+  })
 
   if (updated.textContent){
     const sections= await processSections(updated.textContent, updated.id)
@@ -211,3 +232,12 @@ export async function updateContent(id: string, textContent: string, jsonContent
   
   return updated
 }
+
+export async function generateDescription(textContent: string) {
+
+  console.log("generating description for:")
+  console.log(textContent)
+  
+
+}
+

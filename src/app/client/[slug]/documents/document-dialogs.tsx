@@ -22,7 +22,7 @@ export function DocumentDialog({ id, clientId }: Props) {
       <DialogTrigger asChild>
         {id ? updateTrigger : addTrigger }
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>{id ? 'Actualizar' : 'Crear'} Documento
           </DialogTitle>
