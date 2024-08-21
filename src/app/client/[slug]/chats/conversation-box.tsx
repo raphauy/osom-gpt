@@ -127,24 +127,28 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
                 )}
               >
                 <div className="flex items-center w-full max-w-screen-md px-5 space-x-4 sm:px-0">
-                  <div className="flex flex-col">
-                    <div
-                        className={clsx(
-                        "p-1.5 text-white flex justify-center",
-                        (message.role === "assistant" || message.role === "function") ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
+                  {
+                    // @ts-ignore
+                    !message.gptData &&
+                    <div className="flex flex-col">
+                      <div
+                          className={clsx(
+                          "p-1.5 text-white flex justify-center",
+                          (message.role === "assistant") ? "bg-green-500" : (message.role === "system" || message.role === "function") ? "bg-blue-500" : "bg-black",
                         )}
-                    >
-                        {message.role === "user" ? (
-                        <User width={20} />
-                        ) : message.role === "system" || message.role === "function" ? (
-                          <Terminal width={20} />
-                        ) : (
-                        <Bot width={20} />
-                        )
-                        }
+                      >
+                          {message.role === "user" ? (
+                          <User width={20} />
+                          ) : message.role === "system" || message.role === "function" ? (
+                            <Terminal width={20} />
+                          ) : (
+                          <Bot width={20} />
+                          )
+                          }
+                      </div>
+                      <p className="text-sm">{message.fecha}</p>
                     </div>
-                    <p className="text-sm">{message.fecha}</p>
-                  </div>
+                  }
                   {message.role === "system" ?
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="Prompt">
@@ -157,18 +161,22 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
                     </AccordionItem>
                   </Accordion> :
                     <div className="w-full">
-                      <ReactMarkdown                        
-                        className="prose break-words prose-p:leading-relaxed dark:prose-invert"
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          // open links in new tab
-                          a: (props) => (
-                            <a {...props} target="_blank" rel="noopener noreferrer" />
-                          ),
-                        }}
-                      >
-                        {message.content}
-                      </ReactMarkdown>
+                      {
+                        // @ts-ignore
+                        message.role !== "system"  && !message.gptData &&
+                        <ReactMarkdown                        
+                          className="prose break-words prose-p:leading-relaxed dark:prose-invert"
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // open links in new tab
+                            a: (props) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      }
                     </div>
                 }
                 </div>

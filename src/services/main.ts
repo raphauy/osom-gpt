@@ -1,4 +1,5 @@
 import { getIndicator, getIndicatorByClient, getIndicatorByDay, getIndicatorByMonth, refreshMaterializedViews } from "./analytics-service"
+import { generateDescription, getDocumentDAO } from "./document-services"
 
 async function main() {
 
@@ -27,7 +28,15 @@ async function main() {
     // const byMonth= await getIndicatorByMonth(indicatorId, null, null, clientId)
     // console.log("byMonth: ", byMonth)
 
-    refreshMaterializedViews()
+    // refreshMaterializedViews()
+
+    const documentId= "cm01ltkda071vc5vo04bobpau"
+    const document= await getDocumentDAO(documentId)
+    if (!document) throw new Error("Document not found")
+    console.log("document: ", document.textContent)
+
+    const description= await generateDescription("Hola")
+    console.log("description: ", description)
 
 }
   

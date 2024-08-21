@@ -71,14 +71,6 @@ export async function getIndicatorByClient(indicatorId: string, from: Date | nul
     const indicatorDefinition = indicatorDefinitions.find(indicator => indicator.id === indicatorId)
     if (!indicatorDefinition) throw new Error("Indicator not found")
 
-    // const whereCondition= from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
-    // console.log("whereCondition: ", whereCondition)
-
-    // // put from in Montevideo time zone
-    // from= from ? toZonedTime(from, "America/Montevideo") : null
-    // to= to ? toZonedTime(to, "America/Montevideo") : null
-    
-
     const dateCondition = from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
     const clientCondition = clientId ? Prisma.sql`"clientId" = ${clientId}` : Prisma.sql`true`
     
@@ -113,14 +105,11 @@ export async function getIndicatorByDay(name: string, from: Date | null, to: Dat
     const indicatorDefinition = indicatorDefinitions.find(indicator => indicator.id === name)
     if (!indicatorDefinition) throw new Error("Indicator not found")
 
-    // const whereCondition= from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
-    // console.log("whereCondition: ", whereCondition)
-
     const dateCondition = from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
     const clientCondition = clientId ? Prisma.sql`"clientId" = ${clientId}` : Prisma.sql`true`
     
     const whereCondition = Prisma.sql`${dateCondition} AND ${clientCondition}`
-    console.log("whereCondition: ", whereCondition)
+    // console.log("whereCondition: ", whereCondition)
 
     const tableName = Prisma.sql([indicatorDefinition.tableName])
     const query = Prisma.sql`
@@ -131,7 +120,7 @@ export async function getIndicatorByDay(name: string, from: Date | null, to: Dat
     `
     
     const result = await prisma.$queryRaw<{ day: string, sum: bigint }[]>(query)
-    console.log("result: ", result)
+    // console.log("result: ", result)
 
     const data: DataResult[]= result.map(item => ({
         label: new Date(item.day).toISOString().slice(0, 10),

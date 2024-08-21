@@ -89,6 +89,7 @@ model Client {
 model Document {
   id                     String   @id @default(cuid())
   name                   String                               // gennext: show.column
+  automaticDescription   Boolean   @default(false)            // gennext: show.column
   description            String?                              // gennext: show.column
   jsonContent            String?  @db.Text                    
   textContent            String?  @db.Text                    // gennext: show.column

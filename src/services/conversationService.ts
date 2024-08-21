@@ -14,6 +14,7 @@ import { getContext, setSectionsToMessage } from "./section-services";
 import { getRepoDataDAOByPhone } from "./repodata-services";
 import { getRepositoryDAO } from "./repository-services";
 import { getValue } from "./config-services";
+import { getDocument } from "./functions";
 
 
 export default async function getConversations() {
@@ -264,7 +265,7 @@ export async function processMessage(id: string, modelName?: string) {
         console.log("Repo do not have llmOffMessage, not sending response to the user")        
       }  
     }
-return null
+    return null
   }
 
   const client= conversation.client
@@ -307,7 +308,7 @@ return null
   const providerName= model.providerName
 
   if (providerName === "OpenAI") {
-    completionResponse= await completionInit(client,functions, messages, modelName)
+    completionResponse= await completionInit(conversation.phone, client,functions, messages, modelName)
   } else if (providerName === "Google") {
     completionResponse= await googleCompletionInit(client,functions, messages, systemMessage.content, modelName)
   } else if (providerName === "Groq") {
@@ -325,7 +326,7 @@ return null
   const completionTokens= completionResponse.completionTokens
 
   if (assistantResponse) {
-    const gptDataString= JSON.stringify(gptData)
+    const gptDataString= gptData ? JSON.stringify(gptData) : ""
     if (assistantResponse.includes("notifyHuman")) {
       assistantResponse= "Un agente se comunicará contigo a la brevedad"
     }
@@ -592,4 +593,34 @@ export async function closeConversation(conversationId: string) {
   })
 
   return updated
+}
+
+export async function saveFunction(phone: string, completion: string, clientId: string) {
+  console.log("function call")
+  const completionObj= JSON.parse(completion)
+  const { name, arguments: args }= completionObj.function_call
+  let text= `Llamando a la función ${name}, datos: ${args}`
+
+  let gptData
+  if (name === "getDocument") {
+    const document= await getDocument(JSON.parse(args).docId)
+    if (typeof document !== "string") {
+      gptData= {
+        functionName: name,
+        docId: document.docId,
+        docName: document.docName,
+      }
+    }
+  } else if (name !== "getDateOfNow" && name !== "registrarPedido" && name !== "reservarSummit" && name !== "echoRegister" && name !== "completarFrase" && name !== "reservarServicio") {
+    const copyArgs= {...JSON.parse(args)}
+    delete copyArgs.conversationId
+
+    gptData= {
+      functionName: name,
+      args: copyArgs
+    }
+  }
+  const messageStored= await messageArrived(phone, text, clientId, "function", gptData ? JSON.stringify(gptData) : "", 0, 0)
+  if (messageStored) console.log("function message stored")
+
 }

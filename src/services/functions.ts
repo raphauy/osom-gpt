@@ -50,7 +50,7 @@ export type DocumentResult = {
   docId: string;
   docName: string;
   docURL: string | null;
-  description: string | null;
+  description?: string | null;
   content: string | null;
 };
 
