@@ -128,9 +128,7 @@ export async function getIndicatorByDay(name: string, from: Date | null, to: Dat
     console.log("result: ", result)
 
     const data: DataResult[]= result.map(item => ({
-//        label: format(new Date(item.day), 'yyyy-MM-dd'), // Usa date-fns para formatear la fecha
-        //label: new Date(item.day).toISOString().slice(0, 10),
-        label: addDays(item.day, 1).toISOString().slice(0, 10),
+        label: new Date(item.day).toISOString().slice(0, 10),
         total: Number(item.sum)
     }))
     const total= data.reduce((acc, item) => acc + item.total, 0)
