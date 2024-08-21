@@ -3,15 +3,13 @@ import { removeSectionTexts } from "@/lib/utils";
 import { getClient } from "@/services/clientService";
 import { getSystemMessage, messageArrived, saveFunction } from "@/services/conversationService";
 import { getFunctionsDefinitions } from "@/services/function-services";
+import { processFunctionCall } from "@/services/functions";
 import { getFullModelDAO, getFullModelDAOByName } from "@/services/model-services";
 import { getContext, setSectionsToMessage } from "@/services/section-services";
-import { GoogleGenerativeAIStream, OpenAIStream, StreamingTextResponse } from "ai";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import openaiTokenCounter from 'openai-gpt-token-counter';
-import { NextResponse } from "next/server";
-import { DocumentResult, getDocument, processFunctionCall } from "@/services/functions";
-import { getDocumentDAO, getDocumentName } from "@/services/document-services";
-import { Conversation } from "@prisma/client";
 
 export const maxDuration = 299
 

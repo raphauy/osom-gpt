@@ -32,6 +32,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         const formValues: DocumentFormValues= {
             name,
             description,
+            automaticDescription: false,
             jsonContent: JSON.stringify(jsonContent),
             textContent,
             wordsCount, 
