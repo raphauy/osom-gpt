@@ -74,9 +74,9 @@ export async function getIndicatorByClient(indicatorId: string, from: Date | nul
     // const whereCondition= from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
     // console.log("whereCondition: ", whereCondition)
 
-    // put from in Montevideo time zone
-    from= from ? toZonedTime(from, "America/Montevideo") : null
-    to= to ? toZonedTime(to, "America/Montevideo") : null
+    // // put from in Montevideo time zone
+    // from= from ? toZonedTime(from, "America/Montevideo") : null
+    // to= to ? toZonedTime(to, "America/Montevideo") : null
     
 
     const dateCondition = from && to ? Prisma.sql`"event_date" BETWEEN ${from}::date AND ${to}::date` : Prisma.sql`true`
