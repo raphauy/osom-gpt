@@ -163,7 +163,8 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
                     <div className="w-full">
                       {
                         // @ts-ignore
-                        message.role !== "system"  && !message.gptData &&
+                        message.role != "system" && message.role != "function" &&
+//                        message.role !== "system"  && !message.gptData &&
                         <ReactMarkdown                        
                           className="prose break-words prose-p:leading-relaxed dark:prose-invert"
                           remarkPlugins={[remarkGfm]}
