@@ -38,7 +38,7 @@ export default async function Page({ params }: Props) {
     const descriptionTemplate= await getValue("DOCUMENT_DESCRIPTION_PROMPT")
 
     const currentUser= await getCurrentUser()
-    const isRapha= currentUser?.email === "rapha.uy@rapha.uy"
+    const isAllowed= currentUser?.email === "rapha.uy@rapha.uy" || currentUser?.email === "martiniano@osomdigital.com" || currentUser?.email === "gilberto@osomdigital.com" || currentUser?.email === "fabio@rapha.uy"
     const isAdmin= currentUser?.role === "admin"
 
     return (
@@ -56,10 +56,15 @@ export default async function Page({ params }: Props) {
                 <p className="whitespace-pre-wrap border rounded-md p-4">{document.description}</p>
                 <GenerateDescriptionButton id={document.id} />
 
-                <div className={cn(!isRapha && "hidden")}>
+                <div className={cn(!isAllowed && "hidden")}>
                 {
                     descriptionTemplate ?
-                    <DescriptionForm id={"DOCUMENT_DESCRIPTION_PROMPT"} label="Descripción" initialValue={descriptionTemplate} update={updateTemplateAction} />
+                    <DescriptionForm 
+                        id={"DOCUMENT_DESCRIPTION_PROMPT"} 
+                        label="Descripción (este prompt se utiliza para generar la descripción automática para todos los clientes que estén en automático)"
+                        initialValue={descriptionTemplate} 
+                        update={updateTemplateAction} 
+                    />
                     :
                     <p className="text-sm text-muted-foreground">No hay template de descripción</p>
                 }
