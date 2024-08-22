@@ -82,7 +82,7 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
             )}
           />
 
-          {/* <FormField
+          <FormField
             control={form.control}
             name="automaticDescription"
             render={({ field }) => (
@@ -102,7 +102,7 @@ export function DocumentForm({ id, clientId, closeDialog }: Props) {
           />
           <FormDescription className={cn(!automaticDescription && "hidden")}>
             <span className="font-bold">Nota:</span> Esta descripción será utilizada para seleccionar información relevante para la IA entre todos los documentos.  
-          </FormDescription> */}
+          </FormDescription>
       
           <div className={cn(automaticDescription && "hidden")}>
             <FormField

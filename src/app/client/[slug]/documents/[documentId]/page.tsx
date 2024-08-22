@@ -1,10 +1,13 @@
+import { DescriptionForm } from "@/components/description-form";
+import { getValue } from "@/services/config-services";
 import { getDocumentDAO } from "@/services/document-services";
 import { redirect } from "next/navigation";
+import { updateTemplateAction } from "../document-actions";
 import { DocumentDialog } from "../document-dialogs";
 import NovelOnClient from "./editor-on-client";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import LinkBox from "./link-box";
+import GenerateDescriptionButton from "./generate-description-button";
+import { getCurrentUser } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 type Props = {
     params: {
@@ -30,6 +33,14 @@ export default async function Page({ params }: Props) {
 
     const BASE_PATH= process.env.NEXTAUTH_URL
 
+    const label= document.automaticDescription ? "generada con IA" : "manual"
+
+    const descriptionTemplate= await getValue("DOCUMENT_DESCRIPTION_PROMPT")
+
+    const currentUser= await getCurrentUser()
+    const isRapha= currentUser?.email === "rapha.uy@rapha.uy"
+    const isAdmin= currentUser?.role === "admin"
+
     return (
         <div className="flex flex-col w-full p-1 md:p-4 xl:p-8">
                         
@@ -39,6 +50,22 @@ export default async function Page({ params }: Props) {
             </div>
 
             <NovelOnClient document={document} initialContent={content} basePath={BASE_PATH || "http://localhost:3000"} />
+
+            <div className={cn("gap-4 mt-10 space-y-5 mb-40", !isAdmin && "hidden")}>
+                <p className="text-2xl font-bold">Descripción ({label})</p>
+                <p className="whitespace-pre-wrap border rounded-md p-4">{document.description}</p>
+                <GenerateDescriptionButton id={document.id} />
+
+                <div className={cn(!isRapha && "hidden")}>
+                {
+                    descriptionTemplate ?
+                    <DescriptionForm id={"DOCUMENT_DESCRIPTION_PROMPT"} label="Descripción" initialValue={descriptionTemplate} update={updateTemplateAction} />
+                    :
+                    <p className="text-sm text-muted-foreground">No hay template de descripción</p>
+                }
+                </div>
+                
+            </div>                
 
         </div>
     )

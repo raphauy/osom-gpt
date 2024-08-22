@@ -1,7 +1,8 @@
 "use server"
   
 import { revalidatePath } from "next/cache"
-import { DocumentDAO, DocumentFormValues, createDocument, updateDocument, getFullDocumentDAO, deleteDocument, updateContent } from "@/services/document-services"
+import { DocumentDAO, DocumentFormValues, createDocument, updateDocument, getFullDocumentDAO, deleteDocument, updateContent, generateDescription } from "@/services/document-services"
+import { setValue } from "@/services/config-services"
 
 
 export async function getDocumentDAOAction(id: string): Promise<DocumentDAO | null> {
@@ -42,3 +43,22 @@ export async function updateContentAction(id: string, textContent: string, jsonC
     return updated as DocumentDAO
 }
   
+
+export async function generateDescriptionAction(id: string, template?: string): Promise<boolean> {
+    
+    const res= await generateDescription(id, template)
+
+    revalidatePath("/client/[slug]/documents", 'page')
+  
+    return res
+}
+
+export async function updateTemplateAction(id: string, template: string): Promise<boolean> {
+    const res= await setValue(id, template)
+
+    revalidatePath("/client/[slug]/documents", 'page')
+  
+    if (!res) return false
+
+    return true
+}

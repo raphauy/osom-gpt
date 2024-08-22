@@ -1,6 +1,8 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
 import { processSections } from "./section-services"
+import OpenAI from "openai";
+import { getConfigDAO, getValue } from "./config-services";
 
 export type DocumentDAO = {
 	id: string
@@ -172,6 +174,15 @@ export async function updateDocument(id: string, data: DocumentFormValues) {
     },
     data
   })
+  if (!updated) return null
+  if (updated.automaticDescription) {
+    console.log("automaticDescription, generating description")    
+    const docId= updated.id
+    const res= await generateDescription(docId)  
+  } else {
+    console.log("not automaticDescription, not generating description")
+  }
+
   return updated
 }
 
@@ -229,15 +240,77 @@ export async function updateContent(id: string, textContent: string, jsonContent
 
   const sections= await processSections(textContent, id)
   console.log("sections", sections)
+
+  if (updated.automaticDescription) {
+    console.log("automaticDescription, generating description")    
+    const docId= updated.id
+    const res= await generateDescription(docId)  
+  }
   
   return updated
 }
 
-export async function generateDescription(textContent: string) {
+export async function updateDescription(id: string, description: string) {
+  const updated= await prisma.document.update({
+    where: {
+      id
+    },
+    data: {
+      description
+    }
+  })
+  return updated
+}
 
-  console.log("generating description for:")
-  console.log(textContent)
-  
+export async function generateDescription(id: string, template?: string) {
+  console.log("generating description...")
 
+  if (!template) {
+    const descriptionTemplate= await getValue("DOCUMENT_DESCRIPTION_PROMPT")    
+    if (!descriptionTemplate) throw new Error("DOCUMENT_DESCRIPTION_PROMPT not found")
+    template= descriptionTemplate
+  }
+
+  const document= await getFullDocumentDAO(id)
+  if (!document) throw new Error("Document not found")
+
+  const name= document.name
+  const content= document.textContent
+
+  if (!name || !content) throw new Error("name or content not found")
+
+  const descriptionPrompt= template.replace("{name}", name).replace("{content}", content)
+  console.log("descriptionPrompt: ", descriptionPrompt)  
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY_FOR_EMBEDDINGS,
+  })
+
+  const messages= [
+    {
+      role: "system",
+      content: descriptionPrompt,
+    },
+  ]
+
+  const baseArgs = {
+    model: "gpt-4o-2024-08-06",
+    temperature: 0.1,
+    messages
+  }  
+
+  const initialResponse = await openai.chat.completions.create(baseArgs as any);
+
+  const description= initialResponse.choices[0].message.content
+
+  console.log("description:")
+  console.log(description)
+
+  if (!description) return false
+
+  // update the document description
+  await updateDescription(id, description)
+
+  return true
 }
 

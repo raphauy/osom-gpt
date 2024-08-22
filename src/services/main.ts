@@ -30,13 +30,12 @@ async function main() {
 
     // refreshMaterializedViews()
 
-    const documentId= "cm01ltkda071vc5vo04bobpau"
-    const document= await getDocumentDAO(documentId)
-    if (!document) throw new Error("Document not found")
-    console.log("document: ", document.textContent)
+    const documentId= "clv74xb4p062l9kmfay4dytio"
 
-    const description= await generateDescription("Hola")
-    console.log("description: ", description)
+    const template= "Genara el índice de un documento llamado {name} con el siguiente contenido: {content}"
+
+    const description= await generateDescription(documentId)
+    //console.log("description: ", description)
 
 }
   
