@@ -321,7 +321,7 @@ export default function SimulatorBox() {
         )}
       </div>
 
-      {error && <p className="mt-10 text-base text-center text-red-500">{JSON.parse(error.message).error}</p>}
+      {error && <p className="mt-10 text-base text-center text-red-500">{error.message}</p>}
 
       {
         customInfo?.conversationLLMOff &&

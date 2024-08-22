@@ -597,30 +597,76 @@ export async function closeConversation(conversationId: string) {
 
 export async function saveFunction(phone: string, completion: string, clientId: string) {
   console.log("function call")
-  const completionObj= JSON.parse(completion)
-  const { name, arguments: args }= completionObj.function_call
-  let text= `Llamando a la función ${name}, datos: ${args}`
+
+  // Buscar el inicio y el final del JSON dentro de completion
+  const functionCallStart = completion.indexOf('{"function_call":')
+  if (functionCallStart === -1) {
+    console.error("No se encontró 'function_call' en completion.")
+    return
+  }
+
+  const functionCallEnd = completion.lastIndexOf('}') + 1 // Buscar el último '}' para cerrar el JSON
+  if (functionCallEnd <= functionCallStart) {
+    console.error("No se pudo determinar el final del 'function_call' JSON.")
+    return
+  }
+
+  // Extraer y parsear solo el JSON de function_call
+  const completionObj = JSON.parse(completion.substring(functionCallStart, functionCallEnd))
+  const { name, arguments: args } = completionObj.function_call
+
+  let text = `Llamando a la función ${name}, datos: ${args}`
 
   let gptData
   if (name === "getDocument" || name === "getSection") {
-    const document= await getDocument(JSON.parse(args).docId)
+    const document = await getDocument(JSON.parse(args).docId)
     if (typeof document !== "string") {
-      gptData= {
+      gptData = {
         functionName: name,
         docId: document.docId,
         docName: document.docName,
       }
     }
   } else if (name !== "getDateOfNow" && name !== "registrarPedido" && name !== "reservarSummit" && name !== "echoRegister" && name !== "completarFrase" && name !== "reservarServicio") {
-    const copyArgs= {...JSON.parse(args)}
+    const copyArgs = { ...JSON.parse(args) }
     delete copyArgs.conversationId
 
-    gptData= {
+    gptData = {
       functionName: name,
       args: copyArgs
     }
   }
-  const messageStored= await messageArrived(phone, text, clientId, "function", gptData ? JSON.stringify(gptData) : "", 0, 0)
+  const messageStored = await messageArrived(phone, text, clientId, "function", gptData ? JSON.stringify(gptData) : "", 0, 0)
   if (messageStored) console.log("function message stored")
-
 }
+
+
+// export async function saveFunction(phone: string, completion: string, clientId: string) {
+//   console.log("function call")
+//   const completionObj= JSON.parse(completion)
+//   const { name, arguments: args }= completionObj.function_call
+//   let text= `Llamando a la función ${name}, datos: ${args}`
+
+//   let gptData
+//   if (name === "getDocument" || name === "getSection") {
+//     const document= await getDocument(JSON.parse(args).docId)
+//     if (typeof document !== "string") {
+//       gptData= {
+//         functionName: name,
+//         docId: document.docId,
+//         docName: document.docName,
+//       }
+//     }
+//   } else if (name !== "getDateOfNow" && name !== "registrarPedido" && name !== "reservarSummit" && name !== "echoRegister" && name !== "completarFrase" && name !== "reservarServicio") {
+//     const copyArgs= {...JSON.parse(args)}
+//     delete copyArgs.conversationId
+
+//     gptData= {
+//       functionName: name,
+//       args: copyArgs
+//     }
+//   }
+//   const messageStored= await messageArrived(phone, text, clientId, "function", gptData ? JSON.stringify(gptData) : "", 0, 0)
+//   if (messageStored) console.log("function message stored")
+
+// }

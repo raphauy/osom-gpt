@@ -42,12 +42,14 @@ export default function GPTData({ gptData, slug }: Props) {
     
           return (
             <div className={cn("flex items-center w-full gap-2 p-2 border rounded-md", isLegacyFunction ? "border-yellow-500" : "border-red-500")}>
+                <div>
                 {
                     isLegacyFunction ?
                     <SquareFunction size={20} className="text-yellow-500" />
                     :
                     <Database size={20} className="text-red-500" />
                 }
+                </div>
                 <p className="mr-4 font-bold">{functionName}</p>
                 <CodeBlock code={jsonReplaced} showLineNumbers={false} />                
             </div>
