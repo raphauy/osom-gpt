@@ -18,12 +18,13 @@ export default function GPTData({ gptData, slug }: Props) {
     const gptDataObj= JSON.parse(gptData)
     const functionName= gptDataObj.functionName
 
-    if (functionName === "getDocument") {
+    if (functionName === "getDocument" || functionName === "getSection") {
         const docId= gptDataObj.docId
         const docName= gptDataObj.docName
+        const label= functionName === "getSection" ? "" : "(S)"
         return (
             <div className="flex items-center w-full gap-2 p-2 border rounded-md border-blue-500">
-                <BookOpen size={20} color="blue"/>
+                <BookOpen size={20} color="blue"/> {label}
                 <Link className="flex px-1" href={`/client/${slug}/documents/${docId}`} target="_blank">
                     <Button variant="link" className="h-6"><p>{docName}</p></Button>
                 </Link>

@@ -602,7 +602,7 @@ export async function saveFunction(phone: string, completion: string, clientId: 
   let text= `Llamando a la función ${name}, datos: ${args}`
 
   let gptData
-  if (name === "getDocument") {
+  if (name === "getDocument" || name === "getSection") {
     const document= await getDocument(JSON.parse(args).docId)
     if (typeof document !== "string") {
       gptData= {
