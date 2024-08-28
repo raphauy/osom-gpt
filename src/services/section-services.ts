@@ -213,16 +213,9 @@ export async function getContext(clientId: string, phone: string, userInput: str
   const functioins= await getFunctionsOfClient(clientId)
   const functionsNames= functioins.map((f) => f.name)
 
-  let contextString= "Hablas correctamente el español, incluyendo el uso adecuado de tildes y eñes.\nPor favor, utiliza solo caracteres compatibles con UTF-8 y adecuados para el idioma español.\n"
+  let contextString= "Hablas correctamente el español, incluyendo el uso adecuado de tildes y eñes.\n"
   let sectionsIds: string[] = []
 
-  // if (functionsNames.includes("registrarPedido") || functionsNames.includes("reservarSummit") || functionsNames.includes("echoRegister") || functionsNames.includes("reservarServicio")) {
-  //   const conversation= await getActiveConversation(phone, clientId)
-  //   if (conversation) {
-  //     contextString+= "\nconversationId: " + conversation.id + "\n"
-  //   }
-  // }
-  
   const conversation= await getActiveConversation(phone, clientId)
   if (conversation) {
     contextString+= "\nconversationId para invocar funciones: " + conversation.id + "\n"
@@ -243,7 +236,6 @@ export async function getContext(clientId: string, phone: string, userInput: str
   docId: "${doc.id}",
   docName: "${doc.name}",
   docDescription: "${doc.description}",
-  docURL: "${doc.url}",
   sectionsCount: ${doc.sectionsCount}
 },
 `
