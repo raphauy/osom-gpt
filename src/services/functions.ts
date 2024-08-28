@@ -54,16 +54,17 @@ export type DocumentResult = {
   content: string | null;
 };
 
-export async function getDocument(id: string): Promise<DocumentResult | string> {
-  const document= await getDocumentDAO(id)
+//export async function getDocument(id: string): Promise<DocumentResult | string> {
+export async function getDocument(id: string) {
+    const document= await getDocumentDAO(id)
   if (!document) return "Document not found"
   console.log(`\tgetDocument: doc: ${document.name}`)
 
   return {
     docId: document.id,
     docName: document.name,
-    docURL: document.url ?? null,
-    description: document.description ?? null,
+//    docURL: document.url ?? null,
+//    description: document.description ?? null,
     content: document.textContent ?? null,
   }
 }
