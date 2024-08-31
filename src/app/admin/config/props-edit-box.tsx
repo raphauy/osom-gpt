@@ -14,8 +14,8 @@ export default function PropsEdit({ clientId, messageArrivedDelay, sessionTTL }:
     return (
         <div className="w-full p-4 border rounded-lg">
             <p className="text-lg font-bold">Propiedades del cliente:</p>
-            <NumberForm clientId={clientId} label="Message Arrived Delay" initialValue={messageArrivedDelay} update={setMessageArrivedDelayAction} />
-            <NumberForm clientId={clientId} label="Session TTL" initialValue={sessionTTL} update={setSessionTTLAction} />
+            <NumberForm clientId={clientId} label="Message Arrived Delay (seconds)" initialValue={messageArrivedDelay} update={setMessageArrivedDelayAction} />
+            <NumberForm clientId={clientId} label="Session TTL (minutes)" initialValue={sessionTTL} update={setSessionTTLAction} />
         </div>
     )
 }
