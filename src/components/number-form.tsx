@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { Loader, Pencil } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 type Props= {
   clientId: string
@@ -19,6 +19,10 @@ export function NumberForm({ clientId, label, initialValue, update }: Props) {
 
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState(initialValue)
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
 
   async function onSubmit() {
     toggleEdit()
@@ -52,7 +56,7 @@ export function NumberForm({ clientId, label, initialValue, update }: Props) {
   if (!initialValue) return <div>Valor inicial de {label} no encontrado</div>
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4 dark:bg-black max-w-xs">
+    <div className="mt-6 border bg-slate-100 rounded-md p-4 dark:bg-black max-w-xs w-full">
       <div className="font-medium flex flex-col">
         {label ? <p className="border-b mb-2">{label}:</p> : "Título:"}
             {

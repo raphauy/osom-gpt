@@ -452,3 +452,29 @@ export async function getMessageArrivedDelayByMessageId(messageId: string) {
 
   return message.conversation?.client?.messageArrivedDelay
 }
+
+export async function setSessionTTL(clientId: string, sessionTTL: number) {
+  const client = await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      sessionTTL
+    }
+  })
+  return client
+}
+
+export async function getSessionTTL(clientId: string) {
+  const client = await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    select: {
+      sessionTTL: true
+    }
+  })
+  if (!client) return null
+  
+  return client.sessionTTL
+}

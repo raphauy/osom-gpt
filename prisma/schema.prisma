@@ -75,6 +75,7 @@ model Client {
   promptTokensPrice     Float      @default(0)
   completionTokensPrice Float  @default(0)
   messageArrivedDelay   Int       @default(8)
+  sessionTTL            Int       @default(10)
 
   functions             ClientFunction[]
 

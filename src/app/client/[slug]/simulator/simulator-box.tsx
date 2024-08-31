@@ -186,6 +186,8 @@ export default function SimulatorBox() {
                 Este modelo y proveedor ambos tienen capacidades de streaming de datos.
               </TooltipContent>
             </Tooltip>
+            { client?.sessionTTL && <Badge>{client.sessionTTL} min</Badge> }
+            
             {
               customInfo?.conversationLLMOff && <Badge>LLM Off</Badge>
             }

@@ -27,6 +27,7 @@ export type DataClient = {
     completionCostTokenPrice: number
     modelName: string
     repoLabel: string
+    sessionTTL: number
   }
     
 
@@ -55,7 +56,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         promptCostTokenPrice: promptCostTokenPrice,
         completionCostTokenPrice: completionCostTokenPrice,
         modelName: model?.name || '',
-        repoLabel: client.repoLabel
+        repoLabel: client.repoLabel,
+        sessionTTL: client.sessionTTL
     }
     return data
 }
@@ -89,7 +91,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
-        repoLabel: client.repoLabel
+        repoLabel: client.repoLabel,
+        sessionTTL: client.sessionTTL
     }
     return data
 }
@@ -120,7 +123,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
-        repoLabel: client.repoLabel
+        repoLabel: client.repoLabel,
+        sessionTTL: client.sessionTTL
     }
     return data
 }
@@ -150,7 +154,8 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
-        repoLabel: client.repoLabel
+        repoLabel: client.repoLabel,
+        sessionTTL: client.sessionTTL
     }
     return data
 }
@@ -187,7 +192,8 @@ export async function getDataClients() {
                 promptCostTokenPrice,
                 completionCostTokenPrice,
                 modelName: model?.name || '',
-                repoLabel: client.repoLabel
+                repoLabel: client.repoLabel,
+                sessionTTL: client.sessionTTL
             };
         })
     );

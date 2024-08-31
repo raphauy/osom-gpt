@@ -8,9 +8,10 @@ import { PromptForm } from "../prompts/prompt-form"
 import Hook from "./hook"
 import TokensPrice from "./tokens-price"
 import CopyHook from "./copy-hook"
-import { getClientBySlug, getFunctionsOfClient, getMessageArrivedDelay } from "@/services/clientService"
+import { getClientBySlug, getFunctionsOfClient, getMessageArrivedDelay, getSessionTTL } from "@/services/clientService"
 import DocumentsHook from "./documents-hook"
 import PropsEdit from "./props-edit-box"
+import { setMessageArrivedDelayAction } from "./(crud)/actions"
 
 type Props = {
     searchParams: {
@@ -34,6 +35,7 @@ export default async function ConfigPage({ searchParams }: Props) {
     const BASE_PATH= process.env.NEXTAUTH_URL || "NOT-CONFIGURED"
 
     const messageArrivedDelay= await getMessageArrivedDelay(clientId)
+    const sessionTTL= await getSessionTTL(clientId)
 
     return (
         <div className="flex flex-col items-center w-full p-5 gap-7">
@@ -55,7 +57,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <ClientFunctionsBox clientId={client.id} />
                 </TabsContent>
                 <TabsContent value="props" className="space-y-2">
-                    { messageArrivedDelay && <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay} /> }
+                    <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay || 8} sessionTTL={sessionTTL || 10} />
                     <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} />
                 </TabsContent>
                 <TabsContent value="hooks">

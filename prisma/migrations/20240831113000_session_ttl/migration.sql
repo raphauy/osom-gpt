@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Client" ADD COLUMN     "sessionTTL" INTEGER NOT NULL DEFAULT 10;
