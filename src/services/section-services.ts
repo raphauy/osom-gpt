@@ -5,8 +5,9 @@ import pgvector from 'pgvector/utils';
 import { DocumentDAO, getDocumentsDAOByClient } from "./document-services";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getFunctionsOfClient } from "./clientService";
+import { getFunctionsOfClient, getTimezone } from "./clientService";
 import { getActiveConversation } from "./conversationService";
+import { toZonedTime } from "date-fns-tz";
 
 export type SectionDAO = {
 	id: string
@@ -223,7 +224,9 @@ export async function getContext(clientId: string, phone: string, userInput: str
 
   if (functionsNames.includes("getDateOfNow")) {
     contextString+= "\n**** Fecha y hora ****\n"
-    const hoy= format(new Date(), "EEEE, dd/MM/yyyy HH:mm:ss", {locale: es})
+    const timezone= await getTimezone(clientId) || "America/Montevideo"
+    const clientTime = toZonedTime(new Date(), timezone)
+    const hoy = format(clientTime, "EEEE, dd/MM/yyyy HH:mm:ss", { locale: es });
     contextString+= `Hoy es ${hoy}.\n`
   }
 

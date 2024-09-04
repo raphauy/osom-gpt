@@ -642,32 +642,3 @@ export async function saveFunction(phone: string, completion: string, clientId: 
 }
 
 
-// export async function saveFunction(phone: string, completion: string, clientId: string) {
-//   console.log("function call")
-//   const completionObj= JSON.parse(completion)
-//   const { name, arguments: args }= completionObj.function_call
-//   let text= `Llamando a la función ${name}, datos: ${args}`
-
-//   let gptData
-//   if (name === "getDocument" || name === "getSection") {
-//     const document= await getDocument(JSON.parse(args).docId)
-//     if (typeof document !== "string") {
-//       gptData= {
-//         functionName: name,
-//         docId: document.docId,
-//         docName: document.docName,
-//       }
-//     }
-//   } else if (name !== "getDateOfNow" && name !== "registrarPedido" && name !== "reservarSummit" && name !== "echoRegister" && name !== "completarFrase" && name !== "reservarServicio") {
-//     const copyArgs= {...JSON.parse(args)}
-//     delete copyArgs.conversationId
-
-//     gptData= {
-//       functionName: name,
-//       args: copyArgs
-//     }
-//   }
-//   const messageStored= await messageArrived(phone, text, clientId, "function", gptData ? JSON.stringify(gptData) : "", 0, 0)
-//   if (messageStored) console.log("function message stored")
-
-// }

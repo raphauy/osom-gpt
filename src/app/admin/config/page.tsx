@@ -57,7 +57,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <ClientFunctionsBox clientId={client.id} />
                 </TabsContent>
                 <TabsContent value="props" className="space-y-2">
-                    <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay || 8} sessionTTL={sessionTTL || 10} />
+                    <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay || 8} sessionTTL={sessionTTL || 10} timezone={client.timezone} />
                     <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} />
                 </TabsContent>
                 <TabsContent value="hooks">

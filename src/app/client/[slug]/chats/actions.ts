@@ -1,11 +1,10 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
-import { Client, Conversation, Message } from "@prisma/client"
+import { getFormatInTimezone } from "@/lib/utils"
+import { getTimezone } from "@/services/clientService"
 import { deleteConversation, getConversation, getConversationsOfClient, getLastConversation } from "@/services/conversationService"
-import { format } from "date-fns"
-import { getFormat } from "@/lib/utils"
-import { getSummitIdByConversationId } from "@/services/summit-services"
+import { Client, Conversation, Message } from "@prisma/client"
+import { revalidatePath } from "next/cache"
 
 
 export type DataMessage = {
@@ -40,7 +39,8 @@ export async function getDataConversationAction(conversationId: string): Promise
     const conversation= await getConversation(conversationId)
     if (!conversation) return null
 
-    const data= getData(conversation)
+    const clientTimeZone= await getTimezone(conversation.clientId) || "America/Montevideo"
+    const data= getData(conversation, clientTimeZone)
     
     return data
 }
@@ -49,20 +49,21 @@ export async function getLastDataConversationAction(slug: string): Promise<DataC
     const conversation= await getLastConversation(slug)
     if (!conversation) return null
 
-    const data= getData(conversation)
+    const clientTimeZone= await getTimezone(conversation.clientId) || "America/Montevideo"
+    const data= getData(conversation, clientTimeZone)
     
     return data
 }
 
-function getData(conversation: Conversation & { messages: Message[], client: Client }): DataConversation {
+function getData(conversation: Conversation & { messages: Message[], client: Client }, clientTimeZone: string) {
     const data: DataConversation= {
         id: conversation.id,
-        fecha: getFormat(conversation.createdAt),
-        updatedAt: getFormat(conversation.updatedAt),
+        fecha: getFormatInTimezone(conversation.createdAt, clientTimeZone),
+        updatedAt: getFormatInTimezone(conversation.updatedAt, clientTimeZone),
         celular: conversation.phone,
         messages: conversation.messages.map((message: Message) => ({
             id: message.id,
-            fecha: getFormat(message.createdAt),
+            fecha: getFormatInTimezone(message.createdAt, clientTimeZone),
             updatedAt: message.updatedAt,
             role: message.role,
             content: message.content,
@@ -86,7 +87,8 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
 export async function getDataConversations(clientId: string) {
     const conversations= await getConversationsOfClient(clientId)
 
-    const data: DataConversation[]= conversations.map(conversation => getData(conversation))
+    const clientTimeZone= await getTimezone(clientId) || "America/Montevideo"
+    const data: DataConversation[]= conversations.map(conversation => getData(conversation, clientTimeZone))
     
     return data    
 }

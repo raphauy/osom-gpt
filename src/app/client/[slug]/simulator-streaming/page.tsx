@@ -6,12 +6,11 @@ import { getSimilarModelsAction } from "@/app/admin/models/model-actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getFormat } from "@/lib/utils";
+import { getFormatInTimezone } from "@/lib/utils";
 import { ModelDAO } from "@/services/model-services";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { format } from "date-fns";
-import { Bot, CircleDollarSign, Loader, RefreshCcw, SendIcon, Terminal, Ticket, User } from "lucide-react";
+import { Bot, CircleDollarSign, Loader, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -179,7 +178,7 @@ export default function Chat({ params }: Props) {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date()) + ")"}</p>
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo") + ")"}</p>
         }
         {
           totalPromptTokens > 0 && (

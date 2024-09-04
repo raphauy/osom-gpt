@@ -71,7 +71,8 @@ export async function getDataClientWithModel(slug: string, modelName?: string): 
       completionCostTokenPrice,
       modelName: model && model.name ? model.name : '',
       repoLabel: client.repoLabel,
-      sessionTTL: client.sessionTTL
+      sessionTTL: client.sessionTTL,
+      timezone: client.timezone
   }
   return data
 }

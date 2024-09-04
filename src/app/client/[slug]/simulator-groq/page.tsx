@@ -2,11 +2,13 @@
 
 import { getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
+import { getSimilarModelsAction } from "@/app/admin/models/model-actions";
 import { DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
-import { getFormat } from "@/lib/utils";
+import { getFormatInTimezone } from "@/lib/utils";
+import { ModelDAO } from "@/services/model-services";
 import clsx from "clsx";
 import { Bot, CircleDollarSign, Loader, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -17,9 +19,6 @@ import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
 import { insertMessageAction } from "../simulator/actions";
-import { Select } from "@/components/ui/select";
-import { ModelDAO } from "@/services/model-services";
-import { getSimilarModelsAction } from "@/app/admin/models/model-actions";
 
 
 type Props= {
@@ -223,7 +222,7 @@ export default function Chat({ params }: Props) {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date()) + ")"}</p>
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo") + ")"}</p>
         }
         {
           totalPromptTokens > 0 && (

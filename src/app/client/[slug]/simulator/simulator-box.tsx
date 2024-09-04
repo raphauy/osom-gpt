@@ -3,11 +3,13 @@
 import { CustomInfo, getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
 import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
-import { CloseConversationDialog, DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { CloseConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { getFormat } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
+import { getFormatInTimezone } from "@/lib/utils";
 import { ModelDAO } from "@/services/model-services";
 import { useChat } from "ai/react";
 import clsx from "clsx";
@@ -19,10 +21,8 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
-import { setLLMOffAction } from "./actions";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "@/components/ui/use-toast";
 import GPTData from "../chats/gpt-data";
+import { setLLMOffAction } from "./actions";
 
 export default function SimulatorBox() {
   const params= useParams()
@@ -207,7 +207,7 @@ export default function SimulatorBox() {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date()) + ")"}</p>
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo") + ")"}</p>
         }
         {
           totalPromptTokens > 0 && (

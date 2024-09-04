@@ -28,6 +28,7 @@ export type DataClient = {
     modelName: string
     repoLabel: string
     sessionTTL: number
+    timezone: string
   }
     
 
@@ -57,7 +58,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         completionCostTokenPrice: completionCostTokenPrice,
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
-        sessionTTL: client.sessionTTL
+        sessionTTL: client.sessionTTL,
+        timezone: client.timezone
     }
     return data
 }
@@ -92,7 +94,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         completionCostTokenPrice,
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
-        sessionTTL: client.sessionTTL
+        sessionTTL: client.sessionTTL,
+        timezone: client.timezone
     }
     return data
 }
@@ -124,7 +127,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         completionCostTokenPrice,
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
-        sessionTTL: client.sessionTTL
+        sessionTTL: client.sessionTTL,
+        timezone: client.timezone
     }
     return data
 }
@@ -155,7 +159,8 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         completionCostTokenPrice,
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
-        sessionTTL: client.sessionTTL
+        sessionTTL: client.sessionTTL,
+        timezone: client.timezone
     }
     return data
 }
@@ -193,7 +198,8 @@ export async function getDataClients() {
                 completionCostTokenPrice,
                 modelName: model?.name || '',
                 repoLabel: client.repoLabel,
-                sessionTTL: client.sessionTTL
+                sessionTTL: client.sessionTTL,
+                timezone: client.timezone
             };
         })
     );

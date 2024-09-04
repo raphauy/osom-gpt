@@ -1,10 +1,9 @@
+import { Client } from "@prisma/client";
 import OpenAI from "openai";
 import { ChatCompletionCreateParams, ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { CompletionInitResponse, getAgentes, getDateOfNow, getDocument, getSection, notifyHuman, processFunctionCall, registrarPedido, reservarSummit } from "./functions";
-import { decodeAndCorrectText } from "@/lib/utils";
-import { Client } from "@prisma/client";
-import { getFullModelDAO } from "./model-services";
 import { saveFunction } from "./conversationService";
+import { CompletionInitResponse, getAgentes, processFunctionCall } from "./functions";
+import { getFullModelDAO } from "./model-services";
 
 
 export async function completionInit(phone: string, client: Client, functions: ChatCompletionCreateParams.Function[], messages: ChatCompletionMessageParam[], modelName?: string): Promise<CompletionInitResponse | null> {

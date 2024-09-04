@@ -76,6 +76,7 @@ model Client {
   completionTokensPrice Float  @default(0)
   messageArrivedDelay   Int       @default(8)
   sessionTTL            Int       @default(10)
+  timezone              String @default("America/Montevideo")
 
   functions             ClientFunction[]
 

@@ -1,4 +1,5 @@
 import { getCarServiceEntry } from "@/services/carservice-services";
+import { getTimezone } from "@/services/clientService";
 import { getNarvaezEntry } from "@/services/narvaez-services";
 import { getRepoDataDAOByPhone } from "@/services/repodata-services";
 import { getSummitEntry } from "@/services/summit-services";
@@ -60,7 +61,7 @@ export async function POST(request: Request, { params }: Props) {
             return NextResponse.json({ data: "Repo Data Entry not found" }, { status: 200 })
         }
 
-        const timeZone = "America/Montevideo"
+        const timeZone = await getTimezone(clientId) || "America/Montevideo"
         const date = format(toZonedTime(repoDataEntry.createdAt, timeZone), "yyyy-MM-dd HH:mm", { locale: es })
 
         const data: RepoDataEntryResponse= {

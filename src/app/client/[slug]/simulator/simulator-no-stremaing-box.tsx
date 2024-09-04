@@ -2,12 +2,14 @@
 
 import { getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
-import { CloseConversationDialog, DeleteConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
+import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
+import { CloseConversationDialog } from "@/app/client/[slug]/chats/(delete-conversation)/delete-dialogs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-import { getFormat } from "@/lib/utils";
+import { getFormatInTimezone } from "@/lib/utils";
+import { ModelDAO } from "@/services/model-services";
 import clsx from "clsx";
 import { Bot, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -18,8 +20,6 @@ import ReactMarkdown from "react-markdown";
 import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
 import { insertMessageAction } from "./actions";
-import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
-import { ModelDAO } from "@/services/model-services";
 
 
 export default function SimulatorNoStreamingBox() {
@@ -213,7 +213,7 @@ export default function SimulatorNoStreamingBox() {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date()) + ")"}</p>
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo") + ")"}</p>
         }
         {
           totalPromptTokens > 0 && (

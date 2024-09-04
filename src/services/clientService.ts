@@ -478,3 +478,29 @@ export async function getSessionTTL(clientId: string) {
   
   return client.sessionTTL
 }
+
+export async function getTimezone(clientId: string) {
+  const client = await prisma.client.findUnique({
+    where: {
+      id: clientId
+    },
+    select: {
+      timezone: true
+    }
+  })
+  if (!client) return null
+  
+  return client.timezone
+}
+
+export async function setTimezone(clientId: string, timezone: string) {
+  const client = await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      timezone
+    }
+  })
+  return client
+}

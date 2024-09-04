@@ -1,3 +1,4 @@
+import { getTimezone } from "@/services/clientService";
 import { clsx, type ClassValue } from "clsx";
 import { format as formatTZ, toZonedTime } from "date-fns-tz";
 import { es } from "date-fns/locale";
@@ -39,8 +40,8 @@ export function removeSectionTexts(inputText: string): string {
 }
   
 
-export function getFormat(date: Date): string {
-  const timeZone = "America/Montevideo";
+export async function getFormat(date: Date, clientId?: string): Promise<string> {
+  const timeZone = clientId ? await getTimezone(clientId) || "America/Montevideo" : "America/Montevideo";
   
   // Convert the date to the desired time zone
   const zonedDate = toZonedTime(date, timeZone);
@@ -58,6 +59,23 @@ export function getFormat(date: Date): string {
   }
 }
 
+export function getFormatInTimezone(date: Date, timeZone: string) {
+  
+  // Convert the date to the desired time zone
+  const zonedDate = toZonedTime(date, timeZone);
+  
+  const today = toZonedTime(new Date(), timeZone);
+
+  if (
+    zonedDate.getDate() === today.getDate() &&
+    zonedDate.getMonth() === today.getMonth() &&
+    zonedDate.getFullYear() === today.getFullYear()
+  ) {
+    return formatTZ(zonedDate, "HH:mm", { timeZone, locale: es });
+  } else {
+    return formatTZ(zonedDate, "yyyy/MM/dd", { timeZone, locale: es });
+  }
+}
 
 export function formatCurrency(value: number): string {
   return Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(value)  

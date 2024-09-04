@@ -12,6 +12,10 @@ import { getRepositoryDAOByFunctionName, setConversationLLMOff } from "./reposit
 import { createRepoData, repoDataFormValues } from "./repodata-services";
 import { FunctionClientDAO, getFunctionClientDAO } from "./function-services";
 import { sendWebhookNotification } from "./webhook-notifications-service";
+import { getTimezone } from "./clientService";
+import { toZonedTime } from "date-fns-tz";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export type CompletionInitResponse = {
   assistantResponse: string | null
@@ -69,11 +73,13 @@ export async function getDocument(id: string) {
   }
 }
 
-export async function getDateOfNow(){
-  // return the current date and time in Montevideo time zone
-  const res= new Date().toLocaleString("es-UY", {timeZone: "America/Montevideo"})
-  console.log("getDateOfNow: " + res)
-  return res
+export async function getDateOfNow(clientId: string){
+  // return the current date and time in the client's timezone
+  const timezone= await getTimezone(clientId) || "America/Montevideo"
+  const clientTime = toZonedTime(new Date(), timezone)
+  const hoy = format(clientTime, "EEEE, dd/MM/yyyy HH:mm:ss", { locale: es });
+  console.log("getDateOfNow: " + hoy)
+  return hoy
 }
 
 export async function registrarPedido(clientId: string, 
@@ -373,7 +379,7 @@ export async function processFunctionCall(clientId: string, name: string, args: 
 
   switch (name) {
     case "getDateOfNow":
-      content = await getDateOfNow()
+      content = await getDateOfNow(clientId)
       break
 
     case "notifyHuman":
