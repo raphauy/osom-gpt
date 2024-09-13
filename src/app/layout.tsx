@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="es" suppressHydrationWarning>
         <head />
         <body className={cn("min-h-screen bg-background font-sans antialiased w-full")}>
         {/* <body className={cn("min-h-screen bg-background font-sans antialiased w-full", fontSans.variable)}> */}

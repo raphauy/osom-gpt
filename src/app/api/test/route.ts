@@ -13,3 +13,12 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 
 }
 
+export async function GET(request: Request, { params }: { params: { clientId: string } }) {
+
+    const res= "API is working"
+
+
+    return NextResponse.json( { "data": res }, { status: 200 })
+
+}
+
