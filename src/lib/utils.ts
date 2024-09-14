@@ -250,3 +250,15 @@ export function getMonthNamePlusOne(month: string) {
       return "mes"
   }
 }
+
+export function getStatusColorAndLabel(status: string) {
+  if (status === 'open') {
+    return "Conectado"
+  } else if (status === 'close') {
+    return "Desconectado"
+  } else if (status === 'connecting') {
+    return "Conectando"
+  } else {
+    return "Desconocido"
+  }
+}

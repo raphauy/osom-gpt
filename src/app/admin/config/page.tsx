@@ -12,6 +12,8 @@ import { getClientBySlug, getFunctionsOfClient, getMessageArrivedDelay, getSessi
 import DocumentsHook from "./documents-hook"
 import PropsEdit from "./props-edit-box"
 import { setMessageArrivedDelayAction } from "./(crud)/actions"
+import WhatsappTab from "./whatsapp/whatsapp-tab"
+import ProviderSelector from "./whatsapp/provider-selector"
 
 type Props = {
     searchParams: {
@@ -25,6 +27,7 @@ export default async function ConfigPage({ searchParams }: Props) {
     const clients= await getDataClients()
     const client= clients.find((client) => client.id === clientId)
     if (!client) return <div>No hay clientes</div>
+    console.log("inboxProvider", client.nombre, client.inboxProvider)
     const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
     const narvaezClient= await getClientBySlug("narvaez")
     const summitClient= await getClientBySlug("summit")
@@ -39,7 +42,7 @@ export default async function ConfigPage({ searchParams }: Props) {
 
     return (
         <div className="flex flex-col items-center w-full p-5 gap-7">
-            <Tabs defaultValue="prompt" className="min-w-[700px] xl:min-w-[1000px]">
+            <Tabs defaultValue="prompt" className="min-w-[700px] xl:min-w-[1000px] w-full">
                 <TabsList className="flex justify-between w-full h-12 mb-8">
                     <ClientSelector selectors={selectors} />
                     <div>
@@ -47,6 +50,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                         <TabsTrigger value="functions">Funciones</TabsTrigger>
                         <TabsTrigger value="props">Props</TabsTrigger>
                         <TabsTrigger value="hooks">Hooks</TabsTrigger>                        
+                        <TabsTrigger value="whatsapp">Whatsapp</TabsTrigger>                        
                         <TabsTrigger value="general">General</TabsTrigger>
                     </div>
                 </TabsList>
@@ -71,6 +75,12 @@ export default async function ConfigPage({ searchParams }: Props) {
                     { haveRegistrarPedidoFunction && 
                         <CopyHook name="Obtener Registros (Narvaez)" path={`${BASE_PATH}/api/${client.id}/registros`} clientId={client.id} />
                     }
+                </TabsContent>
+                <TabsContent value="whatsapp">
+                    <div className="w-fit mx-auto mb-4">
+                        <ProviderSelector client={client}/>
+                    </div>
+                    <WhatsappTab client={client} basePath={BASE_PATH} />
                 </TabsContent>
                 <TabsContent value="general">
                     <ConfigsPage />

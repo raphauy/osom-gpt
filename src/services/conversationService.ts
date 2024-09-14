@@ -16,6 +16,7 @@ import { getRepositoryDAO } from "./repository-services";
 import { getValue } from "./config-services";
 import { getDocument } from "./functions";
 import { getSessionTTL } from "./clientService";
+import { sendText } from "./wrc-sdk";
 
 
 export default async function getConversations() {
@@ -335,8 +336,21 @@ export async function processMessage(id: string, modelName?: string) {
     assistantResponse= assistantResponse.replace(/`/g, "'")
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
 
-    console.log("notificarAgente: " + notificarAgente)    
-    await sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+    console.log("notificarAgente: " + notificarAgente)
+    const inboxProvider= client.inboxProvider
+    if (inboxProvider === "OSOM") {
+      await sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+      return
+    }
+
+    if (inboxProvider === "WRC") {
+      console.log("Sending text vía WRC")
+      await sendText(client.slug, conversation.phone, assistantResponse)
+      return
+    }
+
+    console.log("Inbox provider not found, message not sent")
+    
   }
 
 }

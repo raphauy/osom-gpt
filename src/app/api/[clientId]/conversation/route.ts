@@ -3,7 +3,13 @@ import { NextResponse } from "next/server";
 
 export const maxDuration = 299
 
-export async function POST(request: Request, { params }: { params: { clientId: string } }) {
+type Props= {
+    params: {
+        clientId: string
+    }
+}
+
+export async function POST(request: Request, { params }: Props) {
 
     try {
         const authorization = request.headers.get("authorization")
