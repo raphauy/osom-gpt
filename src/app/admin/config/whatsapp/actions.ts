@@ -76,7 +76,7 @@ export async function enableChatwootAction(clientId: string, instanceName: strin
         token,
         url,
         signMsg: true,
-        reopenConversation: true,
+        reopenConversation: false,
         conversationPending: true,
         nameInbox: instanceName,
         importContacts: false,        
@@ -91,6 +91,8 @@ export async function enableChatwootAction(clientId: string, instanceName: strin
     await enableChatwoot(instanceName, params)
 
     const chatwootUpdated= await setChatwootData(clientId, chatwootAccountId, token, url)
+
+    revalidatePath('/admin/config')
 
     return chatwootUpdated
 }
