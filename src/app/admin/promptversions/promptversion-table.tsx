@@ -20,13 +20,6 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
   return (
     <div className="flex gap-1 dark:text-white items-center">
         
-        {/* {table.getColumn("role") && roles && (
-          <DataTableFacetedFilter
-            column={table.getColumn("role")}
-            title="Rol"
-            options={roles}
-          />
-        )} */}
         {isFiltered && (
           <Button
             variant="ghost"

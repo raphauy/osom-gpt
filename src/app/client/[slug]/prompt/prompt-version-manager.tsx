@@ -26,7 +26,7 @@ type Props = {
 export default function PromptVersionManager({ clientId, timezone, prompt, versions }: Props) {
     const [loadingGuardar, setLoadingGuardar] = useState(false)
     const [loadingAplicar, setLoadingAplicar] = useState(false)
-    const [currentPrompt, setCurrentPrompt] = useState(prompt)
+    const [currentPrompt, setCurrentPrompt] = useState("")
     const [selectedVersion, setSelectedVersion] = useState<PromptVersionDAO | null>(null)
 
     const [charCountSaved, setCharCountSaved] = useState(0)
@@ -35,9 +35,12 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
     const session = useSession()
     const currentUser = session?.data?.user?.name || session?.data?.user?.email
 
-    useEffect(() => {
-        setCharCount(currentPrompt.length)
-    }, [currentPrompt])
+    useEffect(() => {        
+        const count= prompt.length
+        setCharCount(count)
+        setCharCountSaved(count)
+        setCurrentPrompt(prompt)
+    }, [prompt])
 
     const saveVersion = () => {
         setLoadingGuardar(true)
@@ -96,29 +99,6 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
     const viewVersion = (version: PromptVersionDAO) => {
         setSelectedVersion(version)
     }
-
-    const groupedVersions = useMemo(() => {
-        const groups: { [key: string]: PromptVersionDAO[] } = {
-        'Hoy': [],
-        'Ayer': [],
-        'Esta semana': [],
-        'Anteriores': []
-        }
-
-        versions.forEach(version => {
-        if (isToday(version.timestamp)) {
-            groups['Hoy'].push(version)
-        } else if (isYesterday(version.timestamp)) {
-            groups['Ayer'].push(version)
-        } else if (isThisWeek(version.timestamp)) {
-            groups['Esta semana'].push(version)
-        } else {
-            groups['Anteriores'].push(version)
-        }
-        })
-
-        return groups
-    }, [versions])
 
     if (!currentUser) {
         return <div>Usuario no encontrado</div>

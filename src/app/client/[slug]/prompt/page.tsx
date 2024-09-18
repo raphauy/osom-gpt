@@ -19,16 +19,5 @@ export default async function PromptPage({ params }: Props) {
 
     const versions= await getPromptVersionsDAO(client.id)
 
-    // return (
-    //     <div className="container mt-10 space-y-5">
-    //         <div 
-    //             className="w-full p-4 border rounded-lg">
-    //             <p className="text-2xl font-bold">{client.name}</p>
-    //             <PromptForm id={client.id} update={updatePrompt} prompt={client.prompt || ""} />
-    //         </div>
-            
-    //     </div>
-    // )
-
     return <PromptVersionManager clientId={client.id} prompt={client.prompt || ""} versions={versions} timezone={client.timezone}/>
 }

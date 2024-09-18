@@ -26,6 +26,7 @@ export default async function ConfigPage({ searchParams }: Props) {
 
     const clients= await getDataClients()
     const client= clients.find((client) => client.id === clientId)
+
     if (!client) return <div>No hay clientes</div>
     const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
     const narvaezClient= await getClientBySlug("narvaez")
