@@ -1,7 +1,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ClientSelector, SelectorData } from "../client-selector"
-import { getDataClients, updatePrompt } from "../clients/(crud)/actions"
+import { getDataClients, updatePromptAndCreateVersionAction } from "../clients/(crud)/actions"
 import { ClientFunctionsBox } from "../clients/(crud)/client-dialog"
 import ConfigsPage from "../configs/page"
 import { PromptForm } from "../prompts/prompt-form"
@@ -12,6 +12,8 @@ import { getClientBySlug, getFunctionsOfClient, getMessageArrivedDelay, getSessi
 import DocumentsHook from "./documents-hook"
 import PropsEdit from "./props-edit-box"
 import { setMessageArrivedDelayAction } from "./(crud)/actions"
+import PromptVersionManager from "@/app/client/[slug]/prompt/prompt-version-manager"
+import { getPromptVersionsDAO } from "@/services/prompt-version-services"
 
 type Props = {
     searchParams: {
@@ -36,10 +38,11 @@ export default async function ConfigPage({ searchParams }: Props) {
 
     const messageArrivedDelay= await getMessageArrivedDelay(clientId)
     const sessionTTL= await getSessionTTL(clientId)
+    const versions= await getPromptVersionsDAO(clientId)
 
     return (
         <div className="flex flex-col items-center w-full p-5 gap-7">
-            <Tabs defaultValue="prompt" className="min-w-[700px] xl:min-w-[1000px]">
+            <Tabs defaultValue="prompt" className="min-w-[700px] xl:min-w-[1000px] h-full">
                 <TabsList className="flex justify-between w-full h-12 mb-8">
                     <ClientSelector selectors={selectors} />
                     <div>
@@ -50,8 +53,8 @@ export default async function ConfigPage({ searchParams }: Props) {
                         <TabsTrigger value="general">General</TabsTrigger>
                     </div>
                 </TabsList>
-                <TabsContent value="prompt">
-                    <PromptForm id={client.id} update={updatePrompt} prompt={client.prompt || ""} />
+                <TabsContent value="prompt" className="h-full">
+                    <PromptVersionManager clientId={client.id} prompt={client.prompt || ""} versions={versions} timezone={client.timezone}/>    
                 </TabsContent>
                 <TabsContent value="functions">
                     <ClientFunctionsBox clientId={client.id} />

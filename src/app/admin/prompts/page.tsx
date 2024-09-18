@@ -1,5 +1,4 @@
-import { getDataClients, updatePrompt } from "../clients/(crud)/actions"
-import { PromptForm } from "./prompt-form"
+import { getDataClients } from "../clients/(crud)/actions"
 
 export default async function PromptPage() {
     const clients= await getDataClients()
@@ -12,7 +11,6 @@ export default async function PromptPage() {
                     <div key={client.id} 
                         className="w-full p-4 border rounded-lg">
                         <p className="text-2xl font-bold">{client.nombre}</p>
-                        <PromptForm id={client.id} update={updatePrompt} prompt={client.prompt || ""} />
                     </div>
                 ))
             }

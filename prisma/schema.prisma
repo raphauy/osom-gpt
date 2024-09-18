@@ -86,6 +86,8 @@ model Client {
 
   repoData              RepoData[]                         // gennext: skip.list
   repoLabel             String   @default("Repositorio")   // gennext: show.column
+
+  promptVersions        PromptVersion[]
 }
 
 model Document {
@@ -360,4 +362,14 @@ model RepoData {
 
   createdAt           DateTime     @default(now())       // gennext: skip.zod
   updatedAt           DateTime     @updatedAt            // gennext: skip.zod
+}
+
+model PromptVersion {
+  id                  String       @id @default(cuid())
+  content             String
+  timestamp           DateTime     @default(now())
+  user                String
+
+  client              Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId            String
 }

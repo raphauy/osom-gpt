@@ -8,6 +8,7 @@ import { EndpointFormValues } from "../../config/(crud)/endpoint-form";
 import { PromptFormValues } from "../../prompts/prompt-form";
 import { ClientFormValues } from "./clientForm";
 import { getFullModelDAO } from "@/services/model-services";
+import { createPromptVersion, PromptVersionDAO, PromptVersionFormValues } from "@/services/prompt-version-services";
 
 export type DataClient = {
     id: string
@@ -247,14 +248,20 @@ export async function updateEndpoint(json: EndpointFormValues) {
     revalidatePath(`/admin/config`)
 }
 
-export async function updatePrompt(json: PromptFormValues) {
+export async function updatePromptAndCreateVersionAction(versionPrompt: PromptVersionFormValues) {
 
-    if (!json.prompt || !json.clienteId)
-        return
+    await setPrompt(versionPrompt.content, versionPrompt.clientId)
+    const newVersion= await createPromptVersion(versionPrompt)
+    if (!newVersion) throw new Error("Error al crear la versión del prompt")
 
-    setPrompt(json.prompt, json.clienteId)
+    revalidatePath(`/admin/config`)
+    return newVersion
+}
 
-    revalidatePath(`/admin/prompts`)
+export async function updatePromptAction(versionPrompt: PromptVersionFormValues) {
+    await setPrompt(versionPrompt.content, versionPrompt.clientId)
+    revalidatePath(`/admin/config`)
+    return true
 }
 
 export async function getFunctionsOfClientAction(clientId: string) {
