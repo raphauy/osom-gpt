@@ -355,7 +355,7 @@ export async function defaultFunction(clientId: string, name: string, args: any)
 
     const functionClient= await getFunctionClientDAO(repo.functionId, conversation.client.id)
     if (functionClient && functionClient.webHookUrl) {
-      await sendWebhookNotification(functionClient.webHookUrl, created)
+      await sendWebhookNotification(functionClient.webHookUrl, created, clientId)
     }
     if (repo.conversationLLMOff) {
       console.log(`setting conversationLLMOff to true for phone ${conversation.phone}`)

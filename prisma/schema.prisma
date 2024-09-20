@@ -373,3 +373,28 @@ model PromptVersion {
   client              Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId            String
 }
+
+enum WebhookStatus {
+  success
+  error
+  resend
+}
+// create a model for webhook notifications
+// we need to store the webhook url, the client id, client name, the function name, the status, the timestamp, the response, the error
+model WebhookNotification {
+  id                  String       @id @default(cuid())
+  phone               String                              // gennext: show.column
+  webhookUrl          String                              // gennext: show.column
+  clientName          String                              // gennext: show.column
+  functionName        String                              // gennext: show.column
+  data                String                              // gennext: show.column
+  status              WebhookStatus                       // gennext: show.column
+  timestamp           DateTime  @default(now())           // gennext: show.column
+  response            String                              // gennext: show.column
+  error               String?                             // gennext: show.column
+  duration            Float                               // gennext: show.column
+  resendId            String?
+  resendStatus        WebhookStatus?
+
+  clientId            String
+}

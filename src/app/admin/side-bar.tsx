@@ -1,12 +1,12 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Bot, Briefcase, ChevronRightSquare, Database, FunctionSquare, LayoutDashboard, MessageCircle, Receipt, ScreenShare, Settings, User, Warehouse } from "lucide-react";
+import { Bot, Briefcase, Database, FunctionSquare, LayoutDashboard, Receipt, ScreenShare, Settings, User, Webhook } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getLastClientIdAction } from "./clients/(crud)/actions";
-import { useSession } from "next-auth/react";
 
 export default function SideBar() {
 
@@ -62,6 +62,11 @@ export default function SideBar() {
       href: `/admin/repositories`,
       icon: Database, 
       text: "Repositorios"
+    },
+    {
+      href: `/admin/webhook-notifications`,
+      icon: Webhook, 
+      text: "Webhook Notif."
     },
     // {
     //   href: "divider", icon: User
