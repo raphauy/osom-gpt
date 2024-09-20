@@ -39,7 +39,7 @@ export default function WebhookCard({ functionName, status, phone, webhookUrl, c
           { duration !== -1 && (
             <>
               <div className="font-semibold">Duración:</div>
-              <div>{duration/1000} seg.</div>
+              <div>{(duration/1000).toFixed(2)} seg.</div>
             </>
           )}
         </dl>
