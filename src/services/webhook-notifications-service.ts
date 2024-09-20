@@ -34,12 +34,13 @@ export async function sendWebhookNotification(webhookUrl: string, repoData: Repo
     }
 
     const init= new Date().getTime()
+    const timeout= 10000 // 10 segundos
     try {
         const response = await axios.post(webhookUrl, data, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            timeout: 10000, // 10 segundos
+            timeout: timeout, // 10 segundos
         })
         const elapsedTime = new Date().getTime() - init
         console.log(`Request took ${elapsedTime} milliseconds`)
@@ -48,17 +49,17 @@ export async function sendWebhookNotification(webhookUrl: string, repoData: Repo
             console.error(`Failed to send webhook notification to ${webhookUrl} `, response.status, response.statusText)
             status = "error"
             whError = response.statusText
-            whResponse = response.statusText
+            whResponse = response.status.toString()
         } else {
             status = "success"
-            whResponse = response.statusText
+            whResponse = response.status.toString()
         }
         duration = elapsedTime
     } catch (error) {
         if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
             console.error('Request timed out');
             whResponse = "Request timed out"
-            whError = "Request timed out"
+            whError = `Request timed out (${timeout/1000} s)`
         } else {
             console.error('Failed to send webhook notification:', error)
             whResponse = error instanceof Error ? error.message : String(error)

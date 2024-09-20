@@ -8,7 +8,9 @@ export async function POST(request: Request, { params }: { params: { clientId: s
     console.log("json: ", json)
     console.log("message: ", message)
 
-//    return NextResponse.json( { "error": "Ocurrió un error" }, { status: 500 })
+//    await new Promise(resolve => setTimeout(resolve, 12000));
+
+//    return NextResponse.json( { "error": "Ocurrió un error" }, { status: 400 })
     return NextResponse.json( { "data": message }, { status: 200 })
 
 }
