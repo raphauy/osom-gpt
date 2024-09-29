@@ -596,6 +596,22 @@ export async function closeConversation(conversationId: string) {
   return updated
 }
 
+export async function turnLLMOn(conversationId: string) {
+  const updated= await prisma.conversation.update({
+    where: {
+      id: conversationId
+    },
+    data: {
+      llmOff: false
+    },
+    include: {
+      client: true
+    }
+  })
+
+  return updated
+}
+
 export async function saveFunction(phone: string, completion: string, clientId: string) {
   console.log("function call")
 
@@ -642,3 +658,46 @@ export async function saveFunction(phone: string, completion: string, clientId: 
 }
 
 
+export async function getLastConversationByPhone(phone: string, clientId: string) {
+  const found = await prisma.conversation.findFirst({
+    where: {
+      phone,
+      clientId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  return found
+}
+
+export async function createAttatchMessage(conversationId: string, content: string){
+  const created= await prisma.message.create({
+    data: {
+      conversationId,
+      role: "function",
+      content: "Agente: " + content
+    }
+  })
+
+  return created
+}
+
+export async function attachRestart(conversationId: string) {
+  const updated= await turnLLMOn(conversationId)
+  const phone= updated.phone
+  const created= await prisma.message.create({
+    data: {
+      conversationId,
+      role: "user",
+      content: "Elabora una respuesta con la información agregada por el agente."
+    }
+  })
+
+  if (!created) {
+    console.log("error creating message for restart")
+    throw new Error("error creating message for restart")
+  }
+  await processMessage(created.id)
+}
