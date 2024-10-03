@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Availability, Schedule } from "@/services/calcom-sdk-v2";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { EventDAO } from "@/services/event-services";
-import { Calendar, Eye, Globe } from "lucide-react";
-import Link from "next/link";
+import { Globe } from "lucide-react";
 
 
 const dayAbbreviations = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
