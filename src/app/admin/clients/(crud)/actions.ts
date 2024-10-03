@@ -1,6 +1,6 @@
 "use server"
 
-import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFunctionsOfClient, getLastClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
+import getClients, { clientHaveEvents, createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFunctionsOfClient, getLastClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
 import { getUser } from "@/services/userService";
 import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -30,6 +30,7 @@ export type DataClient = {
     repoLabel: string
     sessionTTL: number
     timezone: string
+    haveEvents: boolean
   }
     
 
@@ -60,7 +61,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
         sessionTTL: client.sessionTTL,
-        timezone: client.timezone
+        timezone: client.timezone,
+        haveEvents: client.haveEvents
     }
     return data
 }
@@ -96,7 +98,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
         sessionTTL: client.sessionTTL,
-        timezone: client.timezone
+        timezone: client.timezone,
+        haveEvents: client.haveEvents
     }
     return data
 }
@@ -129,7 +132,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
         sessionTTL: client.sessionTTL,
-        timezone: client.timezone
+        timezone: client.timezone,
+        haveEvents: client.haveEvents
     }
     return data
 }
@@ -161,7 +165,8 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         modelName: model?.name || '',
         repoLabel: client.repoLabel,
         sessionTTL: client.sessionTTL,
-        timezone: client.timezone
+        timezone: client.timezone,
+        haveEvents: client.haveEvents
     }
     return data
 }
@@ -200,7 +205,8 @@ export async function getDataClients() {
                 modelName: model?.name || '',
                 repoLabel: client.repoLabel,
                 sessionTTL: client.sessionTTL,
-                timezone: client.timezone
+                timezone: client.timezone,
+                haveEvents: client.haveEvents
             };
         })
     );
@@ -279,4 +285,9 @@ export async function setFunctionsAction(clientId: string, functionIs: string[])
 export async function getLastClientIdAction() {
     const client= await getLastClient()
     return client?.id
+}
+
+export async function clientHaveEventsAction(slug: string): Promise<boolean> {
+    const haveEvents= await clientHaveEvents(slug)
+    return haveEvents
 }

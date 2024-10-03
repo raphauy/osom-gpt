@@ -8,6 +8,7 @@ import { es } from "date-fns/locale";
 import { getFunctionsOfClient, getTimezone } from "./clientService";
 import { getActiveConversation } from "./conversationService";
 import { toZonedTime } from "date-fns-tz";
+import { getActiveEventsDAOByClientId } from "./event-services";
 
 export type SectionDAO = {
 	id: string
@@ -268,6 +269,35 @@ export async function getContext(clientId: string, phone: string, userInput: str
     contextString+= "Hay documentos con más de una Section. Si obtienes una Section con secuence 1 por ejemplo y no está la información para la respuesta, solicita la siguiente Section, utiliza función getSection con la secuence 2.\n"
 
     sectionsIds = similarity.map((item) => item.id)
+  }
+
+  if (functionsNames.includes("obtenerDisponibilidad")) {
+    const events= await getActiveEventsDAOByClientId(clientId)
+    const availableEvents= events.filter(event => event.availability.length > 0)
+    console.log("availableEvents: ", availableEvents.map((event) => event.name))
+
+    contextString+= "\n**** Eventos disponibles, no son reservas, son eventos disponibles para reservar ****\n"
+    contextString+= "Eventos que pueden ser relevantes para elaborar una respuesta:\n"
+    availableEvents.map((event) => {
+    contextString += `{
+    eventId: "${event.id}",
+    eventName: "${event.name}",
+    eventDescription: "${event.description}",
+    eventAddress: "${event.address}",
+    timezone: "${event.timezone}",
+    minDuration: ${event.minDuration},
+    maxDuration: ${event.maxDuration},
+}
+`
+    const hoy = format(toZonedTime(new Date(), event.timezone), "EEEE, dd/MM/yyyy HH:mm:ss", {
+      locale: es,
+    });
+    contextString+= `Ahora es ${hoy} en el timezone del evento (${event.timezone})\n`
+    contextString+= `---------------\n\n`
+
+// eventSeatsPerTimeSlot: ${event.seatsPerTimeSlot}
+    })
+
   }
 
   const res= {

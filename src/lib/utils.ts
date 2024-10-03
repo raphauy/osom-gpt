@@ -1,4 +1,5 @@
 import { getTimezone } from "@/services/clientService";
+import { EventType } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { format as formatTZ, toZonedTime } from "date-fns-tz";
 import { es } from "date-fns/locale";
@@ -249,4 +250,38 @@ export function getMonthNamePlusOne(month: string) {
     default:
       return "mes"
   }
+}
+
+export function generateSlug(name: string): string {
+  return name
+    .toLowerCase() // Convertir a minúsculas
+    .normalize('NFD') // Descomponer los acentos y diacríticos
+    .replace(/[\u0300-\u036f]/g, '') // Eliminar los diacríticos
+    .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+    .replace(/[^\w\-]+/g, '') // Eliminar todos los caracteres que no sean palabras o guiones
+    .replace(/\-\-+/g, '-') // Reemplazar múltiples guiones con uno solo
+    .trim(); // Eliminar espacios al inicio y al final
+}
+
+export function getEventTypeLabel(option: EventType) {
+  switch (option) {
+    case EventType.SINGLE_SLOT:
+      return "Duración fija"
+    case EventType.MULTIPLE_SLOTS:
+      return "Duración variable"
+    default:
+      return "Evento"
+  }
+}
+
+export function checkDateFormatForSlot(dateStr: string) {
+  // formato YYYY-MM-DD
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  return regex.test(dateStr);
+}
+
+export function checkDateTimeFormatForSlot(dateStr: string) {
+  // formato YYYY-MM-DD HH:mm
+  const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+  return regex.test(dateStr);
 }

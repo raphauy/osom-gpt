@@ -74,6 +74,8 @@ model Client {
   prompt                String?   @db.Text
   promptTokensPrice     Float      @default(0)
   completionTokensPrice Float  @default(0)
+  haveEvents            Boolean   @default(false)
+
   messageArrivedDelay   Int       @default(8)
   sessionTTL            Int       @default(10)
   timezone              String @default("America/Montevideo")
@@ -88,6 +90,9 @@ model Client {
   repoLabel             String   @default("Repositorio")   // gennext: show.column
 
   promptVersions        PromptVersion[]
+
+  events                Event[]
+  bookings              Booking[]
 }
 
 model Document {
@@ -150,7 +155,9 @@ model Conversation {
   narvaez     Narvaez?
   summit      Summit?
   carService  CarService?
+
   repoData    RepoData[]
+  bookings    Booking[]
 }
 
 model Message {
@@ -379,8 +386,7 @@ enum WebhookStatus {
   error
   resend
 }
-// create a model for webhook notifications
-// we need to store the webhook url, the client id, client name, the function name, the status, the timestamp, the response, the error
+
 model WebhookNotification {
   id                  String       @id @default(cuid())
   phone               String                              // gennext: show.column
@@ -397,4 +403,71 @@ model WebhookNotification {
   resendStatus        WebhookStatus?
 
   clientId            String
+}
+
+enum EventType {
+  SINGLE_SLOT
+  MULTIPLE_SLOTS
+}
+
+model Event {
+  id                String    @id @default(cuid())
+  name              String                                      // gennext: show.column
+  slug              String                                      // gennext: show.column
+  minDuration       Int       @default(60)                      // gennext: show.column
+  maxDuration       Int       @default(60)                      // gennext: show.column
+  color             String                                      // gennext: show.column
+
+  description       String?
+  address           String?                                     // gennext: show.column
+  seatsPerTimeSlot  Int?                                        // gennext: show.column
+  price             Float?                                      // gennext: show.column
+  isArchived        Boolean   @default(false)                   // gennext: show.column
+
+  availability      String[]  @default([])
+  timezone          String    @default("America/Montevideo")
+  type              EventType @default(SINGLE_SLOT)
+
+  createdAt         DateTime    @default(now())                 // gennext: skip.zod
+  updatedAt         DateTime    @updatedAt                      // gennext: skip.zod
+
+  client            Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId          String
+
+  bookings          Booking[]                            // gennext: skip.list
+}
+
+enum BookingStatus {
+  PENDIENTE
+  RESERVADO
+  PAGADO
+  CONFIRMADO
+  CANCELADO
+  BLOQUEADO
+}
+
+model Booking {
+  id                String    @id @default(cuid())
+  eventName         String                                      // gennext: show.column
+  start             DateTime                                     // gennext: show.column
+  end               DateTime                                     // gennext: show.column
+  seats             Int                                         // gennext: show.column
+  price             Float?                                      // gennext: show.column
+  status            BookingStatus                               // gennext: show.column
+
+  name              String
+  contact           String
+  metadata          String?
+
+  createdAt         DateTime    @default(now())                 // gennext: skip.zod
+  updatedAt         DateTime    @updatedAt                      // gennext: skip.zod
+
+  event             Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId           String
+
+  client            Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId          String
+
+  conversation        Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  conversationId      String?
 }

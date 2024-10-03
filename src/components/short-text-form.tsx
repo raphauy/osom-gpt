@@ -7,13 +7,14 @@ import { Loader, Pencil } from "lucide-react"
 import { useEffect, useState } from "react"
 
 type Props= {
-  clientId: string
+  id: string
   label?: string
-  initialValue: number
-  update: (clientId: string, value: number) => Promise<boolean>
+  fieldName: string
+  initialValue: string
+  update: (id: string, fieldName: string, value: string) => Promise<boolean>
 }
 
-export function NumberForm({ clientId, label, initialValue, update }: Props) {
+export function ShortTextForm({ id, label, fieldName, initialValue, update }: Props) {
 
   const [isEditing, setIsEditing] = useState(false)
   const toggleEdit = () => setIsEditing(!isEditing)
@@ -31,13 +32,13 @@ export function NumberForm({ clientId, label, initialValue, update }: Props) {
     
     setLoading(true)
     try {
-      const ok= await update(clientId, value)
+      const ok= await update(id, fieldName, value)
     
       if (ok) {
         toast({title: `${label} editado` })
       } else {
         setValue(initialValue)
-        toast({title: "Error al editar", variant: "destructive"})
+        toast({title: "Error al editar el título", variant: "destructive"})
       }
     } catch (error: any) {
       setValue(initialValue)
@@ -54,10 +55,8 @@ export function NumberForm({ clientId, label, initialValue, update }: Props) {
     }
   }
 
-  if (!initialValue) return <div>Valor inicial de {label} no encontrado</div>
-
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4 dark:bg-black max-w-xs w-full">
+    <div className="mt-6 border bg-muted rounded-md p-4">
       <div className="font-medium flex flex-col">
         {label ? <p className="border-b mb-2">{label}:</p> : "Título:"}
             {
@@ -65,13 +64,12 @@ export function NumberForm({ clientId, label, initialValue, update }: Props) {
 
                 <div className="flex items-center justify-between gap-1 font-medium">
                   <input
-                    name="value"
-                    type="number"
+                    name={fieldName}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     autoFocus
                     disabled={!isEditing}
                     value={value}
-                    onChange={(e) => setValue(parseInt(e.target.value))}
+                    onChange={(e) => setValue(e.target.value)}
                     onKeyDown={handleEnterKey}
                     onBlur={onSubmit}
                   />

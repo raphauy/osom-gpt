@@ -1,10 +1,8 @@
-import { Edit } from "lucide-react"
-import { TokensPriceDialog } from "./(crud)/tokens-price-dialog"
 import { NumberForm } from "@/components/number-form"
-import { setMessageArrivedDelayAction, setSessionTTLAction, setTimezoneAction } from "./(crud)/actions"
 import { TitleForm } from "@/components/title-form"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { setMessageArrivedDelayAction, setSessionTTLAction, setTimezoneAction } from "./(crud)/actions"
 
 interface Props {
     clientId: string

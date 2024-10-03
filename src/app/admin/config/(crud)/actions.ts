@@ -1,6 +1,6 @@
 "use server"
 
-import { setMessageArrivedDelay, setSessionTTL, setTimezone, setTokensPrice } from "@/services/clientService"
+import { setHaveEvents, setMessageArrivedDelay, setSessionTTL, setTimezone, setTokensPrice } from "@/services/clientService"
 import { revalidatePath } from "next/cache"
 
 
@@ -38,4 +38,12 @@ export async function setTimezoneAction(clientId: string, timezone: string): Pro
     revalidatePath("/admin/config")
 
     return true
+}
+
+export async function setHaveEventsAction(clientId: string, haveEvents: boolean) {
+    const client= await setHaveEvents(clientId, haveEvents)
+
+    revalidatePath(`/admin/config`)
+
+    return client    
 }

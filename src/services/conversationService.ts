@@ -657,6 +657,20 @@ export async function saveFunction(phone: string, completion: string, clientId: 
   if (messageStored) console.log("function message stored")
 }
 
+export async function getConversationPhone(id: string) {
+  const found= await prisma.conversation.findUnique({
+    where: {
+      id
+    },
+    select: {
+      phone: true
+    }
+  })
+
+  return found?.phone
+}
+
+
 
 export async function getLastConversationByPhone(phone: string, clientId: string) {
   const found = await prisma.conversation.findFirst({

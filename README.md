@@ -1,4 +1,4 @@
 
 ## OsomGPT
 
-# OsomGPT project (reservas)
+# OsomGPT project
