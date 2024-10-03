@@ -12,15 +12,16 @@ interface Props {
 export default async function Header({ children }: Props) {
     const session= await getSession()
     const environment = process.env.VERCEL_ENV || "development"
+    const deploymentUrl = process.env.VERCEL_BRANCH_URL || "http://localhost:3000"
 
     let env
 
-    if (environment === 'preview') {
-      env= "PREVIEW"
+    if (deploymentUrl.includes('reservas')) {
+      env= "RESERVAS"
     } else if (environment === 'development') {
       env= "DEVELOPMENT"
-    } else if (environment === 'reservas' || environment === 'Preview (reservas)') {
-        env= "RESERVAS"
+    } else if (environment === 'preview') {
+        env= "PREVIEW"
     }
 
     return (
