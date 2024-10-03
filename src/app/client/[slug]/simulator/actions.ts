@@ -72,7 +72,8 @@ export async function getDataClientWithModel(slug: string, modelName?: string): 
       modelName: model && model.name ? model.name : '',
       repoLabel: client.repoLabel,
       sessionTTL: client.sessionTTL,
-      timezone: client.timezone
+      timezone: client.timezone,
+      haveEvents: client.haveEvents
   }
   return data
 }
