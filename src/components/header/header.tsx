@@ -19,6 +19,8 @@ export default async function Header({ children }: Props) {
       env= "PREVIEW"
     } else if (environment === 'development') {
       env= "DEVELOPMENT"
+    } else if (environment === 'reservas' || environment === 'Preview (reservas)') {
+        env= "RESERVAS"
     }
 
     return (
