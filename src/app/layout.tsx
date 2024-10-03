@@ -1,3 +1,4 @@
+import React from "react"
 import { Metadata, Viewport } from "next"
 import './globals.css'
 

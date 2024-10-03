@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { CustomInfo, getActiveMessagesAction, getCustomInfoAction } from "@/app/admin/chat/actions";
 import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions";
 import { getModelDAOActionByName } from "@/app/admin/models/model-actions";
