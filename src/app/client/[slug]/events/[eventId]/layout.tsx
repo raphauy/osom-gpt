@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bot, PlusCircle } from "lucide-react";
+import { Bot, MessageCircle, PlusCircle } from "lucide-react";
 import { getFullEventsDAO } from "@/services/event-services";
 import { EventCard } from "../event-card";
 import { EventDialog } from "../event-dialogs";
@@ -22,6 +22,12 @@ export default async function EventLayout({ params, children }: Props) {
     <div className="flex flex-grow p-1 w-full gap-2">
       <div className="mt-4 border-r pr-4 border-gray-300 mr-2">
         <EventDialog />
+        <Link href={`/client/${slug}/chats`}>
+          <Button variant="outline" className="w-full mt-2">
+            <MessageCircle className="w-5 h-5 mr-2 mb-1" />
+            <p>Conversaciones</p>
+          </Button>
+        </Link>
         <Link href={`/client/${slug}/events/id/simulator`}>
           <Button variant="outline" className="w-full mt-2">
             <Bot className="w-5 h-5 mr-2 mb-1" />

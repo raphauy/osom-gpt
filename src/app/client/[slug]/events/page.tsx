@@ -20,7 +20,6 @@ export default async function EventPage({ params, searchParams }: Props) {
   const slug = params.slug
   const id = searchParams.id
   const data= await getFullEventsDAO(slug)
-  const bookings= await getFullBookingsDAOBySlug(slug)
 
   return (
     <div className="w-full">      
