@@ -1,14 +1,13 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
-import { Calendar, momentLocalizer, Views, View } from 'react-big-calendar'
 import moment from 'moment-timezone'
 import 'moment/locale/es'
+import { useEffect, useState } from 'react'
+import { Calendar, momentLocalizer, View, Views } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import CustomEvent from './CustomEvent'
 
 moment.locale('es')
-moment.tz.setDefault("America/Montevideo")
 
 moment.updateLocale('es', {
   week: {
@@ -17,8 +16,6 @@ moment.updateLocale('es', {
   }
 })
 
-// Crea el localizer
-const localizer = momentLocalizer(moment)
 
 export type CalendarEvent = {
   bookingId?: string
@@ -42,7 +39,10 @@ export default function BigCalendar({ initialEvents, timezone }: Props) {
 
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [view, setView] = useState<View>(Views.WEEK)
-  
+
+  moment.tz.setDefault(timezone)
+  const localizer = momentLocalizer(moment)
+
   useEffect(() => {
     let adjustedEvents = initialEvents.map(event => ({
       ...event,

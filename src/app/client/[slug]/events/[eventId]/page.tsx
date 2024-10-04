@@ -1,12 +1,12 @@
-import { BookingDAO, getFullBookingsDAO, getFutureBookingsDAOByEventId } from "@/services/booking-services";
+import { BookingDAO, getFutureBookingsDAOByEventId } from "@/services/booking-services";
 import { EventDAO, getEventDAO } from "@/services/event-services";
-import { addMinutes, isBefore, parseISO, format, addDays } from "date-fns";
+import { getSlots } from "@/services/slots-service";
+import { addDays, format } from "date-fns";
+import { toZonedTime, } from "date-fns-tz";
 import { CalendarEvent } from "../big-calendar";
 import AvailabilityDisplay from "./availability-display";
 import EventHeader from "./event-header";
 import TabsPage from "./tabs";
-import { toZonedTime, } from "date-fns-tz";
-import { getSlots } from "@/services/slots-service";
 
 type Props= {
     params: {
@@ -34,8 +34,6 @@ export default async function EventPage({ params }: Props) {
 
     return ( 
         <div className="w-full space-y-4 flex flex-col items-center">
-          hola
-
           <div className="flex gap-2 w-full">
             <EventHeader event={event} slug={slug} />
 

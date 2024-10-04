@@ -22,7 +22,7 @@ const CustomEvent: React.FC<CustomEventProps> = ({ event }) => {
             <div className="text-sm font-bold text-gray-700 line-clamp-2 whitespace-pre-wrap flex items-center justify-between w-full">
               {event.title} 
               {
-                event.bookingId && <CancelBookingDialog id={event.bookingId} description={description} size="sm"/>
+                event.bookingId && <div><CancelBookingDialog id={event.bookingId} description={description} size="sm"/></div>
               }
               
               {

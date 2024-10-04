@@ -6,6 +6,7 @@ import { EventType } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { ScrollArea } from "./ui/scroll-area"
 
 type Props= {
   id: string
@@ -58,11 +59,13 @@ export function SelectTimezoneForm({ id, icon, label, description, initialValue,
               <SelectValue placeholder={value} />
             </SelectTrigger>
             <SelectContent side="top">
+              <ScrollArea className="h-[400px]">
               {getTimezones().map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
-                </SelectItem>
-              ))}
+                  </SelectItem>
+                ))}
+              </ScrollArea>
             </SelectContent>
           </Select>
         </div>
