@@ -41,7 +41,7 @@ export default function ProviderSelector({client}: Props) {
 
   return (
     <div className="min-w-[200px]">
-        <Select onValueChange={handleChange} defaultValue={provider}>
+        <Select onValueChange={handleChange} value={provider}>
             <SelectTrigger>
                 <SelectValue placeholder="Selecciona un proveedor" />
             </SelectTrigger>
