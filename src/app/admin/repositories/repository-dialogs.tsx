@@ -69,7 +69,7 @@ export function DuplicateRepositoryDialog({ duplicationRepoId, duplicationName }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="flex items-center gap-2 hover:bg-slate-100 hover:text-green-600 h-9 rounded-sm">
-        <div className="flex items-center gap-2 hover:cursor-pointer">
+        <div className="flex items-center gap-2 hover:cursor-pointer px-2">
           <Copy className="mr-2"/>
           <p>Duplicar repositorio</p>
         </div>
@@ -90,7 +90,7 @@ export function DeleteRepoFromMenuDialog({ id, description, withText }: DeletePr
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="flex items-center gap-2 hover:bg-slate-100 hover:text-red-600 h-9 rounded-sm">
-        <div className="flex items-center gap-2 hover:cursor-pointer">
+        <div className="flex items-center gap-2 hover:cursor-pointer px-2">
           <Trash2 size={25} className="text-red-400 mr-2"/>
           <p>Eliminar repositorio</p>
         </div>

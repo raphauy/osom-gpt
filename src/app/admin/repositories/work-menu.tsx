@@ -11,7 +11,7 @@ type Props= {
 }
 export default function RepoMenu({ repoId, repoName }: Props) {
     return (
-        <Menubar className="border-0 bg-white">
+        <Menubar className="border-0">
             <MenubarMenu>
                 <MenubarTrigger className="px-1 border-0 cursor-pointer">
                     <EllipsisVertical className="h-5 w-5" />
