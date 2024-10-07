@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "@/components/ui/use-toast"
 import { useEffect, useState } from "react"
-import { createRepositoryAction, deleteRepositoryAction, getRepositoryDAOAction } from "./repository-actions"
-import { repositorySchema, RepositoryFormValues } from '@/services/repository-services'
+import { createRepositoryAction, deleteRepositoryAction, duplicateRepositoryAction, getRepositoryDAOAction } from "./repository-actions"
+import { repositorySchema, RepositoryFormValues, DuplicateRepositoryFormValues, duplicateRepositorySchema } from '@/services/repository-services'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -121,3 +121,73 @@ export function DeleteRepositoryForm({ id, closeDialog, redirect }: DeleteProps)
   )
 }
 
+
+type DuplicateProps= {
+  closeDialog: () => void
+  duplicationName: string
+  duplicationRepoId: string
+}
+
+export function DuplicateRepositoryForm({ closeDialog, duplicationName, duplicationRepoId }: DuplicateProps) {
+  const form = useForm<DuplicateRepositoryFormValues>({
+    resolver: zodResolver(duplicateRepositorySchema),
+    defaultValues: {
+      name: duplicationName + " - copia",
+      duplicationRepoId: duplicationRepoId,
+    },
+    mode: "onChange",
+  })
+  const [loading, setLoading] = useState(false)
+  const router= useRouter()
+
+  const onSubmit = async (data: RepositoryFormValues) => {
+    setLoading(true)
+    try {
+      const created=await duplicateRepositoryAction(data.name, duplicationRepoId)
+      if (!created) {
+        toast({ title: "Error", description: "Error al duplicar el repositorio", variant: "destructive" })
+        return
+      }
+      toast({ title: "Repositorio duplicado. Redirigiendo..." })
+      closeDialog()
+      router.push(`/admin/repositories/${created.id}`)
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="p-4 rounded-md">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre</FormLabel>
+                <FormControl>
+                  <Input placeholder="Registrar Lead" {...field} />
+                </FormControl>
+                <FormDescription>
+                  El nombre del repositorio, lo podrás cambiar después
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+        <div className="flex justify-end">
+            <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancel</Button>
+            <Button type="submit" className="w-32 ml-2">
+              {loading ? <Loader className="h-4 w-4 animate-spin" /> : <p>Duplicar</p>}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>     
+  )
+}

@@ -1,7 +1,7 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
 import { FunctionClientDAO, FunctionDAO, createFunction, deleteFunction, nameIsAvailable } from "./function-services"
-import { FieldDAO } from "./field-services"
+import { createField, FieldDAO } from "./field-services"
 import { colorPalette } from "@/lib/utils"
 
 export type RepositoryDAO = {
@@ -28,6 +28,14 @@ export const repositorySchema = z.object({
 })
 
 export type RepositoryFormValues = z.infer<typeof repositorySchema>
+
+export const duplicateRepositorySchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio."),
+  duplicationRepoId: z.string().min(1, "El nombre es obligatorio."),
+})
+
+export type DuplicateRepositoryFormValues = z.infer<typeof duplicateRepositorySchema>
+
 
 
 export async function getRepositorysDAO() {
@@ -129,6 +137,51 @@ export async function deleteRepository(id: string) {
   return deleted
 }
 
+export async function duplicateRepository(id: string, name: string) {
+  const repo= await getFullRepositoryDAO(id)
+  if (!repo) throw new Error("Repository not found")
+
+  const created= await createRepository(name)
+  
+  // Usar for...of con await para iterar sobre los campos
+//  let order= 0
+  for (const field of repo.fields) {
+    await createField({
+      repositoryId: created.id,
+      name: field.name,
+      description: field.description,
+      type: field.type,
+      required: field.required,
+    })
+    // await prisma.field.create({
+    //   data: {
+    //     repositoryId: created.id,
+    //     name: field.name,
+    //     description: field.description,
+    //     type: field.type,
+    //     required: field.required,
+    //     order: order
+    //   }
+    // })
+    // order++
+  }
+
+  // update some data
+  await prisma.repository.update({
+    where: {
+      id: created.id
+    },
+    data: {
+      uiLabel: name,
+      functionDescription: repo.functionDescription,
+      finalMessage: repo.finalMessage,
+      conversationLLMOff: repo.conversationLLMOff,
+      llmOffMessage: repo.llmOffMessage,
+      notifyExecution: repo.notifyExecution
+    }
+  })
+  return created
+}
 
 export async function getFullRepositorysDAO() {
   const found = await prisma.repository.findMany({

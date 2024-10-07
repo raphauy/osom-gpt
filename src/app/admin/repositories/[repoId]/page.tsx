@@ -152,7 +152,7 @@ export default async function RepositoryPage({ params }: Props) {
         <div className="p-6 mt-4 border rounded-lg w-full">
           <CodeBlock code={repository.function.definition!} showLineNumbers={true} />
         </div>
-        <div className="flex justify-center w-full mt-10">
+        <div className="flex justify-center w-full my-10">
             <DeleteRepositoryDialog
                 id={repository.id} 
                 description={`Seguro que quieres eliminar el repositorio ${repository.name}?

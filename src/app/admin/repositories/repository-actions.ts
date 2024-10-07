@@ -1,7 +1,7 @@
 "use server"
   
 import { addFunctionToClient, getFunctionDAO, removeFunctionFromClient } from "@/services/function-services"
-import { RepositoryDAO, createRepository, deleteRepository, getFullRepositoryDAO, setConversationLLMOff, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setLLMOffMessage, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
+import { RepositoryDAO, createRepository, deleteRepository, duplicateRepository, getFullRepositoryDAO, setConversationLLMOff, setFinalMessage, setFunctionActive, setFunctionDescription, setFunctionName, setLLMOffMessage, setName, setNotifyExecution, setUILabel, setWebHookUrl } from "@/services/repository-services"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -24,6 +24,15 @@ export async function deleteRepositoryAction(id: string): Promise<RepositoryDAO 
     revalidatePath("/admin/repositories")
 
     return deleted as RepositoryDAO
+}
+
+export async function duplicateRepositoryAction(name: string, duplicationRepoId: string): Promise<RepositoryDAO | null> {
+    console.log("duplicating repository", name, duplicationRepoId)
+    const created= await duplicateRepository(duplicationRepoId, name)
+
+    revalidatePath("/admin/repositories")
+
+    return created as RepositoryDAO
 }
 
 export async function setNameAction(id: string, name: string): Promise<boolean> {

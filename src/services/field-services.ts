@@ -45,7 +45,13 @@ export async function getFieldDAO(id: string) {
 }
     
 export async function createField(data: FieldFormValues) {
-  const lastOrder= await prisma.field.count()
+  const lastOrder= await prisma.field.count(
+    {
+      where: {
+        repositoryId: data.repositoryId
+      }
+    }
+  )
   const created = await prisma.field.create({
     data: {
       ...data,
