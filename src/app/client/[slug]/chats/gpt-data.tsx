@@ -1,8 +1,6 @@
 import CodeBlock from "@/components/code-block"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { DocumentResult } from "@/services/functions"
 import { BookOpen, Database, SquareFunction } from "lucide-react"
 import Link from "next/link"
 

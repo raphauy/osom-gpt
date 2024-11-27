@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/db";
-import { messageArrived, processMessage } from "./conversationService";
 import { Message } from "@prisma/client";
-import { getValue } from "./config-services";
 import { addMilliseconds } from "date-fns";
 import { getClient, getMessageArrivedDelayByMessageId } from "./clientService";
+import { messageArrived, processMessage } from "./conversationService";
 
 export type MessageDelayResponse = {
     wasCreated: boolean,
