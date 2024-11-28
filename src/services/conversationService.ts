@@ -701,3 +701,14 @@ export async function attachRestart(conversationId: string) {
   }
   await processMessage(created.id)
 }
+
+export async function createConversation(phone: string, clientId: string) {
+  const created= await prisma.conversation.create({
+    data: {
+      phone,
+      clientId
+    }
+  })
+
+  return created
+}

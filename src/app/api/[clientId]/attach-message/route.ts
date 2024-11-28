@@ -1,4 +1,4 @@
-import { createAttatchMessage, getLastConversationByPhone } from "@/services/conversationService";
+import { createAttatchMessage, createConversation, getLastConversationByPhone } from "@/services/conversationService";
 import { MessageDelayResponse, onMessageReceived, processDelayedMessage } from "@/services/messageDelayService";
 import { NextResponse } from "next/server";
 
@@ -34,9 +34,13 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         console.log("phone: ", phone)
         console.log("text: ", text)
 
-        const conversation= await getLastConversationByPhone(phone, clientId)
+        let conversation= await getLastConversationByPhone(phone, clientId)
         if (!conversation) {
-            return NextResponse.json({ error: `conversation not found for phone ${phone}` }, { status: 404 })
+            conversation= await createConversation(phone, clientId)
+        }
+
+        if (!conversation) {
+            return NextResponse.json({ error: `problem creating conversation for phone ${phone}` }, { status: 502 })
         }
 
         const created= await createAttatchMessage(conversation.id, text)

@@ -42,6 +42,8 @@ export async function POST(request: Request, { params }: { params: { clientId: s
 //                await processDelayedMessage(delayResponse.message.id, phone)
                 // cambio para utilizar solo en VPS
                 processDelayedMessage(delayResponse.message.id, phone)
+                // for Vercel:
+                //waitUntil(processDelayedMessage(delayResponse.message.id, phone))
                 
             } else {
                 console.log("delayResponse.message wasCreated but is null")
