@@ -43,10 +43,11 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             return NextResponse.json({ error: `problem creating conversation for phone ${phone}` }, { status: 502 })
         }
 
-        const created= await createAttatchMessage(conversation.id, text)
-        if (!created) {
-            return NextResponse.json({ error: `error creating attatch message for phone ${phone}` }, { status: 502 })
-        }
+        // const created= await createAttatchMessage(conversation.id, text)
+        // if (!created) {
+        //     return NextResponse.json({ error: `error creating attatch message for phone ${phone}` }, { status: 502 })
+        // }
+        createAttatchMessage(conversation.id, text)
 
         return NextResponse.json({ data: "ACK" }, { status: 200 })
 

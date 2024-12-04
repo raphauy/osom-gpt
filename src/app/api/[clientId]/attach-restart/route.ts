@@ -33,7 +33,8 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             return NextResponse.json({ error: `conversation not found for phone ${phone}` }, { status: 404 })
         }
 
-        await attachRestart(conversation.id)
+        // await attachRestart(conversation.id)
+        attachRestart(conversation.id)
 
         return NextResponse.json({ data: "ACK" }, { status: 200 })
 
