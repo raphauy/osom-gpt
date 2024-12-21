@@ -33,7 +33,17 @@ export type DataConversation = {
     presupuesto?: string
     llmOff: boolean | null
 }
-      
+
+export type DataConversationShort = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    phone: string
+    client: {
+        name: string
+        slug: string
+    }
+}
 
 export async function getDataConversationAction(conversationId: string): Promise<DataConversation | null>{
     const conversation= await getConversation(conversationId)

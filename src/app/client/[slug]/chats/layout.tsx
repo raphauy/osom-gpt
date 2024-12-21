@@ -1,5 +1,8 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { ConversationsTable, ConversationsTableSkeleton } from "./conversations-table";
+import { Loader } from "lucide-react";
 
 interface Props {
   children: React.ReactNode
@@ -22,7 +25,16 @@ export default async function ChatLayout({ children, params }: Props) {
   return (
     <>
       <div className="flex flex-grow w-full">
-        <div className="flex flex-col items-center flex-grow p-1">{children}</div>
+        <div className="flex flex-grow p-1 w-full">
+          <div className="w-[350px] flex-shrink-0">
+            <Suspense fallback={<ConversationsTableSkeleton />}>
+              <ConversationsTable slug={params.slug} />
+            </Suspense>
+          </div>
+          <div className="flex flex-grow w-full">
+            {children}
+          </div>
+        </div>
       </div>
     </>
   )

@@ -53,6 +53,36 @@ export async function getConversationsOfClient(clientId: string) {
   return found;
 }
 
+// if clientId = "ALL" then return all conversations
+export async function getConversationsShortOfClient(clientId: string) {
+  const where= clientId === "ALL" ? {} : {
+    clientId
+  }
+
+  const found = await prisma.conversation.findMany({
+    where,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    select: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      phone: true,
+      client: {
+        select: {
+          name: true,
+          slug: true
+        }
+      }
+    },
+    take: 500
+  })
+
+  return found
+}
+
+
 
 // an active conversation is one that has a message in the last x minutes
 export async function getActiveConversation(phone: string, clientId: string) {

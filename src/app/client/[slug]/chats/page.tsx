@@ -27,8 +27,6 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   const [showSystem, setShowSystem] = useState(false)
 
   const [conversation, setConversation] = useState<DataConversation>()
-  const [client, setClient] = useState<DataClient>()
-  const [dataConversations, setDataConversations] = useState<DataConversation[]>([])
 
   useEffect(() => {
     setLoadingChat(true)
@@ -56,56 +54,14 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   }, [id, slug])
   
 
-  useEffect(() => {   
-    setLoadingConversations(true)
-
-    getDataClientBySlug(slug)
-    .then(client => {
-      if (client) {
-        setClient(client)
-        getDataConversations(client.id)
-        .then(data => {
-          if (data) setDataConversations(data)
-          if (data.length === 0) {
-            toast({ title: "No hay conversaciones aún" })
-          }
-        })
-        .catch(error => console.log(error))
-        .finally(() => setLoadingConversations(false))
-      }
-    })
-    .catch(error => console.log(error))
-    .finally(() => setLoadingConversations(false))
-    
-
-  }, [slug])
-  
-
-
   if (!conversation) return <div></div>
 
   const user= session.data?.user
 
   const isAdmin= user?.role === "admin"
 
-  if (!client) 
-    return <Loader className="w-6 h-6 mx-auto animate-spin" />
-
   return (
     <div className="flex flex-grow w-full">
-
-      <div className="w-72">
-
-        {
-          loadingConversations ? 
-            <Loader className="w-6 h-6 mx-auto animate-spin" /> :
-            <div className="p-3 py-4 mx-auto text-muted-foreground dark:text-white">
-                <DataTable columns={columns} data={dataConversations} />
-            </div> 
-        }
-          
-
-      </div>
 
       <div className="flex flex-col items-center flex-grow p-1">
         {
