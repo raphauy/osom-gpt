@@ -1,8 +1,8 @@
 import { getCurrentUser } from "@/lib/auth";
+import { getClientBySlug } from "@/services/clientService";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ConversationsTable, ConversationsTableSkeleton } from "./conversations-table";
-import { Loader } from "lucide-react";
 
 interface Props {
   children: React.ReactNode
@@ -13,14 +13,14 @@ interface Props {
 
 export default async function ChatLayout({ children, params }: Props) {
 
-  let client= null
-  if (!params.slug) return <div>Cliente no encontrado</div>
-  
   const currentUser = await getCurrentUser()
 
   if (currentUser?.role !== "admin" && currentUser?.role !== "osom" && currentUser?.role !== "cliente") {
     return redirect("/unauthorized?message=You are not authorized to access this page")
   }
+
+  const client= await getClientBySlug(params.slug)
+  if (!client) return <div>Cliente no encontrado</div>
 
   return (
     <>
@@ -30,6 +30,7 @@ export default async function ChatLayout({ children, params }: Props) {
             <Suspense fallback={<ConversationsTableSkeleton />}>
               <ConversationsTable slug={params.slug} />
             </Suspense>
+            {/* <ConversationsTable data={data} /> */}
           </div>
           <div className="flex flex-grow w-full">
             {children}

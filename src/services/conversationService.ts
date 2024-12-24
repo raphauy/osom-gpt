@@ -72,7 +72,8 @@ export async function getConversationsShortOfClient(clientId: string) {
       client: {
         select: {
           name: true,
-          slug: true
+          slug: true,
+          timezone: true
         }
       }
     },

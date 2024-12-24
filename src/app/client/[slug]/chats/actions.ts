@@ -42,6 +42,7 @@ export type DataConversationShort = {
     client: {
         name: string
         slug: string
+        timezone: string
     }
 }
 

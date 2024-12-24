@@ -1,8 +1,7 @@
-import { Loader } from "lucide-react"
-import { DataTable } from "./data-table"
-import { getConversationsShortOfClient } from "@/services/conversationService"
 import { getClientBySlug } from "@/services/clientService"
+import { getConversationsShortOfClient } from "@/services/conversationService"
 import { columns } from "./columns-short"
+import { DataTable } from "./data-table"
 
 export async function ConversationsTable({ slug }: { slug: string }) {
     const client = await getClientBySlug(slug)

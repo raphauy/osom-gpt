@@ -172,7 +172,7 @@ export default function Chat() {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date(), clientId) + ")"}</p>
+            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormat(messages[messages.length -1].createdAt || new Date(), "America/Montevideo") + ")"}</p>
         }
         {
           totalPromptTokens > 0 && (

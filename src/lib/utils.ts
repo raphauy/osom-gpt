@@ -40,24 +40,44 @@ export function removeSectionTexts(inputText: string): string {
 }
   
 
-export async function getFormat(date: Date, clientId?: string): Promise<string> {
-  const timeZone = clientId ? await getTimezone(clientId) || "America/Montevideo" : "America/Montevideo";
+export function getFormat(date: Date, timezone?: string): string {
+  
+  const tz= timezone || "America/Montevideo"
   
   // Convert the date to the desired time zone
-  const zonedDate = toZonedTime(date, timeZone);
+  const zonedDate = toZonedTime(date, tz);
   
-  const today = toZonedTime(new Date(), timeZone);
+  const today = toZonedTime(new Date(), tz);
 
   if (
     zonedDate.getDate() === today.getDate() &&
     zonedDate.getMonth() === today.getMonth() &&
     zonedDate.getFullYear() === today.getFullYear()
   ) {
-    return formatTZ(zonedDate, "HH:mm", { timeZone, locale: es });
+    return formatTZ(zonedDate, "HH:mm", { timeZone: tz, locale: es });
   } else {
-    return formatTZ(zonedDate, "yyyy/MM/dd", { timeZone, locale: es });
+    return formatTZ(zonedDate, "yyyy/MM/dd", { timeZone: tz, locale: es });
   }
 }
+
+// export async function getFormat(date: Date, clientId?: string): Promise<string> {
+//   const timeZone = clientId ? await getTimezone(clientId) || "America/Montevideo" : "America/Montevideo";
+  
+//   // Convert the date to the desired time zone
+//   const zonedDate = toZonedTime(date, timeZone);
+  
+//   const today = toZonedTime(new Date(), timeZone);
+
+//   if (
+//     zonedDate.getDate() === today.getDate() &&
+//     zonedDate.getMonth() === today.getMonth() &&
+//     zonedDate.getFullYear() === today.getFullYear()
+//   ) {
+//     return formatTZ(zonedDate, "HH:mm", { timeZone, locale: es });
+//   } else {
+//     return formatTZ(zonedDate, "yyyy/MM/dd", { timeZone, locale: es });
+//   }
+// }
 
 export function getFormatInTimezone(date: Date, timeZone: string) {
   

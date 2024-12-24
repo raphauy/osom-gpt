@@ -1,14 +1,10 @@
 "use client"
 
-import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/actions"
 import { Loader } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
-import { DataConversation, getDataConversationAction, getDataConversations, getLastDataConversationAction } from "./actions"
-import { columns } from "./columns"
+import { DataConversation, getDataConversationAction, getLastDataConversationAction } from "./actions"
 import ConversationBox from "./conversation-box"
-import { DataTable } from "./data-table"
-import { toast } from "@/components/ui/use-toast"
 
 interface Props {
   params: {
@@ -22,7 +18,6 @@ interface Props {
 export default function ChatPage({ searchParams: { id }, params: { slug } }: Props) {
   const session= useSession()
 
-  const [loadingConversations, setLoadingConversations] = useState(false)
   const [loadingChat, setLoadingChat] = useState(false)
   const [showSystem, setShowSystem] = useState(false)
 

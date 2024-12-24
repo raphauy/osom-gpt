@@ -1,13 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ColumnDef } from "@tanstack/react-table"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { ArrowUpDown } from "lucide-react"
-import { DataConversationShort } from "./actions"
-import Link from "next/link"
 import { getFormat } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
+import Link from "next/link"
+import { DataConversationShort } from "./actions"
 
 export const columns: ColumnDef<DataConversationShort>[] = [
   {
@@ -23,9 +21,10 @@ export const columns: ColumnDef<DataConversationShort>[] = [
     },
     cell: ({ row }) => {
       const data= row.original
+      const timeZone= data.client.timezone
       return (
         <div className="flex items-center justify-start flex-1">
-          {getFormat(data.createdAt)}
+          {getFormat(data.createdAt, timeZone)}
         </div>
       )
     }
