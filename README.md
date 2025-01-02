@@ -2,3 +2,4 @@
 ## OsomGPT
 
 # OsomGPT project
+.
