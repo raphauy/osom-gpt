@@ -326,6 +326,7 @@ enum FieldType {
   string
   number
   boolean
+  array
 }
 
 model Field {
@@ -334,6 +335,7 @@ model Field {
   type                FieldType                          // gennext: show.column
   description         String                             // gennext: show.column
   required            Boolean                            // gennext: show.column
+  items               String?                            // gennext: show.column
   order               Int       @default(0)
 
   repository          Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)

@@ -373,6 +373,7 @@ export async function updateFunctionDefinition(id: string) {
   const properties= fields.map((field) => ({
     name: field.name,
     type: field.type,
+    items: field.type === "array" ? JSON.parse(field.items ?? "{}") : undefined,
     description: field.description,
   }))
   const required= fields.filter((field) => field.required).map((field) => field.name)
@@ -405,7 +406,8 @@ export async function updateFunctionDefinition(id: string) {
 
 export type Property= {
   name: string
-  type: "string" | "number" | "boolean"
+  type: "string" | "number" | "boolean" | "array"
+  items?: JSON
   description: string
 }
 
@@ -440,9 +442,10 @@ export function generateFunctionDefinition(name: string, description: string, pa
 
   const jsonParameters = {
     type: "object",
-    properties: properties.reduce((acc: { [key: string]: { type: string; description: string } }, property) => {
+    properties: properties.reduce((acc: { [key: string]: { type: string; items: JSON | undefined; description: string } }, property) => {
       acc[property.name] = {
         type: property.type,
+        items: property.type === "array" ? property.items : undefined,
         description: property.description,
       };
       return acc;

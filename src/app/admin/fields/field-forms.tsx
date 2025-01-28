@@ -15,6 +15,24 @@ import { FieldType } from "@prisma/client"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 
+const itemsExample= `Ejemplos:
+{
+  "type": "string",
+  "enum": ["examenA", "examenB", "examenC"]
+}
+---------------------
+{
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string"
+    },
+    "edad": {
+      "type": "number"
+    }
+  }
+}`
+
 type Props= {
   id?: string
   repoId: string
@@ -29,6 +47,7 @@ export function FieldForm({ id, repoId, closeDialog }: Props) {
       type: "string",
       description: "",
       required: true,
+      items: "",
       repositoryId: repoId,
     },
     mode: "onChange",
@@ -52,7 +71,10 @@ export function FieldForm({ id, repoId, closeDialog }: Props) {
     if (id) {
       getFieldDAOAction(id).then((data) => {
         if (data) {
-          form.reset(data)
+          form.reset({
+            ...data,
+            items: data.items || ""
+          })
         }
         Object.keys(form.getValues()).forEach((key: any) => {
           if (form.getValues(key) === null) {
@@ -109,7 +131,22 @@ export function FieldForm({ id, repoId, closeDialog }: Props) {
               </FormItem>
             )}
           />
-          
+
+          {form.getValues("type") === "array" && (
+            <FormField
+              control={form.control}
+              name="items"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Items:</FormLabel>
+                  <FormControl>
+                    <Textarea rows={17} placeholder={itemsExample} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
       
           <FormField
             control={form.control}

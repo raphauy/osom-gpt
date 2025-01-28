@@ -1,12 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { ArrowLeftRight, ChevronsLeft, ChevronsRight, Loader, Pencil, PlusCircle, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { toast } from "@/components/ui/use-toast";
-import { FieldForm, DeleteFieldForm } from "./field-forms"
-import { getFieldDAOAction } from "./field-actions"
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { DeleteFieldForm, FieldForm } from "./field-forms";
 
 type Props= {
   id?: string
@@ -29,7 +28,9 @@ export function FieldDialog({ id, repoId }: Props) {
           <DialogTitle>{id ? 'Actualizar' : 'Crear'} campo
           </DialogTitle>
         </DialogHeader>
-        <FieldForm closeDialog={() => setOpen(false)} id={id} repoId={repoId} />
+        <ScrollArea className="max-h-[80vh]">
+          <FieldForm closeDialog={() => setOpen(false)} id={id} repoId={repoId} />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

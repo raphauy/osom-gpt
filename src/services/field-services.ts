@@ -9,19 +9,96 @@ export type FieldDAO = {
 	type: FieldType
 	description: string
 	required: boolean
+  items: string | null | undefined
   order: number
 	repositoryId: string
 	createdAt: Date
 	updatedAt: Date
 }
 
+// const itemsSchema= {
+//   "type": "object",
+//   "properties": {
+//     "type": {
+//       "type": "string",
+//       "enum": ["string", "number", "boolean", "object", "array"]
+//     },
+//     "properties": {
+//       "type": "object",
+//       "patternProperties": {
+//         "^[a-zA-Z0-9_]+$": {
+//           "$ref": "#/definitions/schema"
+//         }
+//       },
+//       "additionalProperties": false
+//     },
+//     "items": {
+//       "$ref": "#/definitions/schema"
+//     }
+//   },
+//   "required": ["type"],
+//   "definitions": {
+//     "schema": {
+//       "type": "object",
+//       "properties": {
+//         "type": {
+//           "type": "string",
+//           "enum": ["string", "number", "boolean", "object", "array"]
+//         },
+//         "properties": {
+//           "type": "object",
+//           "patternProperties": {
+//             "^[a-zA-Z0-9_]+$": {
+//               "$ref": "#/definitions/schema"
+//             }
+//           },
+//           "additionalProperties": false
+//         },
+//         "items": {
+//           "$ref": "#/definitions/schema"
+//         }
+//       },
+//       "required": ["type"]
+//     }
+//   }
+// }
+
+
+// Definición recursiva para manejar esquemas anidados
+const itemsSchema: z.ZodSchema = z.lazy(() =>
+  z.object({
+    type: z.enum(["string", "number", "boolean", "object", "array"]),
+    properties: z
+      .record(z.string(), itemsSchema)
+      .optional()
+      .refine((val) => (val ? Object.keys(val).length > 0 : true), {
+        message: "Si 'properties' está presente, debe tener al menos una propiedad.",
+      }),
+    items: z.lazy(() => itemsSchema).optional(),
+  })
+);
+
 export const fieldSchema = z.object({
-	name: z.string().min(1, "name is required."),
+	name: z.string().min(1, "nombre es obligatorio."),
 	type: z.nativeEnum(FieldType),
-	description: z.string().min(1, "description is required."),
+	description: z.string().min(1, "descripción es obligatoria."),
 	required: z.boolean().default(false),
-	repositoryId: z.string().min(1, "repositoryId is required."),
-})
+	repositoryId: z.string().min(1, "repositoryId es obligatorio."),
+  items: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (val && val.trim() !== "") {
+        try {
+          itemsSchema.parse(JSON.parse(val));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      return true;
+    }, { message: "La definición de 'items' debe ser un JSON válido que cumpla con el esquema de OpenAI para items de un array." }),
+  });
 
 export type FieldFormValues = z.infer<typeof fieldSchema>
 
