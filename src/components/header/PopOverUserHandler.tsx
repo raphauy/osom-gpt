@@ -28,11 +28,7 @@ export default function PopOverUserHandler() {
             <User /> {user.email} 
           </li>
           <li className="flex items-center w-full mt-16 border-t">
-            {/* <div onClick={onLogout} 
-              className="flex items-center flex-grow px-1 py-3 mt-2 rounded-md cursor-pointer hover:border hover:border-gray-500 hover:bg-gray-200">
-              <LogOut className="mr-2" />Logout
-            </div> */}
-            <Button variant="ghost" className="w-full flex justify-start mt-2 hover:border px-2">
+            <Button variant="ghost" className="w-full flex justify-start mt-2 hover:border px-2" onClick={onLogout}>
               <LogOut className="mr-2" />Logout
             </Button>
           </li>
