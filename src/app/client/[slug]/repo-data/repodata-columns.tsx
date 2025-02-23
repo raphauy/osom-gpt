@@ -85,7 +85,7 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
   },
 
   {
-    accessorKey: "UpdatedAt",
+    accessorKey: "createdAt",
     header: ({ column }) => {
         return (
           <Button variant="ghost" className="pl-0 dark:text-white"
@@ -96,7 +96,7 @@ export const columns: ColumnDef<RepoDataDAO>[] = [
     )},
 		cell: ({ row }) => {
       const data= row.original
-      return (<p>{format(data.updatedAt, "yyyy-MM-dd HH:mm", { locale: es})}</p>)
+      return (<p>{format(data.createdAt, "yyyy-MM-dd HH:mm", { locale: es})}</p>)
     }
   },
 

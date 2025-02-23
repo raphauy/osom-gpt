@@ -36,17 +36,6 @@ export const duplicateRepositorySchema = z.object({
 
 export type DuplicateRepositoryFormValues = z.infer<typeof duplicateRepositorySchema>
 
-
-
-export async function getRepositorysDAO() {
-  const found = await prisma.repository.findMany({
-    orderBy: {
-      id: 'asc'
-    },
-  })
-  return found as RepositoryDAO[]
-}
-
 export async function getRepositoryDAO(id: string) {
   const found = await prisma.repository.findUnique({
     where: {
