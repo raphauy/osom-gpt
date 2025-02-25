@@ -28,6 +28,18 @@ interface FlattenedData {
     createdAt: string;
 }
 
+function sanitizeSheetName(name: string): string {
+    // Remover caracteres inválidos para nombres de hojas en Excel
+    let safeName = name.replace(/[\\/?*[\]]/g, '')
+    
+    // Truncar a 31 caracteres máximo
+    if (safeName.length > 31) {
+        safeName = safeName.substring(0, 28) + '...'
+    }
+    
+    return safeName
+}
+
 export async function exportRepoData(slug: string, repoName: string, startStr?: string, endStr?: string) {
     const data = await getFullRepoDatasDAO(slug, startStr, endStr, repoName)
     
@@ -110,8 +122,9 @@ export async function exportRepoData(slug: string, repoName: string, startStr?: 
     })
     ws['!rows'] = rowHeights
 
-    // Agregar la hoja al libro
-    XLSX.utils.book_append_sheet(wb, ws, repoName)
+    // Agregar la hoja al libro con nombre sanitizado
+    const sheetName = sanitizeSheetName(repoName)
+    XLSX.utils.book_append_sheet(wb, ws, sheetName)
 
     // Generar el archivo Excel
     const excelBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
