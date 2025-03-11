@@ -6,12 +6,7 @@ import { es } from 'date-fns/locale'
 import { MoreVertical, Trash, ArrowUpCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { PromptVersionDAO } from '@/services/prompt-version-services'
 import { toZonedTime } from 'date-fns-tz'
 

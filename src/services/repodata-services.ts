@@ -132,6 +132,7 @@ export async function getFullRepoDatasDAO(slug: string, startStr?: string, endSt
     },
     select: {
       id: true,
+      conversationId: true,
       repoName: true,
       phone: true,
       functionName: true,

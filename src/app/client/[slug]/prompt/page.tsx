@@ -1,8 +1,6 @@
 import { getClientBySlug } from "@/services/clientService"
-import { PromptForm } from "@/app/admin/prompts/prompt-form"
-import { updatePromptAndCreateVersionAction } from "@/app/admin/clients/(crud)/actions"
-import PromptVersionManager from "./prompt-version-manager"
 import { getPromptVersionsDAO } from "@/services/prompt-version-services"
+import PromptVersionManager from "./prompt-version-manager"
 
 type Props= {
     params: {
