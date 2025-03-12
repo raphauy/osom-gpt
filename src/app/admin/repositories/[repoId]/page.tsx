@@ -15,6 +15,7 @@ import { ClientSelector, SelectorData } from "./client-selector"
 import getClients, { getComplementaryClients } from "@/services/clientService"
 import { Button } from "@/components/ui/button"
 import RemoveClientButton from "./remove-client-button"
+import { FunctionDescriptionForm } from "./function-description-form"
 
 type Props = {
   params: {
@@ -67,12 +68,9 @@ export default async function RepositoryPage({ params }: Props) {
                         id={repository.id}
                         update={setFunctionNameAction}
                     />
-                    <DescriptionForm
-                        label="Descripción de la function"
-                        initialValue={repository.functionDescription}
-                        id={repository.id}
-                        update={setFunctionDescriptionAction}
-                    />
+                    
+                    <FunctionDescriptionForm repository={repository} />
+
                     <DescriptionForm
                         label="Mensaje final para el usuario"
                         initialValue={repository.finalMessage || ""}
