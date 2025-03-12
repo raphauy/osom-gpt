@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "@/components/ui/use-toast"
 import { RepositoryDAO } from "@/services/repository-services"
 import { AlertCircle, Loader, Pencil } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { setFunctionDescriptionAction } from "../repository-actions"
 import { cn } from "@/lib/utils"
 
@@ -21,6 +21,10 @@ export function FunctionDescriptionForm({ repository }: Props) {
 
   const [loading, setLoading] = useState(false)
   const [description, setDescription] = useState(repository.functionDescription)
+
+  useEffect(() => {
+    setDescription(repository.functionDescription)
+  }, [repository.functionDescription])
 
   const isOverLimit = description.length > MAX_CHARS
 
