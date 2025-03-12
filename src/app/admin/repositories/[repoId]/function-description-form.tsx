@@ -20,11 +20,13 @@ export function FunctionDescriptionForm({ repository }: Props) {
   const toggleEdit = () => setIsEditing(!isEditing)
 
   const [loading, setLoading] = useState(false)
+  const [repoId, setRepoId] = useState(repository.id)
   const [description, setDescription] = useState(repository.functionDescription)
 
   useEffect(() => {
     setDescription(repository.functionDescription)
-  }, [repository.functionDescription])
+    setRepoId(repository.id)
+  }, [repository.functionDescription, repository.id])
 
   const isOverLimit = description.length > MAX_CHARS
 
@@ -44,7 +46,7 @@ export function FunctionDescriptionForm({ repository }: Props) {
     }
 
     setLoading(true)
-    setFunctionDescriptionAction(repository.id, description)
+    setFunctionDescriptionAction(repoId, description)
     .then(() => {
       toggleEdit()
       toast({title: `Descripción editada` })
