@@ -194,3 +194,5 @@ export async function refreshMaterializedViews() {
         throw new Error('Failed to refresh materialized views');
     }
 }
+
+refreshMaterializedViews()
