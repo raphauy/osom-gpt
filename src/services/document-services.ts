@@ -168,6 +168,8 @@ export async function createDocument(data: DocumentFormValues) {
 }
 
 export async function updateDocument(id: string, data: DocumentFormValues) {
+  // calculate the time of the update and log it
+  const startTime = Date.now()
   const updated = await prisma.document.update({
     where: {
       id
@@ -182,6 +184,17 @@ export async function updateDocument(id: string, data: DocumentFormValues) {
   } else {
     console.log("not automaticDescription, not generating description")
   }
+
+  if (updated.textContent){
+    const sections= await processSections(updated.textContent, updated.id)
+    console.log("sections", sections)
+  }
+
+  const endTime = Date.now()
+  const duration = endTime - startTime
+  console.log(`Time taken to update the document: ${duration} milliseconds`)
+
+  console.log("document updated", updated.name)
 
   return updated
 }

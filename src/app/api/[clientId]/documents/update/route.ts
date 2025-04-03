@@ -44,48 +44,39 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             clientId
         }
 
-        const updated= await updateDocument(id, formValues)
-        if (!updated) return NextResponse.json({ error: "error updating document" }, { status: 400 })
+        updateDocument(id, formValues)
+        console.log("updating in background...")
+        return NextResponse.json( { "id": id }, { status: 200 })
 
-        const client= await getClient(clientId)
-        const sectioinsCount= await getSectionCountOfDocument(updated.id)
 
-        const documentResponse: DocumentResponse= {
-            id: updated.id,
-            name: updated.name,
-            description: updated.description || "",
-            content: updated.textContent || "",
-            type: updated.type,
-            wordsCount: updated.wordsCount || 0,
-            url: updated.url || "",
-            createdAt: updated.createdAt.toISOString(),
-            clientId: updated.clientId,
-            clientName: client?.name || "",
-            sectioinsCount
-        }
+        // const updated= await updateDocument(id, formValues)
+        // if (!updated) return NextResponse.json({ error: "error updating document" }, { status: 400 })
 
-        revalidatePath("/client/[slug]", 'page') 
+        // const client= await getClient(clientId)
+        // const sectioinsCount= await getSectionCountOfDocument(updated.id)
+
+        // const documentResponse: DocumentResponse= {
+        //     id: updated.id,
+        //     name: updated.name,
+        //     description: updated.description || "",
+        //     content: updated.textContent || "",
+        //     type: updated.type,
+        //     wordsCount: updated.wordsCount || 0,
+        //     url: updated.url || "",
+        //     createdAt: updated.createdAt.toISOString(),
+        //     clientId: updated.clientId,
+        //     clientName: client?.name || "",
+        //     sectioinsCount
+        // }
+
+        // revalidatePath("/client/[slug]", 'page') 
         
-        return NextResponse.json( { "data": documentResponse }, { status: 200 })
+        // return NextResponse.json( { "data": documentResponse }, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({ error: "error: " + error}, { status: 502 })        
     }
    
-}
-
-
-type SummitEntryResponse = {
-    data:{
-        phone: string,
-        nombreReserva: string | null,
-        nombreCumpleanero: string | null,
-        cantidadInvitados: number | null,
-        fechaReserva: string | null,
-        email: string | null,
-        resumenConversacion: string | null,
-        fecha: string,
-    }
 }
 
 function getJsonContent(content: string) {

@@ -1,8 +1,8 @@
-import { DocumentFormValues, createDocument, getDocumentsDAOByClient } from "@/services/document-services";
+import { getClient } from "@/services/clientService";
+import { DocumentFormValues, createDocument, updateDocument } from "@/services/document-services";
+import { getSectionCountOfDocument } from "@/services/section-services";
 import { NextResponse } from "next/server";
 import { DocumentResponse } from "../route";
-import { getClient } from "@/services/clientService";
-import { getSectionCountOfDocument, getSectionOfDocument } from "@/services/section-services";
 
 
 export async function POST(request: Request, { params }: { params: { clientId: string } }) {
@@ -26,26 +26,30 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         const description= json.description
         const content= json.content
 
-        const wordsCount= content.split(" ").length
-        const textContent= content
-        const jsonContent= getJsonContent(content)
-        const formValues: DocumentFormValues= {
+        // Crear documento con contenido temporal primero
+        const tempContent = "contenido temporal"
+        const tempWordsCount = tempContent.split(" ").length
+        const tempJsonContent = getJsonContent(tempContent)
+        
+        const tempFormValues: DocumentFormValues = {
             name,
             description,
             automaticDescription: false,
-            jsonContent: JSON.stringify(jsonContent),
-            textContent,
-            wordsCount, 
+            jsonContent: JSON.stringify(tempJsonContent),
+            textContent: tempContent,
+            wordsCount: tempWordsCount, 
             clientId
         }
 
-        const document= await createDocument(formValues)
+        // Crear el documento con contenido temporal
+        const document = await createDocument(tempFormValues)
         if (!document) return NextResponse.json({ error: "error creating document" }, { status: 400 })
 
-        const client= await getClient(clientId)
-        const sectioinsCount= await getSectionCountOfDocument(document.id)
+        // Preparar respuesta inmediata
+        const client = await getClient(clientId)
+        const sectioinsCount = await getSectionCountOfDocument(document.id)
 
-        const documentResponse: DocumentResponse= {
+        const documentResponse: DocumentResponse = {
             id: document.id,
             name: document.name,
             description: document.description || "",
@@ -59,7 +63,25 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             sectioinsCount
         }
         
-        return NextResponse.json( { "data": documentResponse }, { status: 200 })
+        // Actualizar documento con contenido real en segundo plano (sin await)
+        const wordsCount = content.split(" ").length
+        const jsonContent = getJsonContent(content)
+        const realFormValues: DocumentFormValues = {
+            name,
+            description,
+            automaticDescription: false,
+            jsonContent: JSON.stringify(jsonContent),
+            textContent: content,
+            wordsCount, 
+            clientId
+        }
+        
+        // Actualizar sin await para que se procese en background
+        updateDocument(document.id, realFormValues)
+        console.log("Actualizando documento con contenido real en segundo plano...")
+        
+        // Devolver respuesta rápida con el documento creado
+        return NextResponse.json({ "data": documentResponse }, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({ error: "error: " + error}, { status: 502 })        
@@ -67,19 +89,6 @@ export async function POST(request: Request, { params }: { params: { clientId: s
    
 }
 
-
-type SummitEntryResponse = {
-    data:{
-        phone: string,
-        nombreReserva: string | null,
-        nombreCumpleanero: string | null,
-        cantidadInvitados: number | null,
-        fechaReserva: string | null,
-        email: string | null,
-        resumenConversacion: string | null,
-        fecha: string,
-    }
-}
 
 function getJsonContent(content: string) {
     const json= {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":content}]}]}
