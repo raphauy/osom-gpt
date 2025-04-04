@@ -38,10 +38,8 @@ export default async function Page({ params }: Props) {
     const descriptionTemplate= await getValue("DOCUMENT_DESCRIPTION_PROMPT")
 
     const currentUser= await getCurrentUser()
-//    const isAllowed= currentUser?.email === "rapha.uy@rapha.uy" || currentUser?.email === "martiniano@osomdigital.com" || currentUser?.email === "gilberto@osomdigital.com"
-//    const isAdmin= currentUser?.role === "admin"
-    const isAllowed= true
-    const isAdmin= true
+    //const isAllowed= currentUser?.email === "rapha.uy@rapha.uy" || currentUser?.email === "martiniano@osomdigital.com" || currentUser?.email === "gilberto@osomdigital.com"
+    const isAdmin= currentUser?.role === "admin"
 
     return (
         <div className="flex flex-col w-full p-1 md:p-4 xl:p-8">
@@ -58,7 +56,7 @@ export default async function Page({ params }: Props) {
                 <p className="whitespace-pre-wrap border rounded-md p-4">{document.description}</p>
                 <GenerateDescriptionButton id={document.id} />
 
-                <div className={cn(!isAllowed && "hidden")}>
+                <div className={cn(!isAdmin && "hidden")}>
                 {
                     descriptionTemplate ?
                     <DescriptionForm 
