@@ -51,7 +51,7 @@ export default async function Page({ params }: Props) {
 
             <NovelOnClient document={document} initialContent={content} basePath={BASE_PATH || "http://localhost:3000"} />
 
-            <div className={cn("gap-4 mt-10 space-y-5 mb-40", !isAdmin && "hidden")}>
+            <div className={cn("gap-4 mt-10 space-y-5 mb-40")}>
                 <p className="text-2xl font-bold">Descripción ({label})</p>
                 <p className="whitespace-pre-wrap border rounded-md p-4">{document.description}</p>
                 <GenerateDescriptionButton id={document.id} />
