@@ -17,6 +17,7 @@ import { CustomInfo, getCustomInfoAction } from "@/app/admin/chat/actions"
 import { useParams } from "next/navigation"
 import { setLLMOffAction } from "../simulator/actions"
 import { toast } from "@/components/ui/use-toast"
+import { sanitizeMarkdown } from "@/lib/utils"
 
 interface Props {
   conversation: DataConversation
@@ -175,7 +176,7 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
                             ),
                           }}
                         >
-                          {message.content}
+                          {sanitizeMarkdown(message.content)}
                         </ReactMarkdown>
                       }
                     </div>

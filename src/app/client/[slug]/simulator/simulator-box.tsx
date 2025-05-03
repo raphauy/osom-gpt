@@ -24,6 +24,7 @@ import Textarea from "react-textarea-autosize";
 import remarkGfm from "remark-gfm";
 import GPTData from "../chats/gpt-data";
 import { setLLMOffAction } from "./actions";
+import { sanitizeMarkdown } from "@/lib/utils";
 
 export default function SimulatorBox() {
   const params= useParams()
@@ -281,7 +282,7 @@ export default function SimulatorBox() {
                         ),
                       }}
                     >
-                      {message.content}
+                      {sanitizeMarkdown(message.content)}
                     </ReactMarkdown>            
                   }
 

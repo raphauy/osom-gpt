@@ -270,3 +270,15 @@ export function getMonthNamePlusOne(month: string) {
       return "mes"
   }
 }
+
+// Función para sanitizar contenido Markdown quitando tablas
+export function sanitizeMarkdown(content: string) {
+  try {
+    // Detectar patrones de tablas Markdown
+    const tableRegex = /(\|[^\n]*\|\n)(\|[-\s|]*\|\n)(\|[^\n]*\|)*/g;
+    return content.replace(tableRegex, "[Tabla no disponible en este formato]\n\n");
+  } catch (e) {
+    console.error("Error sanitizando markdown:", e);
+    return content;
+  }
+}

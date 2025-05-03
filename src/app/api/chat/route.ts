@@ -71,11 +71,16 @@ export async function POST(req: Request) {
     apiKey: provider.apiKey,
     baseURL: provider.baseUrl
   })
+
+  let temperature= undefined
+  if (model.name !== "gpt-4o-search-preview" && model.name !== "gpt-4o-mini-search-preview") {
+    temperature= 0
+  }
   
   // Inicializa el objeto de argumentos con propiedades comunes
   let baseArgs = {
     model: model.name,
-    temperature: 0,
+    temperature,
     stream: true,
   };
   let promptTokens= 0
@@ -87,8 +92,15 @@ export async function POST(req: Request) {
   // Si el array de functions tiene al menos un elemento, añade el parámetro functions
   const args = functions.length > 0 ? { ...baseArgs, functions: functions, function_call: "auto" } : baseArgs;
 
-  // Ahora args contiene el parámetro functions solo si el array no estaba vacío
-  const initialResponse = await openai.chat.completions.create(args as any);
+  let initialResponse
+  try {
+    // Ahora args contiene el parámetro functions solo si el array no estaba vacío
+    initialResponse = await openai.chat.completions.create(args as any);
+  } catch (error) {
+    console.log("error: " + error)
+    const errorMessage= error instanceof Error ? error.message : "Error al crear la respuesta"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
 
   // @ts-ignore
   const stream = OpenAIStream(initialResponse, {
