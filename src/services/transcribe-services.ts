@@ -100,7 +100,7 @@ export async function transcribeAudio(audioUrl: string): Promise<{ text: string;
 
     // Realizar la transcripción
     const transcription = await client.audio.transcriptions.create({
-        model: "gpt-4o-transcribe",
+        model: "whisper-1",
         file: file,
         language: "es"
     });
