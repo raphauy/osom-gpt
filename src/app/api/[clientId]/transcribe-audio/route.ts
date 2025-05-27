@@ -1,4 +1,5 @@
 import { attachRestart, getLastConversationByPhone } from "@/services/conversationService";
+import { transcribeAudio } from "@/services/transcribe-services";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 299
@@ -16,26 +17,25 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         if (!clientId) return NextResponse.json({ error: "clientId is required" }, { status: 400 })
 
         const json= await request.json()
-        const message= json.message
+        const audioUrl= json.audioUrl
         console.log("json: ", json)
-        console.log("message: ", message)
+        console.log("audioUrl: ", audioUrl)
 
-        const phone = message.phone
-        if (!phone) {
-            return NextResponse.json({ error: "phone is required" }, { status: 400 })
+        if (!audioUrl) {
+            return NextResponse.json({ error: "audioUrl is required" }, { status: 400 })
         }
 
-        console.log("attach restart for phone: ", phone)
+        console.log("transcribe audio: ", audioUrl)
 
-        const conversation= await getLastConversationByPhone(phone, clientId)
-        if (!conversation) {
-            return NextResponse.json({ error: `conversation not found for phone ${phone}` }, { status: 404 })
+        const result = await transcribeAudio(audioUrl)
+        if (!result.text) {
+            return NextResponse.json({ error: `error transcribing audio` }, { status: 404 })
         }
 
-        // await attachRestart(conversation.id)
-        attachRestart(conversation.id)
-
-        return NextResponse.json({ data: "ACK" }, { status: 200 })
+        return NextResponse.json({ 
+            text: result.text,
+            durationInSeconds: result.durationInSeconds 
+        }, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({ error: "error: " + error}, { status: 502 })        

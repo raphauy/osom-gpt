@@ -15,6 +15,7 @@ import { setMessageArrivedDelayAction } from "./(crud)/actions"
 import PromptVersionManager from "@/app/client/[slug]/prompt/prompt-version-manager"
 import { getPromptVersionsDAO } from "@/services/prompt-version-services"
 import AttachHooks from "./attach-hooks"
+import SpecialHooks from "./special-hooks"
 
 type Props = {
     searchParams: {
@@ -69,6 +70,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                     <Hook basePath={BASE_PATH} />
                     <DocumentsHook basePath={BASE_PATH} />
                     <AttachHooks basePath={BASE_PATH} />
+                    <SpecialHooks basePath={BASE_PATH} />
                     <CopyHook name="Narvaez Entry" path={`${BASE_PATH}/api/${narvaezClient?.id}/narvaez`} clientId={narvaezClient?.id || ""} />
                     <CopyHook name="Summit Entry" path={`${BASE_PATH}/api/${summitClient?.id}/summit`} clientId={summitClient?.id || ""} />
                     { haveCarServiceFunction && 
