@@ -72,6 +72,7 @@ model Client {
   conversations         Conversation[]
   whatsappEndpoint      String?
   prompt                String?   @db.Text
+  imagePrompt           String?   @default("Describe esta imagen detalladamente en español")
   promptTokensPrice     Float      @default(0)
   completionTokensPrice Float  @default(0)
   messageArrivedDelay   Int       @default(8)
@@ -371,6 +372,7 @@ model PromptVersion {
   content             String
   timestamp           DateTime     @default(now())
   user                String
+  type                String       @default("text")  // "text" | "image"
 
   client              Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId            String

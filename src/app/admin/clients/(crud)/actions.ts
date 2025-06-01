@@ -1,6 +1,6 @@
 "use server"
 
-import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFunctionsOfClient, getLastClient, setFunctions, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
+import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, getComplementaryFunctionsOfClient, getFunctionsOfClient, getLastClient, setFunctions, setPrompt, setImagePrompt, setWhatsAppEndpoing } from "@/services/clientService";
 import { getUser } from "@/services/userService";
 import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -8,7 +8,8 @@ import { EndpointFormValues } from "../../config/(crud)/endpoint-form";
 import { PromptFormValues } from "../../prompts/prompt-form";
 import { ClientFormValues } from "./clientForm";
 import { getFullModelDAO } from "@/services/model-services";
-import { createPromptVersion, PromptVersionDAO, PromptVersionFormValues } from "@/services/prompt-version-services";
+import { createPromptVersion, PromptVersionDAO, PromptVersionFormValues, createImagePromptVersion, ImagePromptVersionFormValues } from "@/services/prompt-version-services";
+import { readImage } from "@/services/vision-services";
 
 export type DataClient = {
     id: string
@@ -22,6 +23,7 @@ export type DataClient = {
     salePercentage?: string
     whatsAppEndpoint: string | null
     prompt?: string | null
+    imagePrompt?: string | null
     promptTokensPrice?: number | null
     completionTokensPrice?: number | null
     promptCostTokenPrice: number
@@ -53,6 +55,7 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
+        imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice: promptCostTokenPrice,
@@ -89,6 +92,7 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
+        imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
@@ -122,6 +126,7 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
+        imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
@@ -154,6 +159,7 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
         prompt: client.prompt,
+        imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
         promptCostTokenPrice,
@@ -193,6 +199,7 @@ export async function getDataClients() {
                 salePercentage: "0",
                 whatsAppEndpoint: client.whatsappEndpoint,
                 prompt: client.prompt,
+                imagePrompt: client.imagePrompt,
                 promptTokensPrice: client.promptTokensPrice,
                 completionTokensPrice: client.completionTokensPrice,
                 promptCostTokenPrice,
@@ -262,6 +269,34 @@ export async function updatePromptAction(versionPrompt: PromptVersionFormValues)
     await setPrompt(versionPrompt.content, versionPrompt.clientId)
     revalidatePath(`/admin/config`)
     return true
+}
+
+export async function updateImagePromptAndCreateVersionAction(versionPrompt: ImagePromptVersionFormValues) {
+
+    await setImagePrompt(versionPrompt.content, versionPrompt.clientId)
+    const newVersion= await createImagePromptVersion(versionPrompt)
+    if (!newVersion) throw new Error("Error al crear la versión del image prompt")
+
+    revalidatePath(`/admin/config`)
+    revalidatePath(`/client/[slug]/prompt`, "page")
+    return newVersion
+}
+
+export async function updateImagePromptAction(versionPrompt: ImagePromptVersionFormValues) {
+    await setImagePrompt(versionPrompt.content, versionPrompt.clientId)
+    revalidatePath(`/admin/config`)
+    revalidatePath(`/client/[slug]/prompt`, "page")
+    return true
+}
+
+export async function testImagePromptAction(imageUrl: string, prompt: string) {
+    try {
+        const result = await readImage(imageUrl, prompt)
+        return { success: true, data: result }
+    } catch (error) {
+        console.error('Error testing image prompt:', error)
+        return { success: false, error: 'Error al procesar la imagen' }
+    }
 }
 
 export async function getFunctionsOfClientAction(clientId: string) {

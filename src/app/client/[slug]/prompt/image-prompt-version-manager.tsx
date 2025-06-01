@@ -8,26 +8,27 @@ import { useEffect, useMemo, useState } from 'react'
 import PromptVersionList from './prompt-version-list'
 import { ArrowUpCircle, Loader, Save } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { PromptVersionDAO, PromptVersionFormValues } from "@/services/prompt-version-services"
+import { ImagePromptVersionDAO, ImagePromptVersionFormValues } from "@/services/prompt-version-services"
 import { useSession } from "next-auth/react"
-import { updatePromptAction, updatePromptAndCreateVersionAction } from "@/app/admin/clients/(crud)/actions"
+import { updateImagePromptAction, updateImagePromptAndCreateVersionAction } from "@/app/admin/clients/(crud)/actions"
 import { toast } from "@/components/ui/use-toast"
 import { deletePromptVersionAction } from "@/app/admin/promptversions/promptversion-actions"
 import { cn } from "@/lib/utils"
 import { toZonedTime } from "date-fns-tz"
+import ImagePromptTester from "./image-prompt-tester"
 
 type Props = {
   clientId: string
   timezone: string
-  prompt: string
-  versions: PromptVersionDAO[]
+  imagePrompt: string
+  versions: ImagePromptVersionDAO[]
 }
     
-export default function PromptVersionManager({ clientId, timezone, prompt, versions }: Props) {
+export default function ImagePromptVersionManager({ clientId, timezone, imagePrompt, versions }: Props) {
     const [loadingGuardar, setLoadingGuardar] = useState(false)
     const [loadingAplicar, setLoadingAplicar] = useState(false)
-    const [currentPrompt, setCurrentPrompt] = useState("")
-    const [selectedVersion, setSelectedVersion] = useState<PromptVersionDAO | null>(null)
+    const [currentImagePrompt, setCurrentImagePrompt] = useState("")
+    const [selectedVersion, setSelectedVersion] = useState<ImagePromptVersionDAO | null>(null)
 
     const [charCountSaved, setCharCountSaved] = useState(0)
     const [charCount, setCharCount] = useState(0)
@@ -36,29 +37,29 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
     const currentUser = session?.data?.user?.name || session?.data?.user?.email
 
     useEffect(() => {        
-        const count= prompt.length
+        const count= imagePrompt.length
         setCharCount(count)
         setCharCountSaved(count)
-        setCurrentPrompt(prompt)
-    }, [prompt])
+        setCurrentImagePrompt(imagePrompt)
+    }, [imagePrompt])
 
     const saveVersion = () => {
         setLoadingGuardar(true)
-        const newVersion: PromptVersionFormValues = {
-        content: currentPrompt,
+        const newVersion: ImagePromptVersionFormValues = {
+        content: currentImagePrompt,
         user: currentUser as string,
         clientId: clientId,
-        type: "text"
+        type: "image"
         }
         
-        updatePromptAndCreateVersionAction(newVersion)
+        updateImagePromptAndCreateVersionAction(newVersion)
         .then(() => {
-            toast({ title: "Versión guardada" })
+            toast({ title: "Versión de image prompt guardada" })
             setCharCountSaved(charCount)
             setSelectedVersion(null)
         })
         .catch(() => {
-            toast({ title: "Error", description: "Error al guardar la versión del prompt" })
+            toast({ title: "Error", description: "Error al guardar la versión del image prompt" })
         })
         .finally(() => {
             setLoadingGuardar(false)
@@ -79,25 +80,31 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
         })
     }
 
-    const handleUseVersion = (version: PromptVersionDAO) => {
-        setCurrentPrompt(version.content)
+    const handleUseVersion = (version: ImagePromptVersionDAO) => {
+        setCurrentImagePrompt(version.content)
         setLoadingAplicar(true)
-        updatePromptAction(version)
+        const versionData: ImagePromptVersionFormValues = {
+            content: version.content,
+            user: version.user,
+            clientId: version.clientId,
+            type: "image"
+        }
+        updateImagePromptAction(versionData)
         .then(() => {
-            toast({title: "Prompt actualizado"})
+            toast({title: "Image prompt actualizado"})
             const count= version.content.length
             setCharCount(count)
             setCharCountSaved(count)
         })
         .catch(() => {
-            toast({title: "Error", description: "Error al actualizar el prompt", variant: "destructive"})
+            toast({title: "Error", description: "Error al actualizar el image prompt", variant: "destructive"})
         })
         .finally(() => {
             setLoadingAplicar(false)
         })
     }
 
-    const viewVersion = (version: PromptVersionDAO) => {
+    const viewVersion = (version: ImagePromptVersionDAO) => {
         setSelectedVersion(version)
     }
 
@@ -110,20 +117,20 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
         <div className="w-full p-4 flex flex-col h-full">
         <div className="space-y-2 mb-4">
             <Textarea
-                value={currentPrompt}
-                // onChange={(e) => setCurrentPrompt(e.target.value)}
-                placeholder="Escribe tu prompt aquí..."
+                value={currentImagePrompt}
+                placeholder="Escribe tu prompt para procesamiento de imágenes aquí..."
                 className="w-full min-h-[300px]"
                 onChange={(e) => {
                     const text = e.target.value
                     setCharCount(text.length)
-                    setCurrentPrompt(text)
+                    setCurrentImagePrompt(text)
                   }}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+            <ImagePromptTester currentPrompt={currentImagePrompt} />
             <Button 
                 onClick={saveVersion} 
-                className={cn("w-48", {
+                className={cn("w-auto px-6", {
                     "opacity-50 cursor-not-allowed": charCountSaved === charCount
                 })}
                 disabled={charCountSaved === charCount}
@@ -146,7 +153,7 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
                 versions={versions}
                 timezone={timezone}
                 selectedVersion={selectedVersion}
-                currentPrompt={currentPrompt}
+                currentPrompt={currentImagePrompt}
                 onViewVersion={viewVersion}
                 onUseVersion={handleUseVersion}
                 onDeleteVersion={deleteVersion}
@@ -180,4 +187,4 @@ export default function PromptVersionManager({ clientId, timezone, prompt, versi
         </div>
         </div>
     )
-}
+} 

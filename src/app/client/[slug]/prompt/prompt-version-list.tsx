@@ -10,17 +10,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { PromptVersionDAO } from '@/services/prompt-version-services'
 import { toZonedTime } from 'date-fns-tz'
 
-type Props = {
-  versions: PromptVersionDAO[]
-  selectedVersion: PromptVersionDAO | null
+type Props<T extends PromptVersionDAO> = {
+  versions: T[]
+  selectedVersion: T | null
   currentPrompt: string
   timezone: string
-  onViewVersion: (version: PromptVersionDAO) => void
-  onUseVersion: (version: PromptVersionDAO) => void
+  onViewVersion: (version: T) => void
+  onUseVersion: (version: T) => void
   onDeleteVersion: (id: string) => void
 }
 
-export default function PromptVersionList({
+export default function PromptVersionList<T extends PromptVersionDAO>({
   versions,
   selectedVersion,
   currentPrompt,
@@ -28,9 +28,9 @@ export default function PromptVersionList({
   onViewVersion,
   onUseVersion,
   onDeleteVersion
-}: Props) {
+}: Props<T>) {
   const groupedVersions = useMemo(() => {
-    const groups: { [key: string]: PromptVersionDAO[] } = {
+    const groups: { [key: string]: T[] } = {
       'Hoy': [],
       'Ayer': [],
       'Esta semana': [],

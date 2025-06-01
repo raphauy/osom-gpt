@@ -143,6 +143,18 @@ export async function setPrompt(prompt: string, clientId: string) {
   return client   
 }
 
+export async function setImagePrompt(imagePrompt: string, clientId: string) {
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      imagePrompt
+    }
+  })
+
+  return client   
+}
 
 export async function setTokensPrice(clientId: string, promptTokensPrice: number, completionTokensPrice: number) {
   console.log(clientId, promptTokensPrice, completionTokensPrice)
