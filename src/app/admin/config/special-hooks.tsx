@@ -26,6 +26,7 @@ export default function SpecialHooks({ basePath }: Props) {
             <p className="text-2xl font-bold">Special Hooks</p>
             <SimpleCopyHook name="transcribeAudio" path={`${basePath}/api/${clientId}/transcribe-audio`} />
             <SimpleCopyHook name="readImage" path={`${basePath}/api/${clientId}/read-image`} />
+            <SimpleCopyHook name="generateEmbedding" path={`${basePath}/api/${clientId}/generate-embedding`} />
         </div>
     )
 }

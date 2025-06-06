@@ -130,6 +130,7 @@ export function DataTable<TData, TValue>({
       columnsOff.forEach((colName) => {
         table.getColumn(colName)?.toggleVisibility(false);
       });
+      table.setPageSize(20);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
