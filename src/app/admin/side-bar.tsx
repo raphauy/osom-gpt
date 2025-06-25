@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Bot, Briefcase, Database, FunctionSquare, LayoutDashboard, Receipt, ScreenShare, Settings, User, Webhook } from "lucide-react";
+import { Bot, Briefcase, Database, FunctionSquare, LayoutDashboard, Receipt, ScreenShare, Settings, User, Webhook, Cloud } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,6 +54,11 @@ export default function SideBar() {
       href: `/admin/models`,
       icon: Bot, 
       text: "Modelos"
+    },
+    {
+      href: `/admin/api-services`,
+      icon: Cloud, 
+      text: "Servicios API"
     },
     {
       href: "divider", icon: User

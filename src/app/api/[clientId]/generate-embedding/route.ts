@@ -1,4 +1,5 @@
 import { generateEmbedding } from "@/services/embedding-services";
+import { recordEmbeddingUsage } from "@/services/apiUsageService";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 299
@@ -37,6 +38,19 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         const result = await generateEmbedding(text)
         if (!result.vector || result.vector.length === 0) {
             return NextResponse.json({ error: `error generating embedding` }, { status: 404 })
+        }
+
+        // Record API usage for billing
+        try {
+            await recordEmbeddingUsage(
+                clientId,
+                result.usageTokens,
+                "text-embedding-3-small"
+            )
+            console.log("Embedding usage recorded successfully")
+        } catch (error) {
+            console.error("Error recording embedding usage:", error)
+            // Don't fail the request if usage recording fails
         }
 
         return NextResponse.json({ 

@@ -79,6 +79,12 @@ model Client {
   sessionTTL            Int       @default(10)
   timezone              String @default("America/Montevideo")
 
+  // API Services Pricing
+  imagePromptTokensPrice     Float @default(0)
+  imageCompletionTokensPrice Float @default(0)
+  audioSecondsPrice          Float @default(0)
+  embeddingTokensPrice       Float @default(0)
+
   functions             ClientFunction[]
 
   // Todo: make this field not optional
@@ -89,6 +95,7 @@ model Client {
   repoLabel             String   @default("Repositorio")   // gennext: show.column
 
   promptVersions        PromptVersion[]
+  apiUsages             ApiUsage[]                         // gennext: skip.list
 }
 
 model Document {
@@ -401,4 +408,44 @@ model WebhookNotification {
   resendStatus        WebhookStatus?
 
   clientId            String
+}
+
+model ApiService {
+  id          String @id @default(cuid())
+  name        String @unique // "gpt-4-vision", "whisper-1", "text-embedding-3-small"
+  serviceType String         // "image", "audio", "embedding"
+  
+  // Costos (lo que cobra OpenAI)
+  promptTokensCost     Float? @default(0)  // para imagen y embedding (por millón de tokens)
+  completionTokensCost Float? @default(0)  // solo para imagen (por millón de tokens)
+  secondsCost          Float? @default(0)  // solo para audio (por segundo)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  apiUsages   ApiUsage[]
+}
+
+model ApiUsage {
+  id              String   @id @default(cuid())
+  clientId        String
+  serviceType     String   // "image", "audio", "embedding"
+  
+  // Para imagen y embedding
+  promptTokens    Int?     @default(0)
+  completionTokens Int?    @default(0)
+  totalTokens     Int?     @default(0)
+  
+  // Para audio
+  durationSeconds Float?   @default(0)
+  
+  // Para embedding  
+  usageTokens     Int?     @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  client          Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  apiService      ApiService? @relation(fields: [apiServiceId], references: [id], onDelete: SetNull)
+  apiServiceId    String?
 }

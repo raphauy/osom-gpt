@@ -1,4 +1,5 @@
 import { transcribeAudio } from "@/services/transcribe-services";
+import { recordAudioUsage } from "@/services/apiUsageService";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 299
@@ -29,6 +30,21 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         const result = await transcribeAudio(audioUrl)
         if (!result.text) {
             return NextResponse.json({ error: `error transcribing audio` }, { status: 404 })
+        }
+
+        // Record API usage for billing
+        try {
+            if (result.durationInSeconds) {
+                await recordAudioUsage(
+                    clientId,
+                    result.durationInSeconds,
+                    "whisper-1"
+                )
+                console.log("Audio usage recorded successfully")
+            }
+        } catch (error) {
+            console.error("Error recording audio usage:", error)
+            // Don't fail the request if usage recording fails
         }
 
         return NextResponse.json({ 

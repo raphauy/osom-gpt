@@ -26,6 +26,11 @@ export type DataClient = {
     imagePrompt?: string | null
     promptTokensPrice?: number | null
     completionTokensPrice?: number | null
+    // API Services Pricing
+    imagePromptTokensPrice?: number | null
+    imageCompletionTokensPrice?: number | null
+    audioSecondsPrice?: number | null
+    embeddingTokensPrice?: number | null
     promptCostTokenPrice: number
     completionCostTokenPrice: number
     modelName: string
@@ -58,6 +63,11 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
+        // API Services Pricing
+        imagePromptTokensPrice: client.imagePromptTokensPrice,
+        imageCompletionTokensPrice: client.imageCompletionTokensPrice,
+        audioSecondsPrice: client.audioSecondsPrice,
+        embeddingTokensPrice: client.embeddingTokensPrice,
         promptCostTokenPrice: promptCostTokenPrice,
         completionCostTokenPrice: completionCostTokenPrice,
         modelName: model?.name || '',
@@ -95,6 +105,11 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
+        // API Services Pricing
+        imagePromptTokensPrice: client.imagePromptTokensPrice,
+        imageCompletionTokensPrice: client.imageCompletionTokensPrice,
+        audioSecondsPrice: client.audioSecondsPrice,
+        embeddingTokensPrice: client.embeddingTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
@@ -129,6 +144,11 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
+        // API Services Pricing
+        imagePromptTokensPrice: client.imagePromptTokensPrice,
+        imageCompletionTokensPrice: client.imageCompletionTokensPrice,
+        audioSecondsPrice: client.audioSecondsPrice,
+        embeddingTokensPrice: client.embeddingTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
@@ -162,6 +182,11 @@ export async function getLastClientAction(): Promise<DataClient | null>{
         imagePrompt: client.imagePrompt,
         promptTokensPrice: client.promptTokensPrice,
         completionTokensPrice: client.completionTokensPrice,
+        // API Services Pricing
+        imagePromptTokensPrice: client.imagePromptTokensPrice,
+        imageCompletionTokensPrice: client.imageCompletionTokensPrice,
+        audioSecondsPrice: client.audioSecondsPrice,
+        embeddingTokensPrice: client.embeddingTokensPrice,
         promptCostTokenPrice,
         completionCostTokenPrice,
         modelName: model?.name || '',
@@ -202,6 +227,11 @@ export async function getDataClients() {
                 imagePrompt: client.imagePrompt,
                 promptTokensPrice: client.promptTokensPrice,
                 completionTokensPrice: client.completionTokensPrice,
+                // API Services Pricing
+                imagePromptTokensPrice: client.imagePromptTokensPrice,
+                imageCompletionTokensPrice: client.imageCompletionTokensPrice,
+                audioSecondsPrice: client.audioSecondsPrice,
+                embeddingTokensPrice: client.embeddingTokensPrice,
                 promptCostTokenPrice,
                 completionCostTokenPrice,
                 modelName: model?.name || '',

@@ -1,5 +1,6 @@
 import { readImage } from "@/services/vision-services";
 import { getClient } from "@/services/clientService";
+import { recordImageUsage } from "@/services/apiUsageService";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 299
@@ -42,6 +43,20 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         const result = await readImage(imageUrl, client.imagePrompt)
         if (!result.description) {
             return NextResponse.json({ error: `error analyzing image` }, { status: 404 })
+        }
+
+        // Record API usage for billing
+        try {
+            await recordImageUsage(
+                clientId,
+                result.usage.promptTokens,
+                result.usage.completionTokens,
+                result.usage.totalTokens
+            )
+            console.log("Image usage recorded successfully")
+        } catch (error) {
+            console.error("Error recording image usage:", error)
+            // Don't fail the request if usage recording fails
         }
 
         return NextResponse.json({ 

@@ -483,29 +483,6 @@ export async function deleteConversation(id: string) {
 
 export async function getBillingData(from: Date, to: Date, clientId?: string): Promise<CompleteData> {  
 
-  // const messages= await prisma.message.findMany({
-  //   where: {
-  //     createdAt: {
-  //       gte: from,
-  //       lte: to
-  //     },
-  //     conversation: {
-  //       clientId: clientId
-  //     }
-  //   },
-  //   include: {
-  //     conversation: {
-  //       include: {
-  //         client: {
-  //           include: {
-  //             model: true
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // })
-
   const messages = await prisma.message.findMany({
     where: {
       createdAt: {
@@ -541,13 +518,6 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
   });
   
   console.log("messages count: ", messages.length)
-  
-
-  // const res: CompleteData= {
-  //   totalCost: 0,
-  //   billingData: []
-  // }
-  // return res
 
   const billingData: BillingData[]= []
 

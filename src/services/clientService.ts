@@ -172,6 +172,36 @@ export async function setTokensPrice(clientId: string, promptTokensPrice: number
   return client   
 }
 
+// Nueva función para actualizar precios de APIs
+export async function setApiTokensPrice(
+  clientId: string, 
+  imagePromptTokensPrice: number, 
+  imageCompletionTokensPrice: number,
+  audioSecondsPrice: number,
+  embeddingTokensPrice: number
+) {
+  console.log(`Setting API prices for client ${clientId}:`, {
+    imagePromptTokensPrice,
+    imageCompletionTokensPrice,
+    audioSecondsPrice,
+    embeddingTokensPrice
+  })
+  
+  const client = await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      imagePromptTokensPrice,
+      imageCompletionTokensPrice,
+      audioSecondsPrice,
+      embeddingTokensPrice
+    }
+  })
+
+  return client   
+}
+
 export type CountData = {
   clientName: string,
   clientSlug: string,

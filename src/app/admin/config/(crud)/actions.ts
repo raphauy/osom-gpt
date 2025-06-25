@@ -1,11 +1,29 @@
 "use server"
 
-import { setMessageArrivedDelay, setSessionTTL, setTimezone, setTokensPrice } from "@/services/clientService"
+import { setApiTokensPrice, setMessageArrivedDelay, setSessionTTL, setTimezone, setTokensPrice } from "@/services/clientService"
 import { revalidatePath } from "next/cache"
 
 
 export async function setTokensPriceAction(clientId: string, promptTokensPrice: number, completionTokensPrice: number) {
     const client= await setTokensPrice(clientId, promptTokensPrice,completionTokensPrice)
+
+    return client    
+}
+
+export async function setApiTokensPriceAction(
+    clientId: string, 
+    imagePromptTokensPrice: number, 
+    imageCompletionTokensPrice: number,
+    audioSecondsPrice: number,
+    embeddingTokensPrice: number
+) {
+    const client = await setApiTokensPrice(
+        clientId, 
+        imagePromptTokensPrice,
+        imageCompletionTokensPrice,
+        audioSecondsPrice,
+        embeddingTokensPrice
+    )
 
     return client    
 }

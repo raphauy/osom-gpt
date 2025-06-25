@@ -16,6 +16,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import TokensCard from "./tokens-card"
 import ValueCard from "./value-card"
 import ValueClientCard from "./value-client-card"
+import ApiUsageCard from "./api-usage-card"
+import ConsolidatedApiCard from "./consolidated-api-card"
+import SummaryCard from "./summary-card"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -120,7 +123,7 @@ export function Billing({ clientId }: Props) {
               <PopoverTrigger asChild>
                 <Button className="w-[280px] justify-center text-left font-normal" id="date" variant="outline">
                   <CalendarClock className="w-4 h-4 mr-2" />
-                  <p>Desde: {format(from ?? new Date(), "PPP", { locale: es })}</p>
+                  <span>Desde: {format(from ?? new Date(), "PPP", { locale: es })}</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-auto p-0">
@@ -136,7 +139,7 @@ export function Billing({ clientId }: Props) {
               <PopoverTrigger asChild>
                 <Button className="w-[280px] justify-start text-left font-normal" id="date" variant="outline">
                   <CalendarClock className="w-4 h-4 mr-2" />
-                  <p>Hasta: {format(to ?? new Date(), "PPP", { locale: es })}</p>
+                  <span>Hasta: {format(to ?? new Date(), "PPP", { locale: es })}</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-auto p-0">
@@ -200,67 +203,161 @@ type BillingCardProps = {
   adminPanel?: boolean
 }
 function BillingCard({ data, adminPanel }: BillingCardProps) {
-  return data?.billingData.map((item) => {
+  if (!data) return null;
 
-    const totalPromptCost = (item.promptTokens / 1000000) * item.promptTokensCost
-    const totalCompletionCost = (item.completionTokens / 1000000) * item.completionTokensCost
-    const totalCost = totalPromptCost + totalCompletionCost
+  // Group clients by name to show both chat and API usage together
+  const clientGroups: {[clientName: string]: {
+    chatData?: typeof data.billingData[0],
+    apiUsageData: NonNullable<typeof data.apiUsageData>
+  }} = {};
 
-    const totalPromptSell = (item.promptTokens / 1000000) * item.clientPricePerPromptToken
-    const totalCompletionSell = (item.completionTokens / 1000000) * item.clientPricePerCompletionToken
+  // Add chat data
+  data.billingData.forEach(item => {
+    clientGroups[item.clientName] = {
+      chatData: item,
+      apiUsageData: []
+    };
+  });
 
-    const percentage= data.totalCost ? totalCost / data.totalCost * 100 : 0
+  // Add API usage data
+  (data.apiUsageData || []).forEach(apiItem => {
+    if (!clientGroups[apiItem.clientName]) {
+      clientGroups[apiItem.clientName] = {
+        apiUsageData: []
+      };
+    }
+    clientGroups[apiItem.clientName].apiUsageData.push(apiItem);
+  });
 
+  return Object.entries(clientGroups).map(([clientName, clientData]) => {
+    const chatItem = clientData.chatData;
+    const chatTotalCost = chatItem ? 
+      ((chatItem.promptTokens / 1000000) * chatItem.promptTokensCost) + 
+      ((chatItem.completionTokens / 1000000) * chatItem.completionTokensCost) : 0;
+
+    const apiTotalCost = clientData.apiUsageData.reduce((sum, api) => sum + api.totalCost, 0);
+    const apiTotalOpenAICost = clientData.apiUsageData.reduce((sum, api) => sum + api.totalOpenAICost, 0);
+    const clientTotalCost = chatTotalCost + apiTotalCost;
+
+    const chatTotalSell = chatItem ? 
+      ((chatItem.promptTokens / 1000000) * chatItem.clientPricePerPromptToken) + 
+      ((chatItem.completionTokens / 1000000) * chatItem.clientPricePerCompletionToken) : 0;
+
+    const percentage = data.totalCost ? clientTotalCost / data.totalCost * 100 : 0;
 
     return (
-      <div key={item.clientName} className="grid gap-6 mt-5 mb-24 md:grid-cols-2">
-        <p className="col-span-2 mt-5 text-3xl font-bold text-center">{item.clientName}</p>
+      <div key={clientName} className="grid gap-6 mt-5 mb-24 md:grid-cols-2">
+        <p className="col-span-2 mt-5 text-3xl font-bold text-center">{clientName}</p>
 
-        {/** Total tokens */}
-        <TokensCard promptTokens={item.promptTokens} completionTokens={item.completionTokens} />
-        
-        {/** Porcentaje */}
-        {
-          adminPanel ? (
-            <>
-              <Card className={cn("flex flex-col justify-between", totalCost === 0 && "opacity-20")}>
-                <CardHeader>
-                  <CardDescription>
-                    <div className="flex justify-between">
-                      <p>Utilización en el período</p>
-                      <PercentCircle />
+                    {/* Chat Data Section */}
+        {chatItem && (
+          <>
+            <div className="col-span-2">
+              <h3 className="text-xl font-semibold mb-4 text-blue-600">💬 Conversaciones</h3>
+            </div>
+            <TokensCard promptTokens={chatItem.promptTokens} completionTokens={chatItem.completionTokens} />
+            
+            {adminPanel ? (
+              <>
+                <Card className={cn("flex flex-col justify-between", chatTotalCost === 0 && "opacity-20")}>
+                  <CardHeader>
+                    <CardDescription>
+                      <div className="flex justify-between">
+                        <p>Utilización Conversaciones en el período</p>
+                        <PercentCircle />
+                      </div>
+                    </CardDescription>
+                    <CardTitle>
+                      <div className="flex items-center justify-between">
+                        <p>{percentage.toFixed(1)}%</p>
+                      </div>                    
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between text-muted-foreground">
+                      <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(chatTotalCost)}</p>
+                      <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.totalCost)}</p>
                     </div>
-                  </CardDescription>
-                  <CardTitle>
-                    <div className="flex items-center justify-between">
-                      <p>{percentage.toFixed(1)}%</p>
-                    </div>                    
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between text-muted-foreground">
-                    <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
-                    <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.totalCost)}</p>
-                  </div>
-                  <Progress value={percentage} indicatorColor="bg-blue-500" className="h-2" />
-                </CardContent>                  
-              </Card>  
+                    <Progress value={percentage} indicatorColor="bg-blue-500" className="h-2" />
+                  </CardContent>                  
+                </Card>  
 
-              {/** Total Compra */}
-              <ValueCard  promptPrice={item.promptTokensCost} completionPrice={item.completionTokensCost} promptCost={totalPromptCost} completionCost={totalCompletionCost} costIcon={true} modelName={item.modelName} />
+                <ValueCard promptPrice={chatItem.promptTokensCost} completionPrice={chatItem.completionTokensCost} promptCost={chatTotalCost - ((chatItem.completionTokens / 1000000) * chatItem.completionTokensCost)} completionCost={(chatItem.completionTokens / 1000000) * chatItem.completionTokensCost} costIcon={true} modelName={chatItem.modelName} />
 
-              {/** Total Venta */}
-              <ValueCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} costIcon={false} modelName="" />
-            </>
-          ) : (
-            <ValueClientCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} />
-          )
-        }
+                <ValueCard promptPrice={chatItem.clientPricePerPromptToken} completionPrice={chatItem.clientPricePerCompletionToken} promptCost={chatTotalSell - ((chatItem.completionTokens / 1000000) * chatItem.clientPricePerCompletionToken)} completionCost={(chatItem.completionTokens / 1000000) * chatItem.clientPricePerCompletionToken} costIcon={false} modelName="" />
+              </>
+            ) : (
+              <ValueClientCard promptPrice={chatItem.clientPricePerPromptToken} completionPrice={chatItem.clientPricePerCompletionToken} promptCost={chatTotalSell - ((chatItem.completionTokens / 1000000) * chatItem.clientPricePerCompletionToken)} completionCost={(chatItem.completionTokens / 1000000) * chatItem.clientPricePerCompletionToken} />
+            )}
+          </>
+        )}
 
+        {/* API Usage Section */}
+        {clientData.apiUsageData.length > 0 && (
+          <>
+            <div className="col-span-2">
+              <h3 className="text-xl font-semibold mb-4 text-green-600">🔌 APIs</h3>
+            </div>
+            {adminPanel ? (
+              <>
+                {/* Vista Admin: Mostrar compra y venta */}
+                <ConsolidatedApiCard 
+                  apiUsageData={clientData.apiUsageData} 
+                  costIcon={true}
+                />
+                <ConsolidatedApiCard 
+                  apiUsageData={clientData.apiUsageData} 
+                  costIcon={false}
+                />
+              </>
+            ) : (
+              /* Vista Cliente: Solo mostrar venta */
+              <ConsolidatedApiCard 
+                apiUsageData={clientData.apiUsageData} 
+                costIcon={false}
+                isClientView={true}
+              />
+            )}
+          </>
+        )}
 
+        {/* Summary Section */}
+        {(chatItem || clientData.apiUsageData.length > 0) && (
+          <>
+            <div className="col-span-2">
+              <h3 className="text-xl font-semibold mb-4 text-blue-600">📊 Resumen</h3>
+            </div>
+            {adminPanel ? (
+              <>
+                {/* Vista Admin: Mostrar resumen de compra y venta */}
+                <SummaryCard 
+                  chatCost={chatTotalCost}
+                  apiCost={apiTotalOpenAICost}
+                  costIcon={true}
+                  chatSellCost={chatTotalSell}
+                  apiSellCost={apiTotalCost}
+                />
+                <SummaryCard 
+                  chatCost={chatTotalSell}
+                  apiCost={apiTotalCost}
+                  costIcon={false}
+                  chatSellCost={chatTotalSell}
+                  apiSellCost={apiTotalCost}
+                />
+              </>
+            ) : (
+              /* Vista Cliente: Solo mostrar resumen de venta */
+              <SummaryCard 
+                chatCost={chatTotalSell}
+                apiCost={apiTotalCost}
+                costIcon={false}
+                isClientView={true}
+              />
+            )}
+          </>
+        )}
       </div>            
-    )}          
-  )           
-
+    );
+  });
 }
 

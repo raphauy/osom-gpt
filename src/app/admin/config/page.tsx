@@ -64,7 +64,7 @@ export default async function ConfigPage({ searchParams }: Props) {
                 </TabsContent>
                 <TabsContent value="props" className="space-y-2">
                     <PropsEdit clientId={client.id} messageArrivedDelay={messageArrivedDelay || 8} sessionTTL={sessionTTL || 10} timezone={client.timezone} />
-                    <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} />
+                    <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} imagePromptTokensPrice={client.imagePromptTokensPrice} imageCompletionTokensPrice={client.imageCompletionTokensPrice} audioSecondsPrice={client.audioSecondsPrice} embeddingTokensPrice={client.embeddingTokensPrice} />
                 </TabsContent>
                 <TabsContent value="hooks">
                     <Hook basePath={BASE_PATH} />
