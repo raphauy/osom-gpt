@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import { removeSectionTexts } from "@/lib/utils"
+import { removeSectionTexts, getFormatWithTime } from "@/lib/utils"
 import clsx from "clsx"
 import { Bot, Car, CircleDollarSign, Cog, Loader, Terminal, Ticket, Unplug, User } from "lucide-react"
 import Link from "next/link"
@@ -86,13 +86,16 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
             }
             {
               conversation.llmOff &&
-              <Button variant="outline" className="px-2" onClick={handleLLMOn}>
-                {loading ? <Loader className="w-4 h-4 animate-spin" /> : <Unplug />}
+              <Button variant="outline" className="h-8 px-2" onClick={handleLLMOn}>
+                {loading ? <Loader className="w-4 h-4 animate-spin" /> : <Unplug className="w-4 h-4" />}
               </Button>
             }
           </div>
           <div>
-            <p className="text-lg font-bold">{conversation.celular} ({conversation.fecha})</p>
+            <div className="text-center">
+              <p className="text-lg font-bold">{conversation.celular}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{conversation.fecha}</p>
+            </div>
             {
               totalPromptTokens > 0 && isAdmin && (
                 <div className="flex items-center justify-center gap-2">
@@ -123,31 +126,37 @@ export default function ConversationBox({ conversation, promptTokensPrice, compl
           messages.map((message, i) => (
             <div key={i} className="w-full">
               <div className={clsx(
-                  "flex w-full items-center justify-between px-1 lg:px-4 border-b border-gray-200 py-5",
-                  message.role === "user" ? "bg-gray-100 dark:bg-gray-800" : "bg-background",
+                  "flex w-full items-center justify-between px-1 lg:px-4 border-b border-gray-200/50 dark:border-gray-700/50 py-6",
+                  message.role === "user" ? "bg-gray-50 dark:bg-gray-800/50" : "bg-background",
                 )}
               >
-                <div className="flex items-center w-full max-w-screen-md px-5 space-x-4 sm:px-0">
+                <div className="flex items-start w-full max-w-screen-md px-5 gap-4 sm:px-0">
                   {
                     // @ts-ignore
                     !message.gptData &&
-                    <div className="flex flex-col">
-                      <div
-                          className={clsx(
-                          "p-1.5 text-white flex justify-center",
-                          (message.role === "assistant") ? "bg-green-500" : (message.role === "system" || message.role === "function") ? "bg-blue-500" : "bg-black",
+                    <div className="flex-shrink-0 flex flex-col items-center">
+                      <div className={clsx(
+                        "w-10 h-10 rounded-full flex items-center justify-center border",
+                        message.role === "assistant" ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800" : 
+                        (message.role === "system" || message.role === "function") ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800" : 
+                        "bg-gray-50 border-gray-300 dark:bg-gray-800 dark:border-gray-600"
+                      )}>
+                        {message.role === "user" ? (
+                          <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        ) : message.role === "system" || message.role === "function" ? (
+                          <Terminal className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        ) : (
+                          <Bot className="w-5 h-5 text-green-600 dark:text-green-400" />
                         )}
-                      >
-                          {message.role === "user" ? (
-                          <User width={20} />
-                          ) : message.role === "system" || message.role === "function" ? (
-                            <Terminal width={20} />
-                          ) : (
-                          <Bot width={20} />
-                          )
-                          }
                       </div>
-                      <p className="text-sm">{message.fecha}</p>
+                      <div className="mt-2 text-center">
+                        <div className="text-xs font-medium text-gray-900 dark:text-gray-100">
+                          {getFormatWithTime(message.updatedAt).primary}
+                        </div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                          {getFormatWithTime(message.updatedAt).secondary}
+                        </div>
+                      </div>
                     </div>
                   }
                   {message.role === "system" ?

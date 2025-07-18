@@ -97,6 +97,28 @@ export function getFormatInTimezone(date: Date, timeZone: string) {
   }
 }
 
+export function getFormatWithTime(date: Date, timezone?: string): { primary: string; secondary: string } {
+  const tz = timezone || "America/Montevideo"
+  const zonedDate = toZonedTime(date, tz)
+  const today = toZonedTime(new Date(), tz)
+  
+  if (
+    zonedDate.getDate() === today.getDate() &&
+    zonedDate.getMonth() === today.getMonth() &&
+    zonedDate.getFullYear() === today.getFullYear()
+  ) {
+    return {
+      primary: formatTZ(zonedDate, "HH:mm", { timeZone: tz, locale: es }),
+      secondary: "Hoy"
+    }
+  } else {
+    return {
+      primary: formatTZ(zonedDate, "yyyy/MM/dd", { timeZone: tz, locale: es }),
+      secondary: formatTZ(zonedDate, "HH:mm", { timeZone: tz, locale: es })
+    }
+  }
+}
+
 export function formatCurrency(value: number): string {
   return Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(value)  
 }
