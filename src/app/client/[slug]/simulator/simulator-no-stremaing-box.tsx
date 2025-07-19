@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-import { getFormatInTimezone } from "@/lib/utils";
+import { getFormatInTimezone, getFormatWithTime } from "@/lib/utils";
 import { ModelDAO } from "@/services/model-services";
 import clsx from "clsx";
 import { Bot, CircleDollarSign, Loader, Podcast, SendIcon, Terminal, Ticket, User } from "lucide-react";
@@ -213,7 +213,14 @@ export default function SimulatorNoStreamingBox() {
         {
           loading ? 
             <Loader className="animate-spin" /> :         
-            <p className="text-lg font-bold text-center">{userEmail} {messages.length > 0 && "(" + getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo") + ")"}</p>
+            <div className="text-center">
+              <p className="text-lg font-bold">{userEmail}</p>
+              {messages.length > 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {getFormatInTimezone(messages[messages.length -1].createdAt || new Date(), client?.timezone || "America/Montevideo")}
+                </p>
+              )}
+            </div>
         }
         {
           totalPromptTokens > 0 && (
@@ -240,26 +247,34 @@ export default function SimulatorNoStreamingBox() {
             <div
               key={i}
               className={clsx(
-                "flex w-full px-1 items-center justify-center border-b border-gray-200 py-4",
-                message.role === "user" ? "bg-gray-100 dark:bg-gray-800" : "bg-background",
+                "flex w-full px-1 items-center justify-center border-b border-gray-200/50 dark:border-gray-700/50 py-6",
+                message.role === "user" ? "bg-gray-50 dark:bg-gray-800/50" : "bg-background",
               )}
             >
-              <div className="flex items-start w-full max-w-screen-md px-5 space-x-4 sm:px-0">
-                <div
-                  className={clsx(
-                    "p-1.5 text-white",
-                    (message.role === "assistant" || message.role === "function") ? "bg-green-500" : message.role === "system" ? "bg-blue-500" : "bg-black",
-                  )}
-                >
-                {message.role === "user" ? (
-                <User width={20} />
-                ) : message.role === "system" || message.role === "function" ? (
-                <Terminal width={20} />
-                ) : (
-                <Bot width={20} />
-                )
-                }
-
+              <div className="flex items-start w-full max-w-screen-md px-5 gap-4 sm:px-0">
+                <div className="flex-shrink-0 flex flex-col items-center">
+                  <div className={clsx(
+                    "w-10 h-10 rounded-full flex items-center justify-center border",
+                    (message.role === "assistant" || message.role === "function") ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800" : 
+                    message.role === "system" ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800" : 
+                    "bg-gray-50 border-gray-300 dark:bg-gray-800 dark:border-gray-600"
+                  )}>
+                    {message.role === "user" ? (
+                      <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    ) : message.role === "system" || message.role === "function" ? (
+                      <Terminal className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    ) : (
+                      <Bot className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    )}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <div className="text-xs font-medium text-gray-900 dark:text-gray-100">
+                      {getFormatWithTime(message.createdAt || new Date(), client?.timezone).primary}
+                    </div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                      {getFormatWithTime(message.createdAt || new Date(), client?.timezone).secondary}
+                    </div>
+                  </div>
                 </div>
                 {message.role !== "system" &&
                   <ReactMarkdown
