@@ -73,7 +73,11 @@ export async function POST(req: Request) {
   })
 
   let temperature= undefined
-  if (model.name !== "gpt-4o-search-preview" && model.name !== "gpt-4o-mini-search-preview") {
+  if (model.name !== "gpt-4o-search-preview" && 
+      model.name !== "gpt-4o-mini-search-preview" &&
+      model.name !== "gpt-5" &&
+      model.name !== "gpt-5-mini" &&
+      model.name !== "gpt-5-nano") {
     temperature= 0
   }
   

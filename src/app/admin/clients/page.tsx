@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { create, getDataClients, update } from "./(crud)/actions"
 import { ClientDialog } from "./(crud)/client-dialog"
+import { CloneDialog } from "./(clone)/clone-dialog"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
  
@@ -12,10 +13,18 @@ export default async function WinesPage() {
 
   const addTrigger= (<Button variant="outline"><PlusCircle size={22} className="mr-2"/>Agregar</Button>)
 
+  // Preparar datos simplificados para el selector
+  const clientsForSelector = clients.map(client => ({
+    id: client.id,
+    name: client.nombre,
+    slug: client.slug
+  }))
+
   return (
     <div className="w-full">      
 
-      <div className="flex justify-end mx-auto my-2">
+      <div className="flex justify-end gap-2 mx-auto my-2">
+        <CloneDialog clients={clientsForSelector} />
         <ClientDialog create={create} update={update} title="Agregar Cliente" trigger={addTrigger}/>
       </div>
 
