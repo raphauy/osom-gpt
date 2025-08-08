@@ -9,9 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command"
 import { toast } from "@/components/ui/use-toast"
 import { User } from "@prisma/client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+import { Search, ChevronsUpDown, Check } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { getDataUser } from "./actions"
 import { DataClient, getDataClients } from "../../clients/(crud)/actions"
 import { get } from "http"
@@ -33,7 +37,9 @@ const formSchema = z.object({
 export type UserFormValues = z.infer<typeof formSchema>
 
 // This can come from your database or API.
-const defaultValues: Partial<UserFormValues> = {}
+const defaultValues: Partial<UserFormValues> = {
+  rol: "cliente" // Default role as requested in PRP
+}
 
 interface Props{
   id?: string
@@ -51,6 +57,26 @@ export function UserForm({ id, create, update, closeDialog }: Props) {
   const [loading, setLoading] = useState(false)
   const [clients, setClients] = useState<DataClient[]>([])
   const [clientName, setClientName] = useState("")
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
+
+  // Watch role changes to show/hide client selector
+  const watchedRole = form.watch("rol")
+  
+  // Filter clients based on search
+  const filteredClients = useMemo(() => {
+    if (!search) return clients
+    return clients.filter(client => 
+      client.nombre.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [clients, search])
+
+  // Clear clienteId when role changes to non-client/user
+  useEffect(() => {
+    if (watchedRole !== "cliente" && watchedRole !== "user") {
+      form.setValue("clienteId", "")
+    }
+  }, [watchedRole, form])
 
   async function onSubmit(data: UserFormValues) {
 
@@ -149,35 +175,73 @@ export function UserForm({ id, create, update, closeDialog }: Props) {
             </FormItem>
           )}
         />
-        <FormField
-        control={form.control}
-        name="clienteId"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Cliente</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  {
-                    id ? 
-                    <SelectValue className="text-muted-foreground" placeholder={clientName} /> :
-                    <SelectValue className="text-muted-foreground" placeholder="Selecciona un Cliente" />
-                  }
-                  
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {clients.map(client => (
-                  <SelectItem key={client.id} value={client.id}>{client.nombre}</SelectItem>
-                ))
-                }
-              </SelectContent>
-            </Select>
-            <FormDescription>El cliente solo afecta a usuarios con rol &ldquo;cliente&ldquo;</FormDescription>
-            <FormMessage />
-          </FormItem>
+        {(watchedRole === "cliente" || watchedRole === "user") && (
+          <FormField
+            control={form.control}
+            name="clienteId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cliente</FormLabel>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {field.value
+                          ? clients.find(c => c.id === field.value)?.nombre || (id ? clientName : undefined)
+                          : "Buscar cliente..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" side="top" sideOffset={5}>
+                    <Command>
+                      <div className="flex items-center border-b px-3">
+                        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                        <input
+                          placeholder="Buscar cliente..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </div>
+                      <CommandGroup>
+                        {filteredClients.slice(0, 10).map((client) => (
+                          <CommandItem
+                            key={client.id}
+                            onSelect={() => {
+                              field.onChange(client.id)
+                              setOpen(false)
+                              setSearch("")
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                field.value === client.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {client.nombre}
+                          </CommandItem>
+                        ))}
+                        {filteredClients.length > 10 && (
+                          <p className="text-sm text-muted-foreground px-2 py-1.5">
+                            {filteredClients.length - 10} más resultados...
+                          </p>
+                        )}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>El cliente solo afecta a usuarios con rol &ldquo;cliente&rdquo;</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         )}
-      />
       <div className="flex justify-end">
         <Button onClick={() => closeDialog()} type="button" variant="secondary" className="w-32">Cancelar</Button>
         <Button type="submit"  variant="outline" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Guardar</p>}</Button>
