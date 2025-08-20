@@ -10,7 +10,7 @@ export default function Logo() {
     <Link href="/">
       <div className="text-3xl font-bold">
         {/* <Image src="/Oso-OsomGPT-logo.png" width={240} height={50} alt="Osom logo" /> */}
-        <Image src="/logo-Impulsa-industria-academy.png" width={240} height={50} alt="Osom logo" />
+        <Image src="/Oso-OsomGPT-logo.png" width={240} height={50} alt="Osom logo" />
       </div>
     </Link>
 
